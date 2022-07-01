@@ -126,11 +126,17 @@ int main()
 	// "Game" loop
 	while (!glfwWindowShouldClose(window))
 	{
+		// Check for input
 		glfwPollEvents();
+
+		// Update everything
 		update();
+
+		// Draw everything
 		draw();
 	}
 
+	// Once done, cleanup
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
@@ -143,6 +149,7 @@ void update()
 
 void draw()
 {
+	// Setup the buffer
 	glViewport(0, 0, width, height);
 	glClearColor(1, 0, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -167,6 +174,7 @@ void draw()
 	glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
+	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);
 }
 
