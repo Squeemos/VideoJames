@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoJames", "VideoJames.vcxproj", "{7551A24D-1E67-4426-9FA5-98094440C66F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Debug|x64.ActiveCfg = Debug|x64
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Debug|x64.Build.0 = Debug|x64
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Debug|x86.ActiveCfg = Debug|Win32
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Debug|x86.Build.0 = Debug|Win32
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Release|x64.ActiveCfg = Release|x64
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Release|x64.Build.0 = Release|x64
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Release|x86.ActiveCfg = Release|Win32
+		{7551A24D-1E67-4426-9FA5-98094440C66F}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DAF65DD7-C0F9-4AB6-9559-94ED1373764B}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,5 @@
+﻿  Main.cpp
+C:\GLP\VideoJames\linmath.h(586,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\GLP\VideoJames\linmath.h(593,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\GLP\VideoJames\linmath.h(605,51): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\GLP\VideoJames\linmath.h(605,20): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
