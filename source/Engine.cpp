@@ -3,27 +3,25 @@
 
 #include <iostream>
 
-// Whether to keep updating the engine
-bool engine_is_running()
-{
-	return window_is_running();
-}
-
 // Start everything in the engine
-void engine_init()
+GameEngine::GameEngine()
 {
 	window_init();
 }
 
-// Update everything in the engine
-void engine_update()
+// Shutdown everything in the engine
+GameEngine::~GameEngine()
+{
+	window_shutdown();
+}
+
+void GameEngine::update()
 {
 	double dt = get_dt();
 	window_update(dt);
 }
 
-// Shutdown everything in the engine
-void engine_shutdown()
+bool GameEngine::running()
 {
-	window_shutdown();
+	return window_is_running();
 }

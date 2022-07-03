@@ -7,11 +7,13 @@
 #include <iostream>
 #include <stdlib.h>
 #include <chrono>
+#include <fstream>
 
 // Forward References
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void update(double dt);
 static void draw();
+static std::string read_shader(std::string file_name);
 
 // Constants
 constexpr unsigned width{ 1280 };
@@ -33,27 +35,11 @@ static float vertices[]{
 	 0.0f,  0.5f, 0.0f
 };
 
-// Vertex Shader
-static const char* vertex_shader_source = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
-
-// Fragment shader
-static const char* frag_shader_source = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\0";
-
 // Initialize everything for the window
 void window_init()
 {
 	// Set some window stuff (quality, resizable)
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	// Init glfw
@@ -97,8 +83,11 @@ void window_init()
 	blue = 0.0f;
 
 	// Creating the vertex shader
+	const GLchar* shader_src;
+	std::string temp = read_shader("./shaders/vertex_shader.vert");
+	shader_src = temp.c_str();
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+	glShaderSource(vertex_shader, 1, &shader_src, NULL);
 	glCompileShader(vertex_shader);
 
 	// Check that the vertex shader properly compiled
@@ -114,8 +103,10 @@ void window_init()
 	}
 
 	// Create the fragment shader
+	temp = read_shader("./shaders/frag_shader.frag");
+	shader_src = temp.c_str();
 	frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(frag_shader, 1, &frag_shader_source, NULL);
+	glShaderSource(frag_shader, 1, &shader_src, NULL);
 	glCompileShader(frag_shader);
 
 	// Check that the fragment shader is properly compiled
@@ -263,4 +254,17 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		if (green > 0.0f)
 			green -= .01f;
 	}
+}
+
+static std::string read_shader(std::string file_name)
+{
+	std::string contents;
+	std::ifstream file(file_name.c_str());
+	if (!file.is_open())
+	{
+		std::cout << "File failed to open: " << file_name << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	std::cout << "Loading shader: " << file_name << std::endl;
+	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }

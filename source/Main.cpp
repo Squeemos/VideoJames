@@ -5,14 +5,14 @@
 // Main
 int main()
 {
-	engine_init();
+	GameEngine* engine = new GameEngine();
 
-	while (engine_is_running())
+	while (engine->running())
 	{
-		engine_update();
+		engine->update();
 	}
 
-	engine_shutdown();
+	delete engine;
 
 	return 0;
 }
