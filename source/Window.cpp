@@ -10,9 +10,7 @@
 #include <fstream>
 
 // Forward References
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-static void update(double dt);
-static void draw();
+static void update_(double dt);
 static std::string read_shader(std::string file_name);
 
 // Constants
@@ -20,10 +18,6 @@ constexpr unsigned width{ 1280 };
 constexpr unsigned height{ 720 };
 
 // Static variables
-static GLFWwindow* window;
-static GLFWmonitor* monitor;
-static bool fullscreen;
-static double previous_time;
 static GLfloat red, green, blue;
 static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, VAO;
@@ -36,7 +30,7 @@ static float vertices[]{
 };
 
 // Initialize everything for the window
-void window_init()
+Window::Window()
 {
 	// Set some window stuff (quality, resizable)
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
@@ -58,8 +52,17 @@ void window_init()
 		exit(EXIT_FAILURE);
 	}
 
+	previous_time = glfwGetTime();
+
+	glfwSetWindowUserPointer(window, this);
+
 	// Input handler
-	glfwSetKeyCallback(window, key_callback);
+	// Maybe there's a better way to do this
+	auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		static_cast<Window*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
+	};
+	glfwSetKeyCallback(window, func);
 
 	// Set current context
 	glfwMakeContextCurrent(window);
@@ -153,40 +156,48 @@ void window_init()
 	glEnableVertexAttribArray(0); // Enable the attributes
 }
 
-// Update the window
-void window_update(double dt)
-{
-	// Check for input
-	glfwPollEvents();
-
-	// Update everything
-	update(dt);
-
-	// Draw everything
-	draw();
-}
-
 // Shutdown the window
-void window_shutdown()
+Window::~Window()
 {
 	// Once done, cleanup
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
 
+// Update the window
+void Window::update(double dt)
+{
+	// Check for input
+	glfwPollEvents();
+
+	// Update everything
+	update_(dt);
+
+	// Draw everything
+	draw();
+}
+
 // Check to see if the window is still open
-bool window_is_running()
+bool Window::running()
 {
 	return !glfwWindowShouldClose(window);
 }
 
+double Window::get_dt()
+{
+	double current_time = glfwGetTime();
+	double dt = current_time - previous_time;
+	previous_time = current_time;
+	return dt;
+}
+
 // Window update
-void update(double dt)
+void update_(double dt)
 {
 }
 
 // Draw everything in the window
-void draw()
+void Window::draw()
 {
 	// Setup the buffer
 	glViewport(0, 0, width, height);
@@ -202,16 +213,8 @@ void draw()
 	glfwSwapBuffers(window);
 }
 
-double get_dt()
-{
-	double current_time = glfwGetTime();
-	double dt = current_time - previous_time;
-	previous_time = current_time;
-	return dt;
-}
-
 // Handles a small amount of inputs
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	// Exit the game
 	if (key == GLFW_KEY_ESCAPE)
@@ -224,7 +227,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	{
 		// Get the video mode of the monitor
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-		
+
 		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
 		if (!fullscreen)
 			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);

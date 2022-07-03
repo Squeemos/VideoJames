@@ -1,4 +1,7 @@
 #pragma once
+
+class Window;
+
 class GameEngine
 {
 public:
@@ -6,4 +9,6 @@ public:
 	~GameEngine();
 	void update();
 	bool running();
+private:
+	Window* window;
 };

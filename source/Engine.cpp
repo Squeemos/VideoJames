@@ -4,24 +4,25 @@
 #include <iostream>
 
 // Start everything in the engine
-GameEngine::GameEngine()
+GameEngine::GameEngine() : window(new Window())
 {
-	window_init();
 }
 
 // Shutdown everything in the engine
 GameEngine::~GameEngine()
 {
-	window_shutdown();
+	delete window;
 }
 
+// Update everything in the game engine
 void GameEngine::update()
 {
-	double dt = get_dt();
-	window_update(dt);
+	double dt = window->get_dt();
+	window->update(dt);
 }
 
+// Check while the game engine is running
 bool GameEngine::running()
 {
-	return window_is_running();
+	return window->running();
 }
