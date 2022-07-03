@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include "Window.h"
 
+#include <iostream>
+
 // Whether to keep updating the engine
 bool engine_is_running()
 {
@@ -16,7 +18,8 @@ void engine_init()
 // Update everything in the engine
 void engine_update()
 {
-	window_update();
+	double dt = get_dt();
+	window_update(dt);
 }
 
 // Shutdown everything in the engine

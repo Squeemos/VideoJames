@@ -10,54 +10,44 @@
 
 // Forward References
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void window_init();
-static void update();
+static void update(double dt);
 static void draw();
 
-// Figure out what this does
-// It's more variables but iduno
-static const struct
-{
-	float x, y;
-	float r, g, b;
-} vertices[3] =
-{
-	{ -0.6f, -0.4f, 1.f, 0.f, 0.f },
-	{  0.6f, -0.4f, 0.f, 1.f, 0.f },
-	{   0.f,  0.6f, 0.f, 0.f, 1.f }
-};
-
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec2 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
-
 // Constants
-constexpr unsigned width = 1280;
-constexpr unsigned height = 720;
+constexpr unsigned width{ 1280 };
+constexpr unsigned height{ 720 };
 
-// Static variables (make them actually static)
+// Static variables
 static GLFWwindow* window;
 static GLFWmonitor* monitor;
 static bool fullscreen;
+static double previous_time;
+static GLfloat red, green, blue;
+static GLuint vertex_shader, frag_shader, shader_program;
+static GLuint VBO, VAO;
 
-static GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-static GLint mvp_location, vpos_location, vcol_location;
+// Static temp variables to discard (only used for testing)
+static float vertices[]{
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+};
+
+// Vertex Shader
+static const char* vertex_shader_source = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
+
+// Fragment shader
+static const char* frag_shader_source = "#version 330 core\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\0";
 
 // Initialize everything for the window
 void window_init()
@@ -101,44 +91,85 @@ void window_init()
 	// Fullscreen is false
 	fullscreen = false;
 
-	// Something is happening here and I have no idea
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// Setting background colors
+	red = 0.0f;
+	green = 0.0f;
+	blue = 0.0f;
 
+	// Creating the vertex shader
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+	glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
 	glCompileShader(vertex_shader);
 
-	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-	glCompileShader(fragment_shader);
+	// Check that the vertex shader properly compiled
+	GLint success;
+	GLchar info_log[512];
+	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
+		std::cout << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
 
-	program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
+	// Create the fragment shader
+	frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(frag_shader, 1, &frag_shader_source, NULL);
+	glCompileShader(frag_shader);
 
-	mvp_location = glGetUniformLocation(program, "MVP");
-	vpos_location = glGetAttribLocation(program, "vPos");
-	vcol_location = glGetAttribLocation(program, "vCol");
+	// Check that the fragment shader is properly compiled
+	glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(frag_shader, 512, NULL, info_log);
+		std::cout << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
 
-	glEnableVertexAttribArray(vpos_location);
-	glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-		sizeof(vertices[0]), (void*)0);
-	glEnableVertexAttribArray(vcol_location);
-	glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-		sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+	// Create the shader program
+	shader_program = glCreateProgram();
+	glAttachShader(shader_program, vertex_shader);
+	glAttachShader(shader_program, frag_shader);
+	glLinkProgram(shader_program);
+
+	// Check that the shader program was properly created
+	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
+		std::cout << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+
+	// Delete the vertex and fragment shader since we no longer need them
+	glDeleteShader(vertex_shader);
+	glDeleteShader(frag_shader);
+
+	// Create vertex array
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	// Generate a vertex buffer
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the buffer
+
+	// Copy vertices into buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
+	glEnableVertexAttribArray(0); // Enable the attributes
 }
 
 // Update the window
-void window_update()
+void window_update(double dt)
 {
 	// Check for input
 	glfwPollEvents();
 
 	// Update everything
-	update();
+	update(dt);
 
 	// Draw everything
 	draw();
@@ -159,7 +190,7 @@ bool window_is_running()
 }
 
 // Window update
-void update()
+void update(double dt)
 {
 }
 
@@ -168,48 +199,68 @@ void draw()
 {
 	// Setup the buffer
 	glViewport(0, 0, width, height);
-	glClearColor(1, 0, 1, 1);
+	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// draw something
-	float ratio;
-	int width, height;
-	mat4x4 m, p, mvp;
-
-	glfwGetFramebufferSize(window, &width, &height);
-	ratio = width / (float)height;
-
-	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	mat4x4_identity(m);
-	mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-	mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-	mat4x4_mul(mvp, p, m);
-
-	glUseProgram(program);
-	glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
+	// Draw something
+	glUseProgram(shader_program);
+	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);
 }
 
-// Handles a small amount of inputs (making fullscreen or closing the window)
+double get_dt()
+{
+	double current_time = glfwGetTime();
+	double dt = current_time - previous_time;
+	previous_time = current_time;
+	return dt;
+}
+
+// Handles a small amount of inputs
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// Exit the game
 	if (key == GLFW_KEY_ESCAPE)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 
+	// Make fullscreen or take from fullscreen to windowed
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 	{
+		// Get the video mode of the monitor
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		
+		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
 		if (!fullscreen)
-			glfwSetWindowMonitor(window, monitor, 0, 0, width, height, 0);
-		if (fullscreen)
-			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, 0);
+			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
+		else
+			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
 
 		fullscreen = !fullscreen;
+	}
+
+	// Change the color of the background
+	if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		if (red < 1.0f)
+			red += .01f;
+		if (blue < 1.0f)
+			blue += .01f;
+		if (green < 1.0f)
+			green += .01f;
+	}
+	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		if (red > 0.0f)
+			red -= .01f;
+		if (blue > 0.0f)
+			blue -= .01f;
+		if (green > 0.0f)
+			green -= .01f;
 	}
 }
