@@ -11,7 +11,7 @@ public:
 	bool running();
 	void update(double dt);
 	double get_dt();
-	void draw();
+	void draw(double dt);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 private:
 	GLFWwindow* window;

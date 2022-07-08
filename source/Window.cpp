@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <chrono>
 #include <fstream>
+#include <utility>
 
 // Forward References
 static void update_(double dt);
@@ -82,9 +83,8 @@ Window::Window()
 	blue = 0.0f;
 
 	// Creating the vertex shader
-	const GLchar* shader_src;
 	std::string temp = read_shader("./shaders/vertex_shader.vert");
-	shader_src = temp.c_str();
+	const GLchar* shader_src = temp.c_str();
 	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &shader_src, NULL);
 	glCompileShader(vertex_shader);
@@ -161,11 +161,8 @@ void Window::update(double dt)
 	// Check for input
 	glfwPollEvents();
 
-	// Update everything
-	update_(dt);
-
 	// Draw everything
-	draw();
+	draw(dt);
 }
 
 // Check to see if the window is still open
@@ -185,32 +182,30 @@ double Window::get_dt()
 // Window update
 void update_(double dt)
 {
-	//float* vertices = John.draw();
-	//for (unsigned i = 0; i < 9; ++i)
-	//	std::cout << vertices[i] << " ";
-	//std::cout << std::endl;
-	//std::cout << _countof(vertices) << std::endl;
-	// 
-	// 
+	John.update(dt);
+	std::pair<float*, unsigned long long> verts_and_num = John.draw();
+
 	// Copy vertices into buffer
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-	//glEnableVertexAttribArray(0); // Enable the attributes
+	glBufferData(GL_ARRAY_BUFFER, verts_and_num.second, verts_and_num.first, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
+	glEnableVertexAttribArray(0); // Enable the attributes
 }
 
 // Draw everything in the window
-void Window::draw()
+void Window::draw(double dt)
 {
 	// Setup the buffer
 	glViewport(0, 0, width, height);
 	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Update everything and store things inside the buffers
+	update_(dt);
+
 	// Draw something
-	update_(0); // curently gets the vertices and adds them to the buffer
 	glUseProgram(shader_program);
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);
