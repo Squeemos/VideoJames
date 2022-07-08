@@ -149,11 +149,13 @@
   <ItemGroup>
     <ClCompile Include="GL\GLAD\src\glad.c" />
     <ClCompile Include="source\Engine.cpp" />
+    <ClCompile Include="source\Entity.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h" />
+    <ClInclude Include="source\Entity.h" />
     <ClInclude Include="source\linmath.h" />
     <ClInclude Include="source\Window.h" />
   </ItemGroup>

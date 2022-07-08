@@ -3,6 +3,7 @@
 
 #include "linmath.h"
 #include "Window.h"
+#include "Entity.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -22,12 +23,7 @@ static GLfloat red, green, blue;
 static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, VAO;
 
-// Static temp variables to discard (only used for testing)
-static float vertices[]{
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-};
+Entity John = Entity();
 
 // Initialize everything for the window
 Window::Window()
@@ -149,11 +145,6 @@ Window::Window()
 	// Generate a vertex buffer
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the buffer
-
-	// Copy vertices into buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-	glEnableVertexAttribArray(0); // Enable the attributes
 }
 
 // Shutdown the window
@@ -194,6 +185,17 @@ double Window::get_dt()
 // Window update
 void update_(double dt)
 {
+	//float* vertices = John.draw();
+	//for (unsigned i = 0; i < 9; ++i)
+	//	std::cout << vertices[i] << " ";
+	//std::cout << std::endl;
+	//std::cout << _countof(vertices) << std::endl;
+	// 
+	// 
+	// Copy vertices into buffer
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
+	//glEnableVertexAttribArray(0); // Enable the attributes
 }
 
 // Draw everything in the window
@@ -205,6 +207,7 @@ void Window::draw()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw something
+	update_(0); // curently gets the vertices and adds them to the buffer
 	glUseProgram(shader_program);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -256,47 +259,6 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 			blue -= .01f;
 		if (green > 0.0f)
 			green -= .01f;
-	}
-	// Move the triangle
-	if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT)) 
-	{
-		vertices[0] -= 0.01f;
-		vertices[3] -= 0.01f;
-		vertices[6] -= 0.01f;
-		// Copy vertices into buffer
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-		glEnableVertexAttribArray(0); // Enable the attributes
-	}
-	if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		vertices[0] += 0.01f;
-		vertices[3] += 0.01f;
-		vertices[6] += 0.01f;
-		// Copy vertices into buffer
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-		glEnableVertexAttribArray(0); // Enable the attributes
-	}
-	if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		vertices[1] += 0.01f;
-		vertices[4] += 0.01f;
-		vertices[7] += 0.01f;
-		// Copy vertices into buffer
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-		glEnableVertexAttribArray(0); // Enable the attributes
-	}
-	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		vertices[1] -= 0.01f;
-		vertices[4] -= 0.01f;
-		vertices[7] -= 0.01f;
-		// Copy vertices into buffer
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-		glEnableVertexAttribArray(0); // Enable the attributes
 	}
 }
 
