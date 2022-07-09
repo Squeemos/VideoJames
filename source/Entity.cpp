@@ -28,10 +28,15 @@ Entity::~Entity()
 
 std::pair<float*,unsigned long long> Entity::draw()
 {
+    std::cout << position[0] << " " << position[1] << " " << position[2] << std::endl;
 	return std::make_pair(vertices, sizeof(vertices));
 }
 
 void Entity::update(double dt)
 {
-
+    if (check_key(GLFW_KEY_RIGHT))
+    {
+        vec3 move{ 1,0,0 };
+        vec3_add(position, position, move);
+    }
 }

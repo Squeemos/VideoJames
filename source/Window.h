@@ -19,3 +19,5 @@ private:
 	double previous_time;
 	bool fullscreen;
 };
+
+int check_key(int key);

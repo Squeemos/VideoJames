@@ -10,6 +10,7 @@
 #include <chrono>
 #include <fstream>
 #include <utility>
+#include <map>
 
 // Forward References
 static void update_(double dt);
@@ -20,6 +21,8 @@ constexpr unsigned width{ 1280 };
 constexpr unsigned height{ 720 };
 
 // Static variables
+static std::map<int, int> input_handler;
+
 static GLfloat red, green, blue;
 static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, VAO;
@@ -236,25 +239,7 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 		fullscreen = !fullscreen;
 	}
 
-	// Change the color of the background
-	if (key == GLFW_KEY_KP_8 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		if (red < 1.0f)
-			red += .01f;
-		if (blue < 1.0f)
-			blue += .01f;
-		if (green < 1.0f)
-			green += .01f;
-	}
-	if (key == GLFW_KEY_KP_2 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		if (red > 0.0f)
-			red -= .01f;
-		if (blue > 0.0f)
-			blue -= .01f;
-		if (green > 0.0f)
-			green -= .01f;
-	}
+	input_handler[key] = action;
 }
 
 static std::string read_shader(std::string file_name)
@@ -268,4 +253,9 @@ static std::string read_shader(std::string file_name)
 	}
 	std::cout << "Loading shader: " << file_name << std::endl;
 	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+}
+
+int check_key(int key)
+{
+	return input_handler[key];
 }
