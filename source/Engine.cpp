@@ -1,10 +1,11 @@
 #include "Engine.h"
+#include "OpenGLHandler.h"
 #include "Window.h"
 
 #include <iostream>
 
 // Start everything in the engine
-GameEngine::GameEngine() : window(new Window())
+GameEngine::GameEngine() : opengl_handler (new OpenGLHandler()), window(new Window())
 {
 }
 
@@ -12,6 +13,7 @@ GameEngine::GameEngine() : window(new Window())
 GameEngine::~GameEngine()
 {
 	delete window;
+	delete opengl_handler;
 }
 
 // Update everything in the game engine

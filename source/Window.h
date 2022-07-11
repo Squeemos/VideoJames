@@ -2,6 +2,7 @@
 
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
+typedef float GLfloat;
 
 class Window
 {
@@ -18,6 +19,8 @@ private:
 	GLFWmonitor* monitor;
 	double previous_time;
 	bool fullscreen;
+	GLfloat red, green, blue;
+	unsigned width, height;
 };
 
 int check_key(int key);

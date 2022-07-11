@@ -8,6 +8,8 @@
 #include <iostream>
 #include <utility>
 
+// ECS when the time is right
+
 Entity::Entity() : position{0,0,0}, vertices{
     // first triangle
      0.5f,  0.5f, 0.0f,  // top right
@@ -38,5 +40,7 @@ void Entity::update(double dt)
     {
         vec3 move{ 1,0,0 };
         vec3_add(position, position, move);
+
+        vertices[1] += 0.001f;
     }
 }

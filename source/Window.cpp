@@ -13,61 +13,45 @@
 #include <map>
 
 // Forward References
-static void update_(double dt);
 static std::string read_shader(std::string file_name);
-
-// Constants
-constexpr unsigned width{ 1280 };
-constexpr unsigned height{ 720 };
+void callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // Static variables
 static std::map<int, int> input_handler;
 
-static GLfloat red, green, blue;
 static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, VAO;
 
 Entity John = Entity();
 
 // Initialize everything for the window
-Window::Window()
+Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720)
 {
 	// Set some window stuff (quality, resizable)
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-	// Init glfw
-	if (!glfwInit())
-	{
-		std::cout << "GLFW did not properly init..." << std::endl;
-		exit(EXIT_FAILURE);
-	}
 
 	// Actually make the window
 	window = glfwCreateWindow(width, height, "Title", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Window failed to create..." << std::endl;
-		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
+	// Set the previous time
 	previous_time = glfwGetTime();
 
+	// Update the user prointer of the window to this
 	glfwSetWindowUserPointer(window, this);
 
-	// Input handler
-	// Maybe there's a better way to do this
-	auto func = [](GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		static_cast<Window*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
-	};
-	glfwSetKeyCallback(window, func);
+	// Set the key callback function
+	glfwSetKeyCallback(window, callback_function);
 
 	// Set current context
 	glfwMakeContextCurrent(window);
 
-	// Load glad
+	// Load glad -> has to be done after glfwinit and window init
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -77,13 +61,7 @@ Window::Window()
 	// Set the monitor to the primary one
 	monitor = glfwGetPrimaryMonitor();
 
-	// Fullscreen is false
-	fullscreen = false;
-
-	// Setting background colors
-	red = 0.0f;
-	green = 0.0f;
-	blue = 0.0f;
+	// Perhaps make a shader class of everything below ------------------------------------
 
 	// Creating the vertex shader
 	std::string temp = read_shader("./shaders/vertex_shader.vert");
@@ -100,7 +78,6 @@ Window::Window()
 	{
 		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
 		std::cout << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
@@ -117,7 +94,6 @@ Window::Window()
 	{
 		glGetShaderInfoLog(frag_shader, 512, NULL, info_log);
 		std::cout << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
@@ -133,7 +109,6 @@ Window::Window()
 	{
 		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
 		std::cout << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
-		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
@@ -155,7 +130,6 @@ Window::~Window()
 {
 	// Once done, cleanup
 	glfwDestroyWindow(window);
-	glfwTerminate();
 }
 
 // Update the window
@@ -163,6 +137,38 @@ void Window::update(double dt)
 {
 	// Check for input
 	glfwPollEvents();
+
+	glfwSwapInterval(0); // vsync
+
+	// Exit the game
+	if (check_key(GLFW_KEY_ESCAPE))
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	// Make fullscreen or take from fullscreen to windowed
+	if (check_key(GLFW_KEY_F) == GLFW_PRESS)
+	{
+		// Get the video mode of the monitor
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
+		if (!fullscreen)
+			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
+		else
+			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
+
+		fullscreen = !fullscreen;
+	}
+
+	John.update(dt);
+	std::pair<float*, unsigned long long> verts_and_num = John.draw();
+
+	// Copy vertices into buffer
+	glBufferData(GL_ARRAY_BUFFER, verts_and_num.second, verts_and_num.first, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
+	glEnableVertexAttribArray(0); // Enable the attributes
 
 	// Draw everything
 	draw(dt);
@@ -182,18 +188,6 @@ double Window::get_dt()
 	return dt;
 }
 
-// Window update
-void update_(double dt)
-{
-	John.update(dt);
-	std::pair<float*, unsigned long long> verts_and_num = John.draw();
-
-	// Copy vertices into buffer
-	glBufferData(GL_ARRAY_BUFFER, verts_and_num.second, verts_and_num.first, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-	glEnableVertexAttribArray(0); // Enable the attributes
-}
-
 // Draw everything in the window
 void Window::draw(double dt)
 {
@@ -201,9 +195,6 @@ void Window::draw(double dt)
 	glViewport(0, 0, width, height);
 	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Update everything and store things inside the buffers
-	update_(dt);
 
 	// Draw something
 	glUseProgram(shader_program);
@@ -217,28 +208,6 @@ void Window::draw(double dt)
 // Handles a small amount of inputs
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	// Exit the game
-	if (key == GLFW_KEY_ESCAPE)
-	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
-
-	// Make fullscreen or take from fullscreen to windowed
-	if (key == GLFW_KEY_F && action == GLFW_PRESS)
-	{
-		// Get the video mode of the monitor
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
-		if (!fullscreen)
-			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
-		else
-			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
-
-		fullscreen = !fullscreen;
-	}
-
 	input_handler[key] = action;
 }
 
@@ -255,7 +224,20 @@ static std::string read_shader(std::string file_name)
 	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }
 
+// Check if keys are pressed
 int check_key(int key)
 {
-	return input_handler[key];
+	const auto iterator = input_handler.find(key);
+	if (iterator != input_handler.end())
+		return iterator->second;
+	else
+		return 0;
+}
+
+// Input handler
+// Maybe there's a better way to do this
+// Make this a static function so it's not a lambda
+void callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	static_cast<Window*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
 }

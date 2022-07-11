@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include <iostream>
+#include <signal.h> // Figure out this to make exiting proper
 
 // Main
 int main()
@@ -14,5 +15,5 @@ int main()
 
 	delete engine;
 
-	return 0;
+	return EXIT_SUCCESS;
 }
