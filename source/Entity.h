@@ -1,7 +1,6 @@
 #pragma once
 #include <utility>
-
-typedef float vec3[3];
+#include "glm/vec2.hpp"
 
 class Entity
 {
@@ -11,6 +10,6 @@ public:
 	void draw();
 	void update(double dt);
 
-	vec3 position;
+	glm::vec2 position;
 };
 

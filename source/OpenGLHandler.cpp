@@ -7,6 +7,8 @@
 
 OpenGLHandler::OpenGLHandler()
 {
+	std::cout << "Creating OpenGLHandler" << std::endl;
+
 	// Init glfw
 	if (!glfwInit())
 	{

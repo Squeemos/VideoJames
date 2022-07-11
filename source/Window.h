@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+class Shader;
 
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
@@ -21,6 +23,7 @@ private:
 	bool fullscreen;
 	GLfloat red, green, blue;
 	unsigned width, height;
+	std::unique_ptr<Shader> shader_program;
 };
 
 int check_key(int key);

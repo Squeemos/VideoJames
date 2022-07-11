@@ -1,6 +1,8 @@
 #ifndef LINMATH_H
 #define LINMATH_H
 
+#pragma warning( disable : 4244 ) // remove this later whenever we go to properly do things
+
 #include <string.h>
 #include <math.h>
 #include <string.h>

@@ -4,15 +4,16 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/vec2.hpp>
 
 #include <iostream>
 #include <utility>
 
 // ECS when the time is right
 
-Entity::Entity() : position{0,0,0}
+Entity::Entity() : position(1,1)
 {
-	std::cout << "Making Entity" << std::endl;
+    std::cout << "Making Entity" << std::endl;
 }
 
 Entity::~Entity()
@@ -28,9 +29,6 @@ void Entity::update(double dt)
 {
     if (check_key(GLFW_KEY_RIGHT))
     {
-        vec3 move{ 1,0,0 };
-        vec3_add(position, position, move);
+        position += glm::vec2(1, 0);
     }
-
-    //std::cout << position[0] << " " << position[1] << " " << position[2] << std::endl;
 }

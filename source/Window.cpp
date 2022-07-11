@@ -4,6 +4,7 @@
 #include "linmath.h"
 #include "Window.h"
 #include "Entity.h"
+#include "Shader.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -15,21 +16,19 @@
 #include <string>
 
 // Forward References
-static std::string read_shader(std::string file_name);
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
-
 // Static variables
 static std::map<int, int> input_handler;
 
-static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, EBO, VAO;
 
 static GLfloat vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+	// position
+	 0.5f,  0.5f, 0.0f, // top right
+	 0.5f, -0.5f, 0.0f, // bottom right
+	-0.5f, -0.5f, 0.0f, // bottom left
+	-0.5f,  0.5f, 0.0f  // top left 
 };
 
 static unsigned int indices[] = { 0,1,3,1,2,3 };
@@ -37,6 +36,8 @@ static unsigned int indices[] = { 0,1,3,1,2,3 };
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(640), height(640)
 {
+	std::cout << "Creating Window" << std::endl;
+
 	// Set some window stuff (quality, resizable)
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -84,72 +85,8 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Set the buffer swap interval to 0 (no vsync)
 	glfwSwapInterval(0);
 
-	// Perhaps make a shader class of everything below ------------------------------------
-
-	// Creating the vertex shader
-	std::string temp = read_shader("./shaders/vertex_shader.vert");
-	const GLchar* shader_src = temp.c_str();
-	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &shader_src, NULL);
-	glCompileShader(vertex_shader);
-
-	// Check that the vertex shader properly compiled
-	GLint success;
-	GLchar info_log[512];
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
-	}
-
-	// Create the fragment shader
-	temp = read_shader("./shaders/frag_shader.frag");
-	shader_src = temp.c_str();
-	frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(frag_shader, 1, &shader_src, NULL);
-	glCompileShader(frag_shader);
-
-	// Check that the fragment shader is properly compiled
-	glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		// Properly throw error at some point
-		glGetShaderInfoLog(frag_shader, 512, NULL, info_log);
-
-		std::stringstream error;
-		error << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
-	}
-
-	// Create the shader program
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, frag_shader);
-	glLinkProgram(shader_program);
-
-	// Check that the shader program was properly created
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		// Properly throw error at some point
-		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-
-		std::stringstream error;
-		error << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
-	}
-
-	// Delete the vertex and fragment shader since we no longer need them
-	glDeleteShader(vertex_shader);
-	glDeleteShader(frag_shader);
+	// Load the shaders class
+	shader_program = std::make_unique<Shader>(Shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag"));
 
 	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
@@ -232,7 +169,9 @@ void Window::update(double dt)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw
-	glUseProgram(shader_program);
+	shader_program->use();
+	float green_value = (sin(current_time) / 2.0f) + 0.5f;
+	shader_program->set_color("our_color", glm::vec4(1, green_value, 1, 1));
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -267,19 +206,6 @@ void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// set the new height and width of the window
 	glViewport(0, 0, width, height);
-}
-
-static std::string read_shader(std::string file_name)
-{
-	std::string contents;
-	std::ifstream file(file_name.c_str());
-	if (!file.is_open())
-	{
-		std::cout << "File failed to open: " << file_name << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	std::cout << "Loading shader: " << file_name << std::endl;
-	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }
 
 // Check if keys are pressed
