@@ -3,17 +3,16 @@
 #include "Window.h"
 
 #include <iostream>
+#include <memory>
 
 // Start everything in the engine
-GameEngine::GameEngine() : opengl_handler (new OpenGLHandler()), window(new Window())
+GameEngine::GameEngine() : opengl_handler (std::make_unique<OpenGLHandler>()), window(std::make_unique<Window>())
 {
 }
 
 // Shutdown everything in the engine
 GameEngine::~GameEngine()
 {
-	delete window;
-	delete opengl_handler;
 }
 
 // Update everything in the game engine

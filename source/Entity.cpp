@@ -26,6 +26,7 @@ Entity::Entity() : position{0,0,0}, vertices{
 
 Entity::~Entity()
 {
+    std::cout << "Destroying Entity" << std::endl;
 }
 
 std::pair<float*,unsigned long long> Entity::draw()

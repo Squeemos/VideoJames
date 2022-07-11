@@ -11,6 +11,8 @@
 #include <fstream>
 #include <utility>
 #include <map>
+#include <sstream>
+#include <string>
 
 // Forward References
 static std::string read_shader(std::string file_name);
@@ -22,7 +24,7 @@ static std::map<int, int> input_handler;
 static GLuint vertex_shader, frag_shader, shader_program;
 static GLuint VBO, VAO;
 
-Entity John = Entity();
+static Entity John = Entity();
 
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720)
@@ -35,7 +37,10 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	window = glfwCreateWindow(width, height, "Title", NULL, NULL);
 	if (!window)
 	{
-		std::cout << "Window failed to create..." << std::endl;
+		// Properly throw error at some point
+		std::stringstream error;
+		error << "Window failed to create..." << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 
@@ -54,12 +59,18 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Load glad -> has to be done after glfwinit and window init
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		// Properly throw error at some point
+		std::stringstream error;
+		error << "Failed to initialize GLAD" << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 
 	// Set the monitor to the primary one
 	monitor = glfwGetPrimaryMonitor();
+
+	// Set the buffer swap interval to 0 (no vsync)
+	glfwSwapInterval(0);
 
 	// Perhaps make a shader class of everything below ------------------------------------
 
@@ -77,7 +88,11 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-		std::cout << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
+
+		// Properly throw error at some point
+		std::stringstream error;
+		error << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 
@@ -92,8 +107,12 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
+		// Properly throw error at some point
 		glGetShaderInfoLog(frag_shader, 512, NULL, info_log);
-		std::cout << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
+
+		std::stringstream error;
+		error << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 
@@ -107,8 +126,12 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 	if (!success)
 	{
+		// Properly throw error at some point
 		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-		std::cout << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
+
+		std::stringstream error;
+		error << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 
@@ -128,6 +151,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 // Shutdown the window
 Window::~Window()
 {
+	std::cout << "Destroying Window" << std::endl;
 	// Once done, cleanup
 	glfwDestroyWindow(window);
 }
@@ -137,8 +161,6 @@ void Window::update(double dt)
 {
 	// Check for input
 	glfwPollEvents();
-
-	glfwSwapInterval(0); // vsync
 
 	// Exit the game
 	if (check_key(GLFW_KEY_ESCAPE))

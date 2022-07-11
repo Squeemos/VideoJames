@@ -17,6 +17,8 @@ OpenGLHandler::OpenGLHandler()
 
 OpenGLHandler::~OpenGLHandler()
 {
-	glfwTerminate(); // Removed since added to openglhandler
-	std::cerr << "Destroying" << std::endl;
+	std::cout << "Destroying OpenGLHandler" << std::endl;
+
+	// Terminate opengl
+	glfwTerminate();
 }

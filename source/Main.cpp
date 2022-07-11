@@ -1,19 +1,19 @@
 #include "Engine.h"
 
 #include <iostream>
-#include <signal.h> // Figure out this to make exiting proper
+#include <memory>
+
+// Figure out a way to make this exit a lot better
 
 // Main
 int main()
 {
-	GameEngine* engine = new GameEngine();
+	std::unique_ptr<GameEngine> engine = std::make_unique<GameEngine>();
 
 	while (engine->running())
 	{
 		engine->update();
 	}
-
-	delete engine;
 
 	return EXIT_SUCCESS;
 }

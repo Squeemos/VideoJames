@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 class OpenGLHandler;
 class Window;
@@ -11,6 +12,6 @@ public:
 	void update();
 	bool running();
 private:
-	OpenGLHandler* opengl_handler;
-	Window* window;
+	std::unique_ptr<OpenGLHandler> opengl_handler;
+	std::unique_ptr<Window> window;
 };
