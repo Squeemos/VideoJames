@@ -16,18 +16,26 @@
 
 // Forward References
 static std::string read_shader(std::string file_name);
-void callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
 
 // Static variables
 static std::map<int, int> input_handler;
 
 static GLuint vertex_shader, frag_shader, shader_program;
-static GLuint VBO, VAO;
+static GLuint VBO, EBO, VAO;
 
-static Entity John = Entity();
+static GLfloat vertices[] = {
+	 0.5f,  0.5f, 0.0f,  // top right
+	 0.5f, -0.5f, 0.0f,  // bottom right
+	-0.5f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f   // top left 
+};
+
+static unsigned int indices[] = { 0,1,3,1,2,3 };
 
 // Initialize everything for the window
-Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720)
+Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(640), height(640)
 {
 	// Set some window stuff (quality, resizable)
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
@@ -44,17 +52,21 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 		exit(EXIT_FAILURE);
 	}
 
-	// Set the previous time
+	// Setup for dt
 	previous_time = glfwGetTime();
+	current_time = glfwGetTime();
+
+	// Set current context
+	glfwMakeContextCurrent(window);
 
 	// Update the user prointer of the window to this
 	glfwSetWindowUserPointer(window, this);
 
 	// Set the key callback function
-	glfwSetKeyCallback(window, callback_function);
+	glfwSetKeyCallback(window, key_callback_function);
 
-	// Set current context
-	glfwMakeContextCurrent(window);
+	// Set the resize callback function
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback_function);
 
 	// Load glad -> has to be done after glfwinit and window init
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -139,13 +151,34 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glDeleteShader(vertex_shader);
 	glDeleteShader(frag_shader);
 
-	// Create vertex array
+	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	// Bind vertex array
 	glBindVertexArray(VAO);
 
-	// Generate a vertex buffer
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the buffer
+	// Bind the vertex buffer in static draw and fill the buffer
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Bind the ebo in static draw and fill the buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Tell the VAO what attributes to use
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// Unbind the VBO -> safe to do
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// cannot unbind the EBO while the VAO is active since the stuff is bound in there
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // <- no do
+
+	// Unbind the VAO so we don't modify
+	glBindVertexArray(0);
 }
 
 // Shutdown the window
@@ -159,13 +192,23 @@ Window::~Window()
 // Update the window
 void Window::update(double dt)
 {
+	// Update dt
+	previous_time = current_time;
+
+	// clear input buffer
+	input_handler.clear();
+
 	// Check for input
 	glfwPollEvents();
 
 	// Exit the game
 	if (check_key(GLFW_KEY_ESCAPE))
 	{
+		// Set the window to close
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		// Return since there's nothing we should try and draw
+		return;
 	}
 
 	// Make fullscreen or take from fullscreen to windowed
@@ -184,16 +227,23 @@ void Window::update(double dt)
 		fullscreen = !fullscreen;
 	}
 
-	John.update(dt);
-	std::pair<float*, unsigned long long> verts_and_num = John.draw();
+	// Setup the buffer
+	glClearColor(red, green, blue, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Copy vertices into buffer
-	glBufferData(GL_ARRAY_BUFFER, verts_and_num.second, verts_and_num.first, GL_DYNAMIC_DRAW); // Copy the vertices into the buffer. Static draw since this triangle won't move positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the attributes  for the buffer
-	glEnableVertexAttribArray(0); // Enable the attributes
+	// Draw
+	glUseProgram(shader_program);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	// Draw everything
-	draw(dt);
+	// Swap the buffers to actually draw what we just loaded into them
+	glfwSwapBuffers(window);
+
+	// Unbind the VAO
+	glBindVertexArray(0);
+
+	// Update dt
+	current_time = glfwGetTime();
 }
 
 // Check to see if the window is still open
@@ -204,33 +254,19 @@ bool Window::running()
 
 double Window::get_dt()
 {
-	double current_time = glfwGetTime();
-	double dt = current_time - previous_time;
-	previous_time = current_time;
-	return dt;
-}
-
-// Draw everything in the window
-void Window::draw(double dt)
-{
-	// Setup the buffer
-	glViewport(0, 0, width, height);
-	glClearColor(red, green, blue, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Draw something
-	glUseProgram(shader_program);
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	// Swap the buffers to actually draw what we just loaded into them
-	glfwSwapBuffers(window);
+	return current_time - previous_time;
 }
 
 // Handles a small amount of inputs
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	input_handler[key] = action;
+}
+
+void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// set the new height and width of the window
+	glViewport(0, 0, width, height);
 }
 
 static std::string read_shader(std::string file_name)
@@ -259,7 +295,12 @@ int check_key(int key)
 // Input handler
 // Maybe there's a better way to do this
 // Make this a static function so it's not a lambda
-void callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	static_cast<Window*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
+}
+
+static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height)
+{
+	static_cast<Window*>(glfwGetWindowUserPointer(window))->frambuffer_size_callback(window, width, height);
 }

@@ -8,10 +8,9 @@ class Entity
 public:
 	Entity();
 	~Entity();
+	void draw();
 	void update(double dt);
-	std::pair<float*, unsigned long long> draw();
 
 	vec3 position;
-	float vertices[18];
 };
 
