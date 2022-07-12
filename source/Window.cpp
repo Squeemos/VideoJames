@@ -2,13 +2,12 @@
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "linmath.h"
 
 #include "Window.h"
 #include "Entity.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -26,7 +25,8 @@ static void framebuffer_size_callback_function(GLFWwindow* window, int width, in
 static std::map<int, int> input_handler;
 
 static GLuint VBO, EBO, VAO;
-static GLuint texture1;
+
+static std::unique_ptr<Texture> t1, t2;
 
 static GLfloat vertices[] = {
 	// positions          // colors           // texture coords
@@ -93,7 +93,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glfwSwapInterval(0);
 
 	// Load the shaders class
-	shader_program = std::make_unique<Shader>(Shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag"));
+	shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
 
 	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
@@ -134,43 +134,8 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Unbind the VAO so we don't modify
 	glBindVertexArray(0);
 
-	// Load a texture
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-
-	// Set texture wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Set texture filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Have the texture's on the y-axis
-	stbi_set_flip_vertically_on_load(true);
-
-	// Make this a function or something later ------------------------------------------------------------
-
-	// Load the texture
-	GLint width, height, n_channels;
-	stbi_uc* data = stbi_load("./assets/tex.png", &width, &height, &n_channels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "Failed to load texture" << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
-	}
-	stbi_image_free(data);	
+	t1 = std::make_unique<Texture>("./assets/rgb_tex.jpg", rgb_mode::rgb);
+	t2 = std::make_unique<Texture>("./assets/rgba_tex.png", rgb_mode::rgba);
 }
 
 // Shutdown the window
@@ -240,7 +205,23 @@ void Window::update(double dt)
 
 	// Draw textures
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture1);
+	glBindTexture(GL_TEXTURE_2D, t1->texture);
+
+	// Draw vertices
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	// Set the texture
+	shader_program->set_int("texture1", 0);
+
+	// Make it move around
+	x = -cos(time) / 2.0f;
+	y = -sin(time) / 2.0f;
+	shader_program->set_location("loc", glm::vec3(x, y, 0));
+
+	// Draw textures
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, t2->texture);
 
 	// Draw vertices
 	glBindVertexArray(VAO);
