@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <string>
 #include <iostream>
@@ -129,6 +131,11 @@ void Shader::set_color(const std::string& name, glm::vec4 color) const
 void Shader::set_location(const std::string& name, glm::vec3 pos) const
 {
 	glUniform3f(glGetUniformLocation(program_id, name.c_str()), pos.x, pos.y, pos.z);
+}
+
+void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, false, glm::value_ptr(mat));
 }
 
 static std::string read_shader(std::string file_name)

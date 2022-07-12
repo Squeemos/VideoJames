@@ -26,14 +26,14 @@ static std::map<int, int> input_handler;
 
 static GLuint VBO, EBO, VAO;
 
-static std::unique_ptr<Texture> t1, t2;
+static Entity* e1;
 
 static GLfloat vertices[] = {
 	// positions          // colors           // texture coords
-	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+	 1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+	 1.0f, -1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+	-1.0f, -1.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+	-1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 };
 
 static GLuint indices[] = { 0,1,3,1,2,3 };
@@ -134,8 +134,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Unbind the VAO so we don't modify
 	glBindVertexArray(0);
 
-	t1 = std::make_unique<Texture>("./assets/rgb_tex.jpg", rgb_mode::rgb);
-	t2 = std::make_unique<Texture>("./assets/rgba_tex.png", rgb_mode::rgba);
+	e1 = new Entity(glm::vec2(0.0f, 0.0f), "./assets/rgba_tex.png", rgb_mode::rgba);
 }
 
 // Shutdown the window
@@ -187,6 +186,8 @@ void Window::update(double dt)
 		fullscreen = !fullscreen;
 	}
 
+	e1->update(dt);
+
 	// Setup the buffer
 	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -194,38 +195,25 @@ void Window::update(double dt)
 	// Draw
 	shader_program->use();
 
+	// ---------------------------------------------------------------
 	// Set the texture
 	shader_program->set_int("texture1", 0);
 
 	// Make it move around
-	GLfloat time = glfwGetTime();
-	GLfloat x = cos(time) / 2.0f;
-	GLfloat y = sin(time) / 2.0f;
-	shader_program->set_location("loc", glm::vec3(x, y, 0));
+	glm::vec3 scale = glm::vec3(.25f, .25f, 0 );
+	glm::mat4 mat = glm::mat4(1);
+	mat = glm::scale(mat, scale);
+	shader_program->set_mat4("model", mat);
+	shader_program->set_location("loc", glm::vec3(e1->position, 0));
 
 	// Draw textures
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, t1->texture);
+	glBindTexture(GL_TEXTURE_2D, e1->tex->texture);
 
 	// Draw vertices
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	// Set the texture
-	shader_program->set_int("texture1", 0);
-
-	// Make it move around
-	x = -cos(time) / 2.0f;
-	y = -sin(time) / 2.0f;
-	shader_program->set_location("loc", glm::vec3(x, y, 0));
-
-	// Draw textures
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, t2->texture);
-
-	// Draw vertices
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	// ---------------------------------------------------------------
 
 	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);

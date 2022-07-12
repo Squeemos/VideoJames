@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
@@ -18,6 +20,7 @@ public:
 	void set_float(const std::string& name, float value) const;
 	void set_color(const std::string& name, glm::vec4 color) const;
 	void set_location(const std::string& name, glm::vec3 pos) const;
+	void set_mat4(const std::string& name, glm::mat4 mat) const;
 
 	GLuint program_id;
 };
