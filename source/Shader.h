@@ -1,4 +1,6 @@
+#pragma once
 #include <string>
+#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
 typedef unsigned int GLuint;
@@ -15,6 +17,7 @@ public:
 	void set_int(const std::string& name, int value) const;
 	void set_float(const std::string& name, float value) const;
 	void set_color(const std::string& name, glm::vec4 color) const;
+	void set_location(const std::string& name, glm::vec3 pos) const;
 
 	GLuint program_id;
 };

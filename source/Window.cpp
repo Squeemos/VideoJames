@@ -1,7 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/vec3.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "linmath.h"
+
 #include "Window.h"
 #include "Entity.h"
 #include "Shader.h"
@@ -22,16 +26,19 @@ static void framebuffer_size_callback_function(GLFWwindow* window, int width, in
 static std::map<int, int> input_handler;
 
 static GLuint VBO, EBO, VAO;
+static GLuint texture1;
 
 static GLfloat vertices[] = {
-	// position
-	 0.5f,  0.5f, 0.0f, // top right
-	 0.5f, -0.5f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f, // bottom left
-	-0.5f,  0.5f, 0.0f  // top left 
+	// positions          // colors           // texture coords
+	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 };
 
-static unsigned int indices[] = { 0,1,3,1,2,3 };
+static GLuint indices[] = { 0,1,3,1,2,3 };
+
+static GLfloat border_color[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(640), height(640)
@@ -105,8 +112,18 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Tell the VAO what attributes to use
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	// Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	// Color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	// Texture Coordinates
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 
 	// Unbind the VBO -> safe to do
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -116,6 +133,44 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 
 	// Unbind the VAO so we don't modify
 	glBindVertexArray(0);
+
+	// Load a texture
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	// Set texture wrapping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Set texture filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Have the texture's on the y-axis
+	stbi_set_flip_vertically_on_load(true);
+
+	// Make this a function or something later ------------------------------------------------------------
+
+	// Load the texture
+	GLint width, height, n_channels;
+	stbi_uc* data = stbi_load("./assets/tex.png", &width, &height, &n_channels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		// Properly throw error at some point
+		std::stringstream error;
+		error << "Failed to load texture" << std::endl;
+		std::cout << error.str();
+		exit(EXIT_FAILURE);
+	}
+	stbi_image_free(data);	
 }
 
 // Shutdown the window
@@ -123,6 +178,9 @@ Window::~Window()
 {
 	std::cout << "Destroying Window" << std::endl;
 	// Once done, cleanup
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	glfwDestroyWindow(window);
 }
 
@@ -170,8 +228,21 @@ void Window::update(double dt)
 
 	// Draw
 	shader_program->use();
-	float green_value = (sin(current_time) / 2.0f) + 0.5f;
-	shader_program->set_color("our_color", glm::vec4(1, green_value, 1, 1));
+
+	// Set the texture
+	shader_program->set_int("texture1", 0);
+
+	// Make it move around
+	GLfloat time = glfwGetTime();
+	GLfloat x = cos(time) / 2.0f;
+	GLfloat y = sin(time) / 2.0f;
+	shader_program->set_location("loc", glm::vec3(x, y, 0));
+
+	// Draw textures
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	// Draw vertices
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -196,12 +267,6 @@ double Window::get_dt()
 	return current_time - previous_time;
 }
 
-// Handles a small amount of inputs
-void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	input_handler[key] = action;
-}
-
 void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// set the new height and width of the window
@@ -219,11 +284,9 @@ int check_key(int key)
 }
 
 // Input handler
-// Maybe there's a better way to do this
-// Make this a static function so it's not a lambda
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	static_cast<Window*>(glfwGetWindowUserPointer(window))->key_callback(window, key, scancode, action, mods);
+	input_handler[key] = action;
 }
 
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height)

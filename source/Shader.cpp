@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
 #include <string>
@@ -123,6 +124,11 @@ void Shader::set_float(const std::string& name, float value) const
 void Shader::set_color(const std::string& name, glm::vec4 color) const
 {
 	glUniform4f(glGetUniformLocation(program_id, name.c_str()), color.x, color.y, color.z, color.w);
+}
+
+void Shader::set_location(const std::string& name, glm::vec3 pos) const
+{
+	glUniform3f(glGetUniformLocation(program_id, name.c_str()), pos.x, pos.y, pos.z);
 }
 
 static std::string read_shader(std::string file_name)

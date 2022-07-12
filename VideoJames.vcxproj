@@ -163,6 +163,7 @@
     <ClInclude Include="source\linmath.h" />
     <ClInclude Include="source\OpenGLHandler.h" />
     <ClInclude Include="source\Shader.h" />
+    <ClInclude Include="source\stb_image.h" />
     <ClInclude Include="source\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
