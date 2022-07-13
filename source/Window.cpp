@@ -89,8 +89,9 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Set the monitor to the primary one
 	monitor = glfwGetPrimaryMonitor();
 
-	// Set the buffer swap interval to 0 (no vsync)
+	// Set the buffer swap interval to 0 (no vsync) or 1 (vsync)
 	glfwSwapInterval(0);
+	// glfwSwapInterval(1);
 
 	// Load the shaders class
 	shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
