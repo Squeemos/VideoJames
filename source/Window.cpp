@@ -5,9 +5,9 @@
 #include "linmath.h"
 
 #include "Window.h"
-#include "Entity.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Entity.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -154,12 +154,6 @@ void Window::update(double dt)
 	// Update dt
 	previous_time = current_time;
 
-	// clear input buffer
-	input_handler.clear();
-
-	// Check for input
-	glfwPollEvents();
-
 	// Exit the game
 	if (check_key(GLFW_KEY_ESCAPE))
 	{
@@ -200,7 +194,7 @@ void Window::update(double dt)
 	shader_program->set_int("texture1", 0);
 
 	// Make it move around
-	glm::vec3 scale = glm::vec3(.25f, .25f, 0 );
+	glm::vec3 scale = glm::vec3(e1->scale, 0 );
 	glm::mat4 mat = glm::mat4(1);
 	mat = glm::scale(mat, scale);
 	shader_program->set_mat4("model", mat);
@@ -220,6 +214,9 @@ void Window::update(double dt)
 
 	// Unbind the VAO
 	glBindVertexArray(0);
+
+	// Check for input
+	glfwPollEvents();
 
 	// Update dt
 	current_time = glfwGetTime();

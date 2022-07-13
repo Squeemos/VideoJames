@@ -12,12 +12,12 @@
 
 // ECS when the time is right
 
-Entity::Entity() : position(0, 0)
+Entity::Entity() : position(0, 0), scale(0, 0), tex(nullptr)
 {
     std::cout << "Making Entity" << std::endl;
 }
 
-Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode)
+Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode) : scale(1.0f, 1.0f)
 {
     position = new_pos;
     tex = std::make_unique<Texture>(texture, mode);
@@ -34,20 +34,28 @@ void Entity::draw()
 
 void Entity::update(double dt)
 {
-    if (check_key(GLFW_KEY_RIGHT))
+    if (check_key(GLFW_KEY_D))
     {
-        position += glm::vec2(0.01f, 0);
+        position += glm::vec2(0.001f, 0);
     }
-    if (check_key(GLFW_KEY_LEFT))
+    if (check_key(GLFW_KEY_A))
     {
-        position += glm::vec2(-0.01f, 0);
+        position += glm::vec2(-0.001f, 0);
+    }
+    if (check_key(GLFW_KEY_W))
+    {
+        position += glm::vec2(0, 0.001f);
+    }
+    if (check_key(GLFW_KEY_S))
+    {
+        position += glm::vec2(0, -0.001f);
     }
     if (check_key(GLFW_KEY_UP))
     {
-        position += glm::vec2(0, 0.01f);
+        scale += glm::vec2(.001f, .001f);
     }
     if (check_key(GLFW_KEY_DOWN))
     {
-        position += glm::vec2(0, -0.01f);
+        scale += glm::vec2(-.001f, -.001f);
     }
 }
