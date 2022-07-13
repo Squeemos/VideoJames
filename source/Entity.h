@@ -2,7 +2,9 @@
 #include <utility>
 #include <memory>
 #include <string>
+
 #include "glm/vec2.hpp"
+#include <glm/gtx/quaternion.hpp>
 
 class Texture;
 enum class rgb_mode;
@@ -18,6 +20,7 @@ public:
 
 	glm::vec2 position;
 	glm::vec2 scale;
+	glm::quat rotation;
 	std::unique_ptr<Texture> tex;
 };
 

@@ -55,7 +55,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	{
 		// Properly throw error at some point
 		std::stringstream error;
-		error << "Window failed to create..." << std::endl;
+		error << "Window failed to create" << std::endl;
 		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
@@ -195,11 +195,19 @@ void Window::update(double dt)
 	shader_program->set_int("texture1", 0);
 
 	// Make it move around
-	glm::vec3 scale = glm::vec3(e1->scale, 0 );
-	glm::mat4 mat = glm::mat4(1);
-	mat = glm::scale(mat, scale);
-	shader_program->set_mat4("model", mat);
-	shader_program->set_location("loc", glm::vec3(e1->position, 0));
+	glm::mat4 model = glm::mat4(1);
+	model = glm::translate(model, glm::vec3(e1->position, 0));
+	model = model * glm::toMat4(e1->rotation);
+	model = glm::scale(model, glm::vec3(e1->scale, 0));
+
+	glm::mat4 view = glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -3.0f));
+
+	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
+
+
+	shader_program->set_mat4("model", model);
+	shader_program->set_mat4("view", view);
+	shader_program->set_mat4("projection", projection);
 
 	// Draw textures
 	glActiveTexture(GL_TEXTURE0);

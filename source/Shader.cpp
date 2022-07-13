@@ -144,7 +144,10 @@ static std::string read_shader(std::string file_name)
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		std::cout << "File failed to open: " << file_name << std::endl;
+		// Properly throw error at some point
+		std::stringstream error;
+		error << "File failed to open: " << file_name << std::endl;
+		std::cout << error.str();
 		exit(EXIT_FAILURE);
 	}
 	std::cout << "Loading shader: " << file_name << std::endl;
