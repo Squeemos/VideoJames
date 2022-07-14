@@ -11,7 +11,7 @@ class Entity
 {
 public:
 	Entity();
-	Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode);
+	Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode, std::string name);
 	~Entity();
 	void draw();
 	void update(double dt);
@@ -20,5 +20,6 @@ public:
 	glm::vec2 scale;
 	glm::vec3 rotation;
 	std::unique_ptr<Texture> tex;
+	std::string name;
 };
 

@@ -3,7 +3,7 @@
 
 class OpenGLHandler;
 class Window;
-class Camera;
+class SceneManager;
 
 class GameEngine
 {
@@ -15,5 +15,5 @@ public:
 private:
 	std::unique_ptr<OpenGLHandler> opengl_handler;
 	std::unique_ptr<Window> window;
-	std::unique_ptr<Camera> camera;
+	std::unique_ptr<SceneManager> scene_manager;
 };

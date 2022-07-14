@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "stb_image.h"
 
 typedef unsigned int GLuint;
 
@@ -14,10 +13,12 @@ enum class rgb_mode
 class Texture
 {
 public:
-	Texture();
 	Texture(const std::string& name, rgb_mode mode);
 	~Texture();
 
-	GLuint texture;
+	GLuint texture; // Make private at some point
+
+private:
+	Texture();
 };
 

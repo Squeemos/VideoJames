@@ -3,6 +3,7 @@
 
 class Shader;
 class Camera;
+class Scene;
 
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
@@ -14,7 +15,8 @@ public:
 	Window();
 	~Window();
 	bool running();
-	void update(double dt, const Camera& camera);
+	void update(double dt);
+	void draw(Scene& scene);
 	double get_dt();
 	void frambuffer_size_callback(GLFWwindow* window, int width, int height);
 private:
@@ -26,5 +28,3 @@ private:
 	unsigned width, height;
 	std::unique_ptr<Shader> shader_program;
 };
-
-int check_key(int key);

@@ -7,28 +7,29 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/vec2.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <glm/glm.hpp>
 
 #include <iostream>
-#include <utility>
 
 // ECS when the time is right
 
 Entity::Entity() : position(0.0f, 0.0f), scale(0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), tex(nullptr)
 {
-    std::cout << "Making Entity" << std::endl;
+    std::cout << "Creating Entity" << std::endl;
 }
 
-Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode) : scale(1.0f, 1.0f), rotation(0.0f, 0.0f, 0.0f)
+Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode, std::string name) : scale(1.0f, 1.0f),
+                                                                                                 rotation(0.0f, 0.0f, 0.0f),
+                                                                                                 name(name)
 {
+    std::cout << "Creating Entity: " << name << std::endl;
     position = new_pos;
     tex = std::make_unique<Texture>(texture, mode);
 }
 
 Entity::~Entity()
 {
-    std::cout << "Destroying Entity" << std::endl;
+    std::cout << "Destroying Entity: " << name << std::endl;
 }
 
 void Entity::draw()

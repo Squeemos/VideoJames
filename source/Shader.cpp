@@ -1,11 +1,10 @@
 #include "Shader.h"
+#include "Error.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
 
 #include <string>
 #include <iostream>
@@ -13,15 +12,6 @@
 #include <sstream>
 
 static std::string read_shader(std::string file_name);
-
-Shader::Shader()
-{
-	// Properly throw error at some point
-	std::stringstream error;
-	error << "Cannot use default ctor for Shader class..." << std::endl;
-	std::cout << error.str();
-	exit(EXIT_FAILURE);
-}
 
 Shader::Shader(const std::string& path1, const std::string& path2)
 {
@@ -48,11 +38,9 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 	{
 		glGetShaderInfoLog(vertex_shader, 1024, NULL, info_log);
 
-		// Properly throw error at some point
 		std::stringstream error;
 		error << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		throw ShaderError(error.str());
 	}
 
 	// Load the fragment shader
@@ -71,8 +59,11 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 
 		std::stringstream error;
 		error << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+
+		// Delete vertex shader before exiting
+		glDeleteShader(vertex_shader);
+
+		throw ShaderError(error.str());
 	}
 
 	// Create the shader program
@@ -85,13 +76,14 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 	glGetProgramiv(program_id, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		// Properly throw error at some point
-		glGetProgramInfoLog(program_id, 512, NULL, info_log);
+		// Get info of error
+		glGetProgramInfoLog(program_id, 1024, NULL, info_log);
 
-		std::stringstream error;
-		error << "Linking the shaders into a program ran into a problem" << std::endl << info_log << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		// Delete the shaders before throwing
+		glDeleteShader(vertex_shader);
+		glDeleteShader(frag_shader);
+
+		throw ProgramError("Linking the shaders into a program ran into a problem");
 	}
 
 	glDeleteShader(vertex_shader);
@@ -140,16 +132,13 @@ void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
 
 static std::string read_shader(std::string file_name)
 {
+	std::cout << "Loading shader: " << file_name << std::endl;
+
 	std::string contents;
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "File failed to open: " << file_name << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		throw ShaderError(std::string("File failed to open: " + file_name));
 	}
-	std::cout << "Loading shader: " << file_name << std::endl;
 	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }

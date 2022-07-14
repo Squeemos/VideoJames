@@ -12,6 +12,8 @@
 #include "Entity.h"
 #include "Camera.h"
 #include "Input.h"
+#include "Scene.h"
+#include "Error.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -28,9 +30,6 @@ static void framebuffer_size_callback_function(GLFWwindow* window, int width, in
 
 // Static variables
 static GLuint VBO, EBO, VAO;
-
-// Remove this later
-static Entity* e1;
 
 static GLfloat vertices[] = {
 	// positions          // colors           // texture coords
@@ -57,11 +56,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	window = glfwCreateWindow(width, height, "Title", NULL, NULL);
 	if (!window)
 	{
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "Window failed to create" << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		throw WindowError();
 	}
 
 	// Setup for dt
@@ -83,11 +78,9 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Load glad -> has to be done after glfwinit and window init
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "Failed to initialize GLAD" << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		// Destory window before exiting
+		glfwDestroyWindow(window);
+		throw GladError();
 	}
 
 	// Set the monitor to the primary one
@@ -97,8 +90,16 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glfwSwapInterval(0);
 	// glfwSwapInterval(1);
 
-	// Load the shaders class
-	shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+	// Load the shaders
+	try
+	{
+		shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+	}
+	catch (std::exception& e)
+	{
+		// Destory window
+		glfwDestroyWindow(window);
+	}
 
 	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
@@ -138,8 +139,6 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 
 	// Unbind the VAO so we don't modify
 	glBindVertexArray(0);
-
-	e1 = new Entity(glm::vec2(0.0f, 0.0f), "./assets/rgba_tex.png", rgb_mode::rgba);
 }
 
 // Shutdown the window
@@ -154,7 +153,7 @@ Window::~Window()
 }
 
 // Update the window
-void Window::update(double dt, const Camera& camera)
+void Window::update(double dt)
 {
 	// Update dt
 	previous_time = current_time;
@@ -185,35 +184,43 @@ void Window::update(double dt, const Camera& camera)
 		fullscreen = !fullscreen;
 	}
 
-	e1->update(dt);
+	// Check for input
+	glfwPollEvents();
 
+	// Update dt
+	current_time = glfwGetTime();
+}
+
+void Window::draw(Scene& scene)
+{
 	// Setup the buffer
 	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Draw
+	// Use the shader program
 	shader_program->use();
 
 	// ---------------------------------------------------------------
 	// Camera
+	Camera& camera = scene.get_camera(); // Make this better
+
 	glm::mat4 view = glm::lookAt(camera.position, camera.target, glm::vec3(0, 1.0f, 0));
 
-	// ---------------------------------------------------------------
 	// Set the texture
 	shader_program->set_int("texture1", 0);
 
 	// Make it move around
 	glm::mat4 model = glm::mat4(1);
-	model = glm::translate(model, glm::vec3(e1->position, 0));
+	model = glm::translate(model, glm::vec3(scene.ent->position, 0));
 
 	// Clean up rotations
-	model = glm::rotate(model, e1->rotation.x, glm::vec3(1.0f, 0, 0));
-	model = glm::rotate(model, e1->rotation.y, glm::vec3(0, 1.0f, 0));
-	model = glm::rotate(model, e1->rotation.z, glm::vec3(0, 0, 1.0f));
+	model = glm::rotate(model, scene.ent->rotation.x, glm::vec3(1.0f, 0, 0));
+	model = glm::rotate(model, scene.ent->rotation.y, glm::vec3(0, 1.0f, 0));
+	model = glm::rotate(model, scene.ent->rotation.z, glm::vec3(0, 0, 1.0f));
 
 
 	//model = model * glm::toMat4(e1->rotation);
-	model = glm::scale(model, glm::vec3(e1->scale, 0));
+	model = glm::scale(model, glm::vec3(scene.ent->scale, 0));
 
 	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
 
@@ -224,7 +231,7 @@ void Window::update(double dt, const Camera& camera)
 
 	// Draw textures
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, e1->tex->texture);
+	glBindTexture(GL_TEXTURE_2D, scene.ent->tex->texture);
 
 	// Draw vertices
 	glBindVertexArray(VAO);
@@ -236,12 +243,6 @@ void Window::update(double dt, const Camera& camera)
 
 	// Unbind the VAO
 	glBindVertexArray(0);
-
-	// Check for input
-	glfwPollEvents();
-
-	// Update dt
-	current_time = glfwGetTime();
 }
 
 // Check to see if the window is still open
@@ -260,8 +261,6 @@ void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
 	// set the new height and width of the window
 	glViewport(0, 0, width, height);
 }
-
-// Check if keys are pressed
 
 // Input handler
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)

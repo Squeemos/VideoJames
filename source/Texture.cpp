@@ -1,8 +1,10 @@
 #include "Texture.h"
+#include "Error.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
+
+#include <glm/glm.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -10,15 +12,6 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-
-Texture::Texture()
-{
-	// Properly throw error at some point
-	std::stringstream error;
-	error << "Cannot use default ctor for Texture class..." << std::endl;
-	std::cout << error.str();
-	exit(EXIT_FAILURE);
-}
 
 Texture::Texture(const std::string& name, rgb_mode mode)
 {
@@ -53,11 +46,7 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			break;
 		default:
-			// Properly throw error at some point
-			std::stringstream error;
-			error << "Must use either rgb or rgba mode" << std::endl;
-			std::cout << error.str();
-			exit(EXIT_FAILURE);
+			throw TextureError(std::string("Error loading: ") + name + std::string(" -> Texture mode must be either rgb or rgba"));
 			break;
 		}
 
@@ -72,11 +61,7 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 	}
 	else
 	{
-		// Properly throw error at some point
-		std::stringstream error;
-		error << "Failed to load texture" << std::endl;
-		std::cout << error.str();
-		exit(EXIT_FAILURE);
+		throw TextureError(std::string("Failed to load texture: " + name));
 	}
 }
 
