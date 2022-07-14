@@ -2,6 +2,7 @@
 #include "linmath.h"
 #include "Window.h"
 #include "Texture.h"
+#include "Input.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -14,12 +15,12 @@
 
 // ECS when the time is right
 
-Entity::Entity() : position(0.0f, 0.0f), scale(0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f, 0.0f), tex(nullptr)
+Entity::Entity() : position(0.0f, 0.0f), scale(0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), tex(nullptr)
 {
     std::cout << "Making Entity" << std::endl;
 }
 
-Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode) : scale(1.0f, 1.0f), rotation(0.0f, 0.0f, 0.0f, 0.0f)
+Entity::Entity(glm::vec2 new_pos, const std::string& texture, rgb_mode mode) : scale(1.0f, 1.0f), rotation(0.0f, 0.0f, 0.0f)
 {
     position = new_pos;
     tex = std::make_unique<Texture>(texture, mode);
@@ -48,4 +49,16 @@ void Entity::update(double dt)
         scale += glm::vec2(.001f, .001f);
     if (check_key(GLFW_KEY_DOWN))
         scale += glm::vec2(-.001f, -.001f);
+    if (check_key(GLFW_KEY_KP_8))
+        rotation.x += .001f;
+    if (check_key(GLFW_KEY_KP_2))
+        rotation.x -= .001f;
+    if (check_key(GLFW_KEY_KP_4))
+        rotation.y -= .001f;
+    if (check_key(GLFW_KEY_KP_6))
+        rotation.y += .001f;
+    if (check_key(GLFW_KEY_Q))
+        rotation.z += .001f;
+    if (check_key(GLFW_KEY_E))
+        rotation.z -= .001f;
 }

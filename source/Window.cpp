@@ -1,6 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
+
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "linmath.h"
 
@@ -8,6 +10,8 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Entity.h"
+#include "Camera.h"
+#include "Input.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -21,11 +25,11 @@
 // Forward References
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
-// Static variables
-static std::map<int, int> input_handler;
 
+// Static variables
 static GLuint VBO, EBO, VAO;
 
+// Remove this later
 static Entity* e1;
 
 static GLfloat vertices[] = {
@@ -150,7 +154,7 @@ Window::~Window()
 }
 
 // Update the window
-void Window::update(double dt)
+void Window::update(double dt, const Camera& camera)
 {
 	// Update dt
 	previous_time = current_time;
@@ -191,16 +195,25 @@ void Window::update(double dt)
 	shader_program->use();
 
 	// ---------------------------------------------------------------
+	// Camera
+	glm::mat4 view = glm::lookAt(camera.position, camera.target, glm::vec3(0, 1.0f, 0));
+
+	// ---------------------------------------------------------------
 	// Set the texture
 	shader_program->set_int("texture1", 0);
 
 	// Make it move around
 	glm::mat4 model = glm::mat4(1);
 	model = glm::translate(model, glm::vec3(e1->position, 0));
-	model = model * glm::toMat4(e1->rotation);
-	model = glm::scale(model, glm::vec3(e1->scale, 0));
 
-	glm::mat4 view = glm::translate(glm::mat4(1), glm::vec3(0.0f, 0.0f, -3.0f));
+	// Clean up rotations
+	model = glm::rotate(model, e1->rotation.x, glm::vec3(1.0f, 0, 0));
+	model = glm::rotate(model, e1->rotation.y, glm::vec3(0, 1.0f, 0));
+	model = glm::rotate(model, e1->rotation.z, glm::vec3(0, 0, 1.0f));
+
+
+	//model = model * glm::toMat4(e1->rotation);
+	model = glm::scale(model, glm::vec3(e1->scale, 0));
 
 	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
 
@@ -249,19 +262,11 @@ void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 // Check if keys are pressed
-int check_key(int key)
-{
-	const auto iterator = input_handler.find(key);
-	if (iterator != input_handler.end())
-		return iterator->second;
-	else
-		return 0;
-}
 
 // Input handler
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	input_handler[key] = action;
+	update_input(key, action);
 }
 
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height)

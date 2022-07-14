@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
+
 class Shader;
+class Camera;
 
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
@@ -12,7 +14,7 @@ public:
 	Window();
 	~Window();
 	bool running();
-	void update(double dt);
+	void update(double dt, const Camera& camera);
 	double get_dt();
 	void frambuffer_size_callback(GLFWwindow* window, int width, int height);
 private:

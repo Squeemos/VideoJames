@@ -1,9 +1,6 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 typedef unsigned int GLuint;
 
