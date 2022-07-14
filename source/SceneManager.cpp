@@ -2,13 +2,15 @@
 #include "Scene.h"
 #include "Camera.h"
 
+#include "SandboxScene.h"
+
 #include <iostream>
 
 SceneManager::SceneManager()
 {
 	std::cout << "Creating Scene Manager" << std::endl;
 
-	current_scene = std::make_shared<Scene>();
+	current_scene = std::make_shared<SandboxScene>();
 	add_scene(current_scene);
 }
 

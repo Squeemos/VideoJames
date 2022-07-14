@@ -200,43 +200,46 @@ void Window::draw(Scene& scene)
 	// Use the shader program
 	shader_program->use();
 
-	// ---------------------------------------------------------------
 	// Camera
 	Camera& camera = scene.get_camera(); // Make this better
 
 	glm::mat4 view = glm::lookAt(camera.position, camera.target, glm::vec3(0, 1.0f, 0));
 
-	// Set the texture
-	shader_program->set_int("texture1", 0);
+	std::pair<std::vector<std::unique_ptr<Entity>>::iterator, std::vector<std::unique_ptr<Entity>>::iterator> iterators = scene.draw();
 
-	// Make it move around
-	glm::mat4 model = glm::mat4(1);
-	model = glm::translate(model, glm::vec3(scene.ent->position, 0));
+	for (auto start = iterators.first; start != iterators.second; ++start)
+	{	// Set the texture
+		shader_program->set_int("texture1", 0);
 
-	// Clean up rotations
-	model = glm::rotate(model, scene.ent->rotation.x, glm::vec3(1.0f, 0, 0));
-	model = glm::rotate(model, scene.ent->rotation.y, glm::vec3(0, 1.0f, 0));
-	model = glm::rotate(model, scene.ent->rotation.z, glm::vec3(0, 0, 1.0f));
+		// ---------------------------------------------------------------
+		// Make it move around
+		glm::mat4 model = glm::mat4(1);
+		Entity* current_entity = start->get();
+		model = glm::translate(model, glm::vec3(current_entity->position, 0));
+
+		// Clean up rotations (turn into quat)
+		 model = glm::rotate(model, current_entity->rotation.x, glm::vec3(1.0f, 0, 0));
+		 model = glm::rotate(model, current_entity->rotation.y, glm::vec3(0, 1.0f, 0));
+		 model = glm::rotate(model, current_entity->rotation.z, glm::vec3(0, 0, 1.0f));
+
+		// model = glm::scale(model, glm::vec3(scale, 0));
+
+		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
 
 
-	//model = model * glm::toMat4(e1->rotation);
-	model = glm::scale(model, glm::vec3(scene.ent->scale, 0));
+		shader_program->set_mat4("model", model);
+		shader_program->set_mat4("view", view);
+		shader_program->set_mat4("projection", projection);
 
-	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
+		// Draw textures
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, current_entity->tex->texture);
 
-
-	shader_program->set_mat4("model", model);
-	shader_program->set_mat4("view", view);
-	shader_program->set_mat4("projection", projection);
-
-	// Draw textures
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, scene.ent->tex->texture);
-
-	// Draw vertices
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	// ---------------------------------------------------------------
+		// Draw vertices
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		// ---------------------------------------------------------------
+	}
 
 	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);

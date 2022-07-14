@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-Scene::Scene() : camera(std::make_unique<Camera>()), ent(std::make_unique<Entity>(glm::vec2(0.0f, 0.0f), "./assets/rgba_tex.png", rgb_mode::rgba, "Kai'Sa"))
+Scene::Scene()
 {
 	std::cout << "Creating Scene" << std::endl;
 }
@@ -17,8 +17,16 @@ Scene::~Scene()
 
 void Scene::update(double dt)
 {
-	camera->update(dt);
-	ent->update(dt);
+}
+
+std::pair<std::vector<std::unique_ptr<Entity>>::iterator, std::vector<std::unique_ptr<Entity>>::iterator> Scene::draw()
+{
+	return std::make_pair(entity_list.begin(), entity_list.end());
+}
+
+void Scene::set_camera(std::unique_ptr<Camera> cam)
+{
+	camera = std::move(cam);
 }
 
 Camera& Scene::get_camera()
