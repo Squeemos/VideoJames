@@ -38,7 +38,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	// Actually make the window
-	window = glfwCreateWindow(width, height, "Title", NULL, NULL);
+	window = glfwCreateWindow(width, height, "VideoJames", NULL, NULL);
 	if (!window)
 	{
 		throw WindowError();
@@ -110,10 +110,17 @@ void Window::update(double dt)
 
 		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
 		if (!fullscreen)
+		{
 			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		}
 		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
 		else
+		{
 			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
+
+			// Set the position of the window to be in the center of the screen
+			glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
+		}
 
 		fullscreen = !fullscreen;
 	}
