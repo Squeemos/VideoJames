@@ -92,39 +92,6 @@ void Window::update(double dt)
 	// Update dt
 	previous_time = current_time;
 
-	// Exit the game
-	if (check_key(GLFW_KEY_ESCAPE))
-	{
-		// Set the window to close
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-
-		// Return since there's nothing we should try and draw
-		return;
-	}
-
-	// Make fullscreen or take from fullscreen to windowed
-	if (check_key(GLFW_KEY_F) == GLFW_PRESS)
-	{
-		// Get the video mode of the monitor
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
-		if (!fullscreen)
-		{
-			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-		}
-		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
-		else
-		{
-			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
-
-			// Set the position of the window to be in the center of the screen
-			glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
-		}
-
-		fullscreen = !fullscreen;
-	}
-
 	// Check for input
 	glfwPollEvents();
 
@@ -156,6 +123,45 @@ double Window::get_dt()
 	return current_time - previous_time;
 }
 
+void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+{
+	scancode;
+	mods;
+	glfw_window;
+	// Exit the game
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		// Set the window to close
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		// Return since there's nothing we should try and draw
+		return;
+	}
+
+	// Make fullscreen or take from fullscreen to windowed
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		// Get the video mode of the monitor
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+		// Set the window to be fullscreen (currently uses monitor's resolution and refresh rate, can later be adjusted)
+		if (!fullscreen)
+		{
+			glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		}
+		// Set the window to be windowed (currently uses const resolution and monitor refresh rate, can later be adjusted)
+		else
+		{
+			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
+
+			// Set the position of the window to be in the center of the screen
+			glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
+		}
+
+		fullscreen = !fullscreen;
+	}
+}
+
 void Window::frambuffer_size_callback(GLFWwindow* glfw_window, int window_width, int window_height)
 {
 	glfw_window;
@@ -170,6 +176,8 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 	scancode;
 	glfw_window;
 	update_input(key, action);
+
+	static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->key_callback(glfw_window, key, scancode, action, mods);
 }
 
 static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height)

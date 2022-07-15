@@ -15,6 +15,7 @@ public:
 	bool running();
 	void update(double dt);
 	double get_dt();
+	void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 	void frambuffer_size_callback(GLFWwindow* glfw_window, int window_width, int window_height);
 	void reset();
 	void swap_buffer();

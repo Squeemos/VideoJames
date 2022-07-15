@@ -15,7 +15,7 @@
 
 // ECS when the time is right
 
-Entity::Entity() : position(0.0f, 0.0f, 0.0f), scale(0.0f, 0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), tex(nullptr), speed(0.0f)
+Entity::Entity() : position(0.0f, 0.0f, 0.0f), scale(0.0f, 0.0f, 0.0f), rotation(0.0f, 0.0f, 0.0f), tex(nullptr), speed(0.0f), mesh(nullptr), name("")
 {
     std::cout << "Creating Entity" << std::endl;
 }
