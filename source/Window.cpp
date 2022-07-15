@@ -25,8 +25,8 @@
 #include <string>
 
 // Forward References
-static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
-static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
+static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
+static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height);
 
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1920), height(1080)
@@ -87,6 +87,8 @@ Window::~Window()
 // Update the window
 void Window::update(double dt)
 {
+	dt;
+
 	// Update dt
 	previous_time = current_time;
 
@@ -147,19 +149,23 @@ double Window::get_dt()
 	return current_time - previous_time;
 }
 
-void Window::frambuffer_size_callback(GLFWwindow* window, int width, int height)
+void Window::frambuffer_size_callback(GLFWwindow* glfw_window, int window_width, int window_height)
 {
+	glfw_window;
 	// set the new height and width of the window
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, window_width, window_height);
 }
 
 // Input handler
-static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
+	mods;
+	scancode;
+	glfw_window;
 	update_input(key, action);
 }
 
-static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height)
+static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height)
 {
-	static_cast<Window*>(glfwGetWindowUserPointer(window))->frambuffer_size_callback(window, width, height);
+	static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->frambuffer_size_callback(glfw_window, window_width, window_height);
 }

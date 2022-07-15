@@ -15,7 +15,7 @@ public:
 	bool running();
 	void update(double dt);
 	double get_dt();
-	void frambuffer_size_callback(GLFWwindow* window, int width, int height);
+	void frambuffer_size_callback(GLFWwindow* glfw_window, int window_width, int window_height);
 	void reset();
 	void swap_buffer();
 private:

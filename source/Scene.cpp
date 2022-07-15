@@ -17,6 +17,7 @@ Scene::~Scene()
 
 void Scene::update(double dt)
 {
+	dt;
 }
 
 void Scene::draw()
