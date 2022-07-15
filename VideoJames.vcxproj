@@ -155,6 +155,7 @@
     <ClCompile Include="source\Entity.cpp" />
     <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\Mesh.cpp" />
     <ClCompile Include="source\OpenGLHandler.cpp" />
     <ClCompile Include="source\SandboxScene.cpp" />
     <ClCompile Include="source\Scene.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="source\Error.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\linmath.h" />
+    <ClInclude Include="source\Mesh.h" />
     <ClInclude Include="source\OpenGLHandler.h" />
     <ClInclude Include="source\SandboxScene.h" />
     <ClInclude Include="source\Scene.h" />

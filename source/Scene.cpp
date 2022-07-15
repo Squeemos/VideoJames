@@ -19,9 +19,8 @@ void Scene::update(double dt)
 {
 }
 
-std::pair<std::vector<std::unique_ptr<Entity>>::iterator, std::vector<std::unique_ptr<Entity>>::iterator> Scene::draw()
+void Scene::draw()
 {
-	return std::make_pair(entity_list.begin(), entity_list.end());
 }
 
 void Scene::set_camera(std::unique_ptr<Camera> cam)

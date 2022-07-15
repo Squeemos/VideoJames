@@ -2,8 +2,6 @@
 #include <memory>
 
 class Shader;
-class Camera;
-class Scene;
 
 typedef struct GLFWwindow GLFWwindow;
 typedef struct GLFWmonitor GLFWmonitor;
@@ -16,9 +14,10 @@ public:
 	~Window();
 	bool running();
 	void update(double dt);
-	void draw(Scene& scene);
 	double get_dt();
 	void frambuffer_size_callback(GLFWwindow* window, int width, int height);
+	void reset();
+	void swap_buffer();
 private:
 	GLFWwindow* window;
 	GLFWmonitor* monitor;

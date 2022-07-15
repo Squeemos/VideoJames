@@ -24,9 +24,17 @@ GameEngine::~GameEngine()
 void GameEngine::update()
 {
 	double dt = window->get_dt();
+
+	// Update
 	scene_manager->update(dt);
-	window->draw(*scene_manager->get_current_scene());
 	window->update(dt);
+
+	// Draw
+	window->reset();
+
+	scene_manager->draw();
+
+	window->swap_buffer();
 }
 
 // Check while the game engine is running

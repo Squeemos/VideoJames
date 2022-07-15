@@ -28,21 +28,6 @@
 static void key_callback_function(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
 
-// Static variables
-static GLuint VBO, EBO, VAO;
-
-static GLfloat vertices[] = {
-	// positions          // colors           // texture coords
-	 1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-	 1.0f, -1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-	-1.0f, -1.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-	-1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-};
-
-static GLuint indices[] = { 0,1,3,1,2,3 };
-
-static GLfloat border_color[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(640), height(640)
 {
@@ -89,56 +74,6 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Set the buffer swap interval to 0 (no vsync) or 1 (vsync)
 	glfwSwapInterval(0);
 	// glfwSwapInterval(1);
-
-	// Load the shaders
-	try
-	{
-		shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
-	}
-	catch (std::exception& e)
-	{
-		// Destory window
-		glfwDestroyWindow(window);
-	}
-
-	// Generate our vertex array and vertex buffers
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	// Bind vertex array
-	glBindVertexArray(VAO);
-
-	// Bind the vertex buffer in static draw and fill the buffer
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// Bind the ebo in static draw and fill the buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Tell the VAO what attributes to use
-
-	// Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// Color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-
-	// Texture Coordinates
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-
-	// Unbind the VBO -> safe to do
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// cannot unbind the EBO while the VAO is active since the stuff is bound in there
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // <- no do
-
-	// Unbind the VAO so we don't modify
-	glBindVertexArray(0);
 }
 
 // Shutdown the window
@@ -146,9 +81,6 @@ Window::~Window()
 {
 	std::cout << "Destroying Window" << std::endl;
 	// Once done, cleanup
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 	glfwDestroyWindow(window);
 }
 
@@ -191,61 +123,17 @@ void Window::update(double dt)
 	current_time = glfwGetTime();
 }
 
-void Window::draw(Scene& scene)
+void Window::reset()
 {
 	// Setup the buffer
 	glClearColor(red, green, blue, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
 
-	// Use the shader program
-	shader_program->use();
-
-	// Camera
-	Camera& camera = scene.get_camera(); // Make this better
-
-	glm::mat4 view = glm::lookAt(camera.position, camera.target, glm::vec3(0, 1.0f, 0));
-
-	std::pair<std::vector<std::unique_ptr<Entity>>::iterator, std::vector<std::unique_ptr<Entity>>::iterator> iterators = scene.draw();
-
-	for (auto start = iterators.first; start != iterators.second; ++start)
-	{	// Set the texture
-		shader_program->set_int("texture1", 0);
-
-		// ---------------------------------------------------------------
-		// Make it move around
-		glm::mat4 model = glm::mat4(1);
-		Entity* current_entity = start->get();
-		model = glm::translate(model, glm::vec3(current_entity->position, 0));
-
-		// Clean up rotations (turn into quat)
-		 model = glm::rotate(model, current_entity->rotation.x, glm::vec3(1.0f, 0, 0));
-		 model = glm::rotate(model, current_entity->rotation.y, glm::vec3(0, 1.0f, 0));
-		 model = glm::rotate(model, current_entity->rotation.z, glm::vec3(0, 0, 1.0f));
-
-		// model = glm::scale(model, glm::vec3(scale, 0));
-
-		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
-
-
-		shader_program->set_mat4("model", model);
-		shader_program->set_mat4("view", view);
-		shader_program->set_mat4("projection", projection);
-
-		// Draw textures
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, current_entity->tex->texture);
-
-		// Draw vertices
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		// ---------------------------------------------------------------
-	}
-
+void Window::swap_buffer()
+{
 	// Swap the buffers to actually draw what we just loaded into them
 	glfwSwapBuffers(window);
-
-	// Unbind the VAO
-	glBindVertexArray(0);
 }
 
 // Check to see if the window is still open

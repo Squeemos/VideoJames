@@ -16,9 +16,10 @@ public:
 	Texture(const std::string& name, rgb_mode mode);
 	~Texture();
 
-	GLuint texture; // Make private at some point
+	void use();
 
 private:
+	GLuint texture;
 	Texture();
 };
 

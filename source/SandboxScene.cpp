@@ -25,4 +25,13 @@ void SandboxScene::update(double dt)
 	{
 		e->update(dt);
 	}
+	get_camera().update(dt);
+}
+
+void SandboxScene::draw()
+{
+	for (auto& e : entity_list)
+	{
+		e->draw();
+	}
 }

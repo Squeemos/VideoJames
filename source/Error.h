@@ -55,3 +55,10 @@ public:
 private:
 	std::string message_;
 };
+
+// When mesh fails
+class MeshError : public std::exception
+{
+public:
+	const char* what() const { return "Creating a default mesh"; }
+};

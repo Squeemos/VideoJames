@@ -18,8 +18,7 @@ public:
 	void set_location(const std::string& name, glm::vec3 pos) const;
 	void set_mat4(const std::string& name, glm::mat4 mat) const;
 
-	GLuint program_id; // Make private at some point
-
 private:
+	GLuint program_id;
 	Shader();
 };

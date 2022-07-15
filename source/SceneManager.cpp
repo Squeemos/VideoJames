@@ -25,6 +25,11 @@ void SceneManager::update(double dt)
 	current_scene->update(dt);
 }
 
+void SceneManager::draw()
+{
+	current_scene->draw();
+}
+
 void SceneManager::add_scene(std::shared_ptr<Scene> scene)
 {
 	scenes.push_back(scene);

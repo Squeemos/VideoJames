@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <vector>
-#include <utility>
 
 class Entity;
 class Camera;
@@ -13,7 +12,7 @@ public:
 	Scene();
 	~Scene();
 	virtual void update(double dt);
-	virtual std::pair<std::vector<std::unique_ptr<Entity>>::iterator, std::vector<std::unique_ptr<Entity>>::iterator> draw();
+	virtual void draw();
 
 	void set_camera(std::unique_ptr<Camera> cam);
 	Camera& get_camera();
