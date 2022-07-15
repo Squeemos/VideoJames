@@ -29,7 +29,7 @@ static void key_callback_function(GLFWwindow* window, int key, int scancode, int
 static void framebuffer_size_callback_function(GLFWwindow* window, int width, int height);
 
 // Initialize everything for the window
-Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(640), height(640)
+Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1920), height(1080)
 {
 	std::cout << "Creating Window" << std::endl;
 

@@ -29,11 +29,11 @@ Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i)
 
 	// Bind the vertex buffer in static draw and fill the buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, n_v, v, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, n_v * sizeof(GLfloat), v, GL_STATIC_DRAW);
 
 	// Bind the ebo in static draw and fill the buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_i, i, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_i * sizeof(GLuint), i, GL_STATIC_DRAW);
 
 	// Tell the VAO what attributes to use
 
@@ -66,10 +66,15 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::use_shader_program()
+void Mesh::bind_shader_program()
 {
 	// Use the shader
 	shader_program->use();
+}
+
+void Mesh::unbind_shader_program()
+{
+	shader_program->unbind();
 }
 
 void Mesh::set_texture()
@@ -78,14 +83,14 @@ void Mesh::set_texture()
 	shader_program->set_int("texture1", 0);
 }
 
-void Mesh::draw()
+void Mesh::bind_vao()
 {
 	// Draw vertices
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Mesh::unbind()
+void Mesh::unbind_vao()
 {
 	// Unbind the VAO
 	glBindVertexArray(0);

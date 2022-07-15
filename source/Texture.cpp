@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iostream>
 
+// Add in parameter for whether or not this texture is used for tiling
 Texture::Texture(const std::string& name, rgb_mode mode)
 {
 	std::cout << "Loading texture: " << name << std::endl;
@@ -21,10 +22,16 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
+	// Adjust this when it's tiled or not
+	// If tiled -> use GL_REPEAT
+	// If not tiled -> use GL_MIRRORED_REPEAT
 	// Set texture wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
+
+	// Use GL_LINEAR for quality
+	// Use GL_NEAREST for speed
 	// Set texture filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
