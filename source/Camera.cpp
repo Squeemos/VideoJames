@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Camera.h"
 #include "Input.h"
