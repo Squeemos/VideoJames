@@ -7,6 +7,7 @@ typedef unsigned int GLuint;
 class Shader
 {
 public:
+	Shader();
 	Shader(const std::string& path1, const std::string& path2);
 	~Shader();
 	void use();
@@ -22,5 +23,4 @@ public:
 
 private:
 	GLuint program_id;
-	Shader();
 };

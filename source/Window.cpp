@@ -1,15 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "linmath.h"
-
 #include "Window.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Entity.h"
-#include "Camera.h"
 #include "Input.h"
-#include "Scene.h"
 #include "Error.h"
 
 #include <iostream>
@@ -17,8 +10,6 @@
 #include <chrono>
 #include <fstream>
 #include <utility>
-#include <map>
-#include <sstream>
 #include <string>
 
 // Forward References
@@ -154,7 +145,7 @@ void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int ac
 			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
 
 			// Set the position of the window to be in the center of the screen
-			glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
+			// glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
 		}
 
 		fullscreen = !fullscreen;

@@ -34,13 +34,3 @@ void SceneManager::add_scene(std::shared_ptr<Scene> scene)
 {
 	scenes.push_back(scene);
 }
-
-std::shared_ptr<Scene> SceneManager::get_current_scene()
-{
-	return current_scene;
-}
-
-Camera& SceneManager::get_current_camera()
-{
-	return current_scene->get_camera();
-}

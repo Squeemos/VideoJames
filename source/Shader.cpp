@@ -15,6 +15,11 @@
 
 static std::string read_shader(std::string file_name);
 
+Shader::Shader()
+{
+	throw ShaderError("Cannot use default constructor for shaders");
+}
+
 Shader::Shader(const std::string& path1, const std::string& path2)
 {
 	std::cout << "Creating Shader" << std::endl;

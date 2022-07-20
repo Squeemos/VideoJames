@@ -1,9 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <entt/entt.hpp>
 
-class Entity;
 class Camera;
 
 class Scene
@@ -11,15 +10,14 @@ class Scene
 public:
 	Scene();
 	~Scene();
-	virtual void update(double dt);
-	virtual void draw();
+	virtual void update(double dt) = 0;
+	virtual void draw() = 0;
 
-	void set_camera(std::unique_ptr<Camera> cam);
 	Camera& get_camera();
 
 protected:
-	std::vector<std::unique_ptr<Entity>> entity_list;
 	std::unique_ptr<Camera> camera;
+	entt::registry registry;
 
 private:
 };

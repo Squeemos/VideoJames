@@ -5,8 +5,6 @@
 
 #include <glm/glm.hpp>
 
-class Shader;
-
 typedef unsigned int GLuint;
 typedef float GLfloat;
 
@@ -20,6 +18,5 @@ public:
 	void unbind_vao();
 
 private:
-	std::shared_ptr<Shader> shader_program;
 	GLuint VBO, EBO, VAO, n_vertices, n_indices;
 };
