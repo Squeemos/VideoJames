@@ -7,14 +7,20 @@
 
 #include <iostream>
 #include <utility>
+#include <cstdlib>
 
 SandboxScene::SandboxScene()
 {
 	std::cout << "Creating Sandbox Scene" << std::endl;
 	set_camera(std::make_unique<Camera>());
 
-	entity_list.push_back(std::make_unique<Entity>(glm::vec3(0.0f, 0.0f, 0.0f), "./assets/rgba_tex.png", rgb_mode::rgba, "Kai'Sa"));
-	entity_list.push_back(std::make_unique<Entity>(glm::vec3(10.0f, 0.0f, -5.0f), "./assets/rgb_tex.jpg", rgb_mode::rgb, "Eagle"));
+	for (auto i = 0; i < 1000; ++i)
+	{
+		int x = rand() % 10 - 5;
+		int y = rand() % 10 - 5;
+		int z = rand() % 10;
+		entity_list.push_back(std::make_unique<Entity>(glm::vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(-z)), "./assets/rgba_tex.png", rgb_mode::rgba, "Kai'Sa"));
+	}
 }
 
 SandboxScene::~SandboxScene()
