@@ -16,18 +16,8 @@ public:
 	Mesh();
 	Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i);
 	~Mesh();
-	void bind_shader_program();
-	void unbind_shader_program();
-	void set_texture();
 	void bind_vao();
 	void unbind_vao();
-
-	void shader_set_bool(const std::string& name, bool value) const;
-	void shader_set_int(const std::string& name, int value) const;
-	void shader_set_float(const std::string& name, float value) const;
-	void shader_set_color(const std::string& name, glm::vec4 color) const;
-	void shader_set_location(const std::string& name, glm::vec3 pos) const;
-	void shader_set_mat4(const std::string& name, glm::mat4 mat) const;
 
 private:
 	std::shared_ptr<Shader> shader_program;

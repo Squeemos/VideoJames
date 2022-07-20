@@ -19,7 +19,7 @@ public:
 
 protected:
 	std::vector<std::unique_ptr<Entity>> entity_list;
+	std::unique_ptr<Camera> camera;
 
 private:
-	std::unique_ptr<Camera> camera;
 };

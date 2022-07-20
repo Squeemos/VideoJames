@@ -12,12 +12,9 @@ Mesh::Mesh()
 	throw MeshError();
 }
 
-Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i)
+Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i) : n_vertices(n_v), n_indices(n_i)
 {
 	std::cout << "Creating Mesh" << std::endl;
-
-	// Create the shader program
-	shader_program = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
 
 	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
@@ -66,22 +63,6 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::bind_shader_program()
-{
-	// Use the shader
-	shader_program->use();
-}
-
-void Mesh::unbind_shader_program()
-{
-	shader_program->unbind();
-}
-
-void Mesh::set_texture()
-{
-	// Set the texture
-	shader_program->set_int("texture1", 0);
-}
 
 void Mesh::bind_vao()
 {
@@ -94,29 +75,4 @@ void Mesh::unbind_vao()
 {
 	// Unbind the VAO
 	glBindVertexArray(0);
-}
-
-void Mesh::shader_set_bool(const std::string& name, bool value) const
-{
-	shader_program->set_bool(name, value);
-}
-void Mesh::shader_set_int(const std::string& name, int value) const
-{
-	shader_program->set_int(name, value);
-}
-void Mesh::shader_set_float(const std::string& name, float value) const
-{
-	shader_program->set_float(name, value);
-}
-void Mesh::shader_set_color(const std::string& name, glm::vec4 color) const
-{
-	shader_program->set_color(name, color);
-}
-void Mesh::shader_set_location(const std::string& name, glm::vec3 pos) const
-{
-	shader_program->set_location(name, pos);
-}
-void Mesh::shader_set_mat4(const std::string& name, glm::mat4 mat) const
-{
-	shader_program->set_mat4(name, mat);
 }

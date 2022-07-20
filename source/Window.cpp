@@ -26,7 +26,7 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height);
 
 // Initialize everything for the window
-Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1920), height(1080)
+Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720)
 {
 	std::cout << "Creating Window" << std::endl;
 
@@ -71,6 +71,8 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 	// Set the buffer swap interval to 0 (no vsync) or 1 (vsync)
 	glfwSwapInterval(0);
 	// glfwSwapInterval(1);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 // Shutdown the window
@@ -100,7 +102,7 @@ void Window::reset()
 {
 	// Setup the buffer
 	glClearColor(red, green, blue, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::swap_buffer()

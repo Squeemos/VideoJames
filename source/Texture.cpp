@@ -68,7 +68,7 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 	}
 	else
 	{
-		throw TextureError(std::string("Failed to load texture: " + name));
+		throw TextureError(std::string("Failed to load texture: ") + name);
 	}
 }
 

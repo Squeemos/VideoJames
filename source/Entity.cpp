@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Input.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -20,10 +21,10 @@ Entity::Entity() : position(0.0f, 0.0f, 0.0f), scale(0.0f, 0.0f, 0.0f), rotation
 }
 
 Entity::Entity(glm::vec3 new_pos, const std::string& texture, rgb_mode mode, std::string name) : position(new_pos),
-                                                                                                 scale(600.0f, 600.0f, 0.0f),
+                                                                                                 scale(1.0f, 1.0f, 0.0f),
                                                                                                  rotation(0.0f, 0.0f, 0.0f),
                                                                                                  name(name),
-                                                                                                 speed(100.0f)
+                                                                                                 speed(1.0f)
 {
     std::cout << "Creating Entity: " << name << std::endl;
 
@@ -42,7 +43,9 @@ Entity::Entity(glm::vec3 new_pos, const std::string& texture, rgb_mode mode, std
     GLuint indices[6]{ 0,1,3,1,2,3 };
     // ----------------------------------------------------------------------------
 
+    // Make the mesh and the shader
     mesh = std::make_shared<Mesh>(verts, 32, indices, 6);
+    shader = std::make_unique<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
 }
 
 Entity::~Entity()
@@ -50,11 +53,8 @@ Entity::~Entity()
     std::cout << "Destroying Entity: " << name << std::endl;
 }
 
-void Entity::draw()
+glm::mat4 Entity::draw()
 {
-    // Set the texture
-    mesh->set_texture();
-
     // Setup the entity's model uniform
     glm::mat4 model = glm::mat4(1);
 
@@ -68,19 +68,7 @@ void Entity::draw()
     model = glm::rotate(model, rotation.z, glm::vec3(0, 0, 1.0f));
 
     // Scale the entity
-    model = glm::scale(model, scale);
-
-    // Set the model uniform
-    mesh->shader_set_mat4("model", model);
-
-    // Use the texture
-    tex->use();
-
-    // Bind the mesh
-    mesh->bind_vao();
-    
-    // Unbind the mesh
-    mesh->unbind_vao();
+    return glm::scale(model, scale);
 }
 
 void Entity::update(double dt)

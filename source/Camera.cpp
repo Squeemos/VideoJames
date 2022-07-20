@@ -32,22 +32,21 @@ void Camera::update(double dt)
 	}
 	if (check_key(GLFW_KEY_J))
 	{
-		position.x += speed * static_cast<float>(dt);
-		target.x += speed * static_cast<float>(dt);
+		position.x -= speed * static_cast<float>(dt);
+		target.x -= speed * static_cast<float>(dt);
 	}
 	if (check_key(GLFW_KEY_L))
 	{
-		position.x -=  speed * static_cast<float>(dt);
-		target.x -= speed * static_cast<float>(dt);
+		position.x +=  speed * static_cast<float>(dt);
+		target.x += speed * static_cast<float>(dt);
 	}
 }
 
 glm::mat4 Camera::get_projection()
 {
-	// glm::mat4 view = glm::ortho(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f), position.y - (size.y / 2.0f), position.y + (size.y / 2.0f));
 
-	return glm::ortho(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f), position.y - (size.y / 2.0f), position.y + (size.y / 2.0f), -size.z, size.z);
-	// return glm::perspective(glm::radians(90.0f), size.x / size.y, .1f, size.z);
+	// return glm::ortho(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f), position.y - (size.y / 2.0f), position.y + (size.y / 2.0f), -size.z, size.z);
+	return glm::perspective(glm::radians(90.0f), size.x / size.y, .0001f, size.z);
 }
 
 glm::mat4 Camera::get_view()
