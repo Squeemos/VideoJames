@@ -145,7 +145,8 @@ void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int ac
 			glfwSetWindowMonitor(window, NULL, 0, 0, width, height, mode->refreshRate);
 
 			// Set the position of the window to be in the center of the screen
-			// glfwSetWindowPos(window, static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f), static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f));
+			// This is really gross, find a way to fix it
+			glfwSetWindowPos(window, static_cast<int>(static_cast<float>(mode->width) / 2.0f - (static_cast<float>(width) / 2.0f)), static_cast<int>(static_cast<float>(mode->height) / 2.0f - (static_cast<float>(height) / 2.0f)));
 		}
 
 		fullscreen = !fullscreen;
