@@ -4,10 +4,35 @@
 #include "Mesh.h"
 #include "Shader.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 #include <utility>
 #include <cstdlib>
 #include <tuple>
+
+struct Name
+{
+public:
+	Name() : name("") {}
+	Name(const std::string& n) : name(n) {}
+	~Name() {}
+	const std::string& get() { return name; }
+private:
+	std::string name;
+};
+
+struct Transform
+{
+public:
+	Transform() : position(0.0f,0.0f,0.0f) {}
+	Transform(glm::vec3 tform) : position(tform) {}
+	~Transform() {}
+	const glm::vec3& get() { return position; }
+
+private:
+	glm::vec3 position;
+};
 
 SandboxScene::SandboxScene() : Scene()
 {
@@ -17,8 +42,23 @@ SandboxScene::SandboxScene() : Scene()
 
 	entt::entity entity = registry.create();
 	registry.emplace<Shader>(entity, "./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
-	// registry.emplace<Mesh>(entity);
-	// std::make_unique<Entity>(glm::vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(-z)), "./assets/rgba_tex.png", rgb_mode::rgba, "Kai'Sa");
+
+	// Have this be reading from a file of meshes ---------------------------------
+	GLfloat verts[32]{
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+	};
+
+	GLuint indices[6]{ 0,1,3,1,2,3 };
+	// ----------------------------------------------------------------------------
+
+	registry.emplace<Mesh>(entity, verts, 32, indices, 6);
+	registry.emplace<Texture>(entity, "./assets/rgba_tex.png", rgb_mode::rgba);
+	registry.emplace<Name>(entity, "Kai'Sa");
+	registry.emplace<Transform>(entity);
 }
 
 SandboxScene::~SandboxScene()
@@ -31,44 +71,25 @@ void SandboxScene::update(double dt)
 	camera->update(dt);
 }
 
-// This draws, but it draws late
 void SandboxScene::draw()
 {
-	//// Ideally move the shit to outside the iteration
-	//for (auto& e : entity_list)
-	//{
-	//	// bind shader program
-	//	e->shader->use();
-	//	// set uniforms -> projection, view
-	//	e->shader->set_mat4("projection", camera->get_projection());
-	//	e->shader->set_mat4("view", camera->get_view());
-	//	// bind textures
-	//	// optional: bind vbo
-	//	// bind vao
-	//	// set uniforms -> model
-	//	e->shader->set_mat4("model", e->draw());
-	//	e->shader->set_int("texture0", 0);
-	//	// draw
-	//	// unbind vao
-	//	// Use the texture
-	//	e->tex->use();
-	//	e->mesh->bind_vao();
-	//	// Unbind the mesh
-	//	e->mesh->unbind_vao();
-	//}
+	auto group = registry.group<Shader>(entt::get<Transform, Mesh, Texture>);
+	for (auto entity : group)
+	{
+		auto [shader, transform, mesh, texture] = group.get<Shader, Transform, Mesh, Texture>(entity);
 
-	// Find a group with transforms and meshes
-	//auto group = registry.group<Shader>();
-	//for (auto entity : group)
-	//{
-	//	auto shader = group.get<Shader>(entity);
-	//}
+		shader.use();
+		shader.set_mat4("projection", camera->get_projection());
+		shader.set_mat4("view", camera->get_view());
 
-	//auto view = registry.view<Shader>();
-	//for (auto& entity : view)
-	//{
-	//	auto& shader = view.get<Shader>(entity);
-	//	shader.use();
-	//	shader.unbind();
-	//}
+		glm::mat4 model = glm::mat4(1);
+		model = glm::translate(model, transform.get());
+		shader.set_mat4("model", model);
+		
+		shader.set_int("texture0", 0);
+		texture.use();
+		mesh.bind_vao();
+		mesh.unbind_vao();
+		shader.unbind();
+	}
 }
