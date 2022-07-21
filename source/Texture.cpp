@@ -13,6 +13,11 @@
 #include <sstream>
 #include <iostream>
 
+Texture::Texture()
+{
+	throw TextureError("Cannot create default texture");
+}
+
 // Add in parameter for whether or not this texture is used for tiling
 Texture::Texture(const std::string& name, rgb_mode mode)
 {
@@ -75,10 +80,17 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 Texture::~Texture()
 {
 	std::cout << "Destryoing Texture" << std::endl;
+	glDeleteTextures(1, &texture);
 }
 
-void Texture::use()
+void Texture::bind()
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+void Texture::unbind()
+{
+	glBindTexture(GL_TEXTURE0, 0);
+	glBindTexture(GL_TEXTURE_2D, NULL);
 }

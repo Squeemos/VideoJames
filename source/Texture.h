@@ -13,13 +13,14 @@ enum class rgb_mode
 class Texture
 {
 public:
+	Texture();
 	Texture(const std::string& name, rgb_mode mode);
 	~Texture();
 
-	void use();
+	void bind();
+	void unbind();
 
 private:
 	GLuint texture;
-	Texture();
 };
 

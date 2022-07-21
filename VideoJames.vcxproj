@@ -164,6 +164,7 @@
     <ClCompile Include="source\Scene.cpp" />
     <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\ShaderManager.cpp" />
     <ClCompile Include="source\Texture.cpp" />
     <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
@@ -179,6 +180,7 @@
     <ClInclude Include="source\Scene.h" />
     <ClInclude Include="source\SceneManager.h" />
     <ClInclude Include="source\Shader.h" />
+    <ClInclude Include="source\ShaderManager.h" />
     <ClInclude Include="source\stb_image.h" />
     <ClInclude Include="source\Texture.h" />
     <ClInclude Include="source\Window.h" />

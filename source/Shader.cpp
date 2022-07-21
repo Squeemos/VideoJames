@@ -15,12 +15,12 @@
 
 static std::string read_shader(std::string file_name);
 
-Shader::Shader()
+Shader::Shader() : program_id(0), vert_path(""), frag_path("")
 {
-	throw ShaderError("Cannot use default constructor for shaders");
+	throw ShaderError("Creating blank shader");
 }
 
-Shader::Shader(const std::string& path1, const std::string& path2)
+Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_path(vertex), frag_path(fragment)
 {
 	std::cout << "Creating Shader" << std::endl;
 
@@ -33,7 +33,7 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 	const GLchar* shader_src;
 
 	// Load the vertex shader
-	temp = read_shader(path1);
+	temp = read_shader(vertex);
 	shader_src = temp.c_str();
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &shader_src, NULL);
@@ -51,7 +51,7 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 	}
 
 	// Load the fragment shader
-	temp = read_shader(path2);
+	temp = read_shader(fragment);
 	shader_src = temp.c_str();
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(frag_shader, 1, &shader_src, NULL);
@@ -99,7 +99,7 @@ Shader::Shader(const std::string& path1, const std::string& path2)
 
 Shader::~Shader()
 {
-	std::cout << "Destroying Shader" << std::endl;
+	std::cout << "Destroying Shader " + vert_path + " " + frag_path << std::endl;
 }
 
 void Shader::use()

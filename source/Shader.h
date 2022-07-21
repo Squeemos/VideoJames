@@ -8,7 +8,7 @@ class Shader
 {
 public:
 	Shader();
-	Shader(const std::string& path1, const std::string& path2);
+	Shader(const std::string& vertex, const std::string& fragment);
 	~Shader();
 	void use();
 
@@ -21,6 +21,9 @@ public:
 	void set_location(const std::string& name, glm::vec3 pos) const;
 	void set_mat4(const std::string& name, glm::mat4 mat) const;
 
+	friend class ShaderManager;
+
 private:
 	GLuint program_id;
+	std::string vert_path, frag_path;
 };
