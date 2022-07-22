@@ -5,6 +5,7 @@
 #include <string>
 
 class Shader;
+
 class ShaderManager
 {
 public:

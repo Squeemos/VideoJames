@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "TextureManager.h"
 #include "ShaderManager.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -72,19 +73,18 @@ SandboxScene::SandboxScene() : Scene()
 	// ----------------------------------------------------------------------------
 
 	material.mesh = std::make_shared<Mesh>(verts, 32, indices, 6);
-	material.texture = std::make_shared<Texture>("./assets/rgba_tex.png", rgb_mode::rgba);
+	material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	registry.emplace<Name>(entity, "Kai'Sa");
 	registry.emplace<Transform>(entity);
 
-	entt::entity entity2 = registry.create();
-	auto& material2 = registry.emplace<Material>(entity2);
-	material2.shader = construct_shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
-	material2.mesh = std::make_shared<Mesh>(verts, 32, indices, 6);
-	material2.texture = std::make_shared<Texture>("./assets/rgb_tex.jpg", rgb_mode::rgb);
-	registry.emplace<Name>(entity2, "Bagel");
-	registry.emplace<Transform>(entity2, glm::vec3(1.0f,0.0f,0.0f));
-
+	entt::entity e = registry.create();
+	auto& m = registry.emplace<Material>(e);
+	m.shader = construct_shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+	m.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
+	m.mesh = std::make_shared<Mesh>(verts, 32, indices, 6);
+	registry.emplace<Name>(e, "Eagle");
+	registry.emplace<Transform>(e, glm::vec3(1.0f,0.0f,0.0f));
 }
 
 SandboxScene::~SandboxScene()

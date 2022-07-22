@@ -20,7 +20,10 @@ public:
 	void bind();
 	void unbind();
 
+	friend class TextureManager;
 private:
+	std::string path;
+	rgb_mode mode;
 	GLuint texture;
 };
 

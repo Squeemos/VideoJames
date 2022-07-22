@@ -19,7 +19,7 @@ Texture::Texture()
 }
 
 // Add in parameter for whether or not this texture is used for tiling
-Texture::Texture(const std::string& name, rgb_mode mode)
+Texture::Texture(const std::string& name, rgb_mode type) : path(name), mode(type)
 {
 	std::cout << "Loading texture: " << name << std::endl;
 
@@ -49,7 +49,7 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 	if (data)
 	{
 		// Load the texture based on which mode it is
-		switch (mode)
+		switch (type)
 		{
 		case rgb_mode::rgb:
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -79,7 +79,7 @@ Texture::Texture(const std::string& name, rgb_mode mode)
 
 Texture::~Texture()
 {
-	std::cout << "Destryoing Texture" << std::endl;
+	std::cout << "Destryoing Texture " << path << std::endl;
 	glDeleteTextures(1, &texture);
 }
 
@@ -91,6 +91,5 @@ void Texture::bind()
 
 void Texture::unbind()
 {
-	glBindTexture(GL_TEXTURE0, 0);
 	glBindTexture(GL_TEXTURE_2D, NULL);
 }
