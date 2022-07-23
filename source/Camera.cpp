@@ -9,7 +9,7 @@
 #include <iostream>
 
 // Make the camera size based off the monitor size
-Camera::Camera() : position(0, 0, 3.0f), target(0, 0, 0), speed(5.0f), size(1920.0f, 1080.0f, 100.0f)
+Camera::Camera() : position(0, 0, 3.0f), target(0, 0, 0), speed(2.5f), size(1920.0f, 1080.0f, 100.0f)
 {
 	std::cout << "Creating Camera" << std::endl;
 }
@@ -39,14 +39,6 @@ void Camera::update(double dt)
 	{
 		position.x +=  speed * static_cast<float>(dt);
 		target.x += speed * static_cast<float>(dt);
-	}
-	if (check_key(GLFW_KEY_U))
-	{
-		// Rotate the camera to the left
-	}
-	if (check_key(GLFW_KEY_O))
-	{
-		// Rotate the camera to the right
 	}
 }
 
