@@ -12,9 +12,9 @@ Mesh::Mesh()
 	throw MeshError();
 }
 
-Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i) : n_vertices(n_v), n_indices(n_i)
+Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i, const std::string& n) : n_vertices(n_v), n_indices(n_i), name(n)
 {
-	std::cout << "Creating Mesh" << std::endl;
+	std::cout << "Creating Mesh: " << name << std::endl;
 
 	// Generate our vertex array and vertex buffers
 	glGenVertexArrays(1, &VAO);
@@ -58,6 +58,7 @@ Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i) : n_vertices(n_v), n_i
 
 Mesh::~Mesh()
 {
+	std::cout << "Destroying Mesh: " << name << std::endl;
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);

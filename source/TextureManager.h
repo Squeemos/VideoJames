@@ -2,10 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include <string>
 
-class Texture;
-enum class rgb_mode;
+#include "Texture.h"
 
 class TextureManager
 {

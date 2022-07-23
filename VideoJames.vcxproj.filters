@@ -60,6 +60,9 @@
     <ClCompile Include="source\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\MeshManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Engine.h">
@@ -108,6 +111,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MeshManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Name.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

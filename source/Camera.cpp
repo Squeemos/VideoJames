@@ -40,6 +40,14 @@ void Camera::update(double dt)
 		position.x +=  speed * static_cast<float>(dt);
 		target.x += speed * static_cast<float>(dt);
 	}
+	if (check_key(GLFW_KEY_U))
+	{
+		// Rotate the camera to the left
+	}
+	if (check_key(GLFW_KEY_O))
+	{
+		// Rotate the camera to the right
+	}
 }
 
 glm::mat4 Camera::get_projection()
