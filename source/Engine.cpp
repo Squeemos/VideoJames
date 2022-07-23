@@ -29,11 +29,13 @@ void GameEngine::update()
 	scene_manager->update(dt);
 	window->update(dt);
 
-	// Draw
+	// Empty buffers
 	window->reset();
 
+	// Draw everything in the scene
 	scene_manager->draw();
 
+	// Swap buffers
 	window->swap_buffer();
 }
 

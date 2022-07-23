@@ -12,9 +12,7 @@ OpenGLHandler::OpenGLHandler()
 
 	// Init glfw
 	if (!glfwInit())
-	{
 		throw GLFWError();
-	}
 }
 
 OpenGLHandler::~OpenGLHandler()

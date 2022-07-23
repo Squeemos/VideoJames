@@ -21,12 +21,14 @@ ShaderManager::~ShaderManager()
 
 std::shared_ptr<Shader> ShaderManager::construct(const std::string& vertex, const std::string& fragment)
 {
+	// Check if the shader already exists
 	for (auto& shader : shaders)
 	{
 		if (shader->vert_path == vertex && shader->frag_path == fragment)
 			return shader;
 	}
 
+	// Doesn't exist, so construct a new one
 	std::shared_ptr<Shader> new_shader = std::make_shared<Shader>(vertex, fragment);
 	shaders.push_back(new_shader);
 

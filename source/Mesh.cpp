@@ -59,6 +59,8 @@ Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i, const std::string& n) 
 Mesh::~Mesh()
 {
 	std::cout << "Destroying Mesh: " << name << std::endl;
+	
+	// Delete the vao and the buffers
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);

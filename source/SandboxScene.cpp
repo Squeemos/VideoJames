@@ -59,6 +59,7 @@ void SandboxScene::update(double dt)
 	camera->update(dt);
 }
 
+// This might be able to be moved into the base scene class
 void SandboxScene::draw()
 {
 	// Create a group with all entities with a transform and a material (therefore, renderable)

@@ -21,12 +21,14 @@ TextureManager::~TextureManager()
 
 std::shared_ptr<Texture> TextureManager::construct(const std::string& path, rgb_mode mode)
 {
+	// Try and find the texture
 	for (auto& texture : textures)
 	{
 		if (texture->path == path && texture->mode == mode)
 			return texture;
 	}
 
+	// Doesn't exist, so construct a new one
 	std::shared_ptr<Texture> new_texture = std::make_shared<Texture>(path, mode);
 	textures.push_back(new_texture);
 
