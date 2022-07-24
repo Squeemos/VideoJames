@@ -45,7 +45,7 @@ SandboxScene::SandboxScene() : Scene()
 
 		float x = static_cast<float>(rand() % 10);
 		float y = static_cast<float>(rand() % 10);
-		registry.emplace<Transform>(e, glm::vec3(i * .1 * x, i * .1 * - y, (x - y) * .1));
+		registry.emplace<Transform>(e, glm::vec3(i * .1 * x, i * .1 * - y, (x + y) * .1));
 	}
 }
 
@@ -54,9 +54,9 @@ SandboxScene::~SandboxScene()
 	std::cout << "Destroying Sandbox Scene" << std::endl;
 }
 
-void SandboxScene::update(double dt)
+void SandboxScene::update(double dt, glm::vec2& mouse)
 {
-	camera->update(dt);
+	camera->update(dt, mouse);
 }
 
 // This might be able to be moved into the base scene class
@@ -75,8 +75,10 @@ void SandboxScene::draw()
 		material.shader->use();
 
 		// Set the camera uniforms
-		material.shader->set_mat4("projection", camera->get_projection());
-		material.shader->set_mat4("view", camera->get_view());
+ 		material.shader->set_mat4("projection", camera->get_projection());
+
+ 		auto view = camera->get_view();
+		material.shader->set_mat4("view", view);
 
 		// Set the transform uniform
 		glm::mat4 model = glm::mat4(1);

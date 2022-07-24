@@ -15,9 +15,10 @@
 // Forward References
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height);
+static void mouse_callback_function(GLFWwindow* glmfw_window, double x_pos, double y_pos);
 
 // Initialize everything for the window
-Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720)
+Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720), mouse(0.0f, 0.0f)
 {
 	std::cout << "Creating Window" << std::endl;
 
@@ -47,6 +48,12 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 
 	// Set the resize callback function
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback_function);
+
+	// Set the mouse callback function
+	glfwSetCursorPosCallback(window, mouse_callback_function);
+
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Load glad -> has to be done after glfwinit and window init
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -113,6 +120,11 @@ double Window::get_dt()
 	return current_time - previous_time;
 }
 
+glm::vec2& Window::get_mouse()
+{
+	return mouse;
+}
+
 void Window::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
 	scancode;
@@ -160,6 +172,13 @@ void Window::frambuffer_size_callback(GLFWwindow* glfw_window, int window_width,
 	glViewport(0, 0, window_width, window_height);
 }
 
+void Window::mouse_callback(GLFWwindow* glfw_window, double x_pos, double y_pos)
+{
+	glfw_window;
+	mouse.x = static_cast<float>(x_pos);
+	mouse.y = static_cast<float>(y_pos);
+}
+
 // Input handler
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
@@ -174,4 +193,9 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 static void framebuffer_size_callback_function(GLFWwindow* glfw_window, int window_width, int window_height)
 {
 	static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->frambuffer_size_callback(glfw_window, window_width, window_height);
+}
+
+static void mouse_callback_function(GLFWwindow* glfw_window, double x_pos, double y_pos)
+{
+	static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->mouse_callback(glfw_window, x_pos, y_pos);
 }

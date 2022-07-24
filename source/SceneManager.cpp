@@ -20,9 +20,9 @@ SceneManager::~SceneManager()
 }
 
 
-void SceneManager::update(double dt)
+void SceneManager::update(double dt, glm::vec2& mouse)
 {
-	current_scene->update(dt);
+	current_scene->update(dt, mouse);
 }
 
 void SceneManager::draw()

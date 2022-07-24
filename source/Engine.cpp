@@ -26,7 +26,7 @@ void GameEngine::update()
 	double dt = window->get_dt();
 
 	// Update
-	scene_manager->update(dt);
+	scene_manager->update(dt, window->get_mouse());
 	window->update(dt);
 
 	// Empty buffers

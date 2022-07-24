@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <entt/entt.hpp>
+#include <glm/glm.hpp>
 
 class Camera;
 
@@ -10,7 +11,7 @@ class Scene
 public:
 	Scene();
 	~Scene();
-	virtual void update(double dt) = 0;
+	virtual void update(double dt, glm::vec2& mouse) = 0;
 	virtual void draw() = 0;
 
 	Camera& get_camera();

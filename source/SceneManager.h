@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+#include <glm/glm.hpp>
+
 class Scene;
 class Camera;
 
@@ -12,7 +14,7 @@ public:
 	SceneManager();
 	~SceneManager();
 
-	void update(double dt);
+	void update(double dt, glm::vec2& mouse);
 	void draw();
 
 	void add_scene(std::shared_ptr<Scene> scene);
