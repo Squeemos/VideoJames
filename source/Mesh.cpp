@@ -2,7 +2,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Mesh.h"
-#include "Shader.h"
 #include "Error.h"
 
 #include <iostream>
@@ -12,7 +11,7 @@ Mesh::Mesh()
 	throw MeshError();
 }
 
-Mesh::Mesh(GLfloat* v, GLuint n_v, GLuint* i, GLuint n_i, const std::string& n) : n_vertices(n_v), n_indices(n_i), name(n)
+Mesh::Mesh(const GLfloat* v, GLuint n_v, const GLuint* i, GLuint n_i, const std::string& n) : n_vertices(n_v), n_indices(n_i), name(n)
 {
 	std::cout << "Creating Mesh: " << name << std::endl;
 

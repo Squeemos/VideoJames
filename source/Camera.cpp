@@ -10,7 +10,6 @@
 
 #include <iostream>
 
-// Make the camera size based off the monitor size
 Camera::Camera() : position(0, 0, 3.0f), target(0, 0, -1.0f), speed(10.0f), size(1920.0f, 1080.0f, 1000.0f), mouse(0.0f, 0.0f), rotation(0.0f, 0.0f)
 {
 	std::cout << "Creating Camera" << std::endl;
