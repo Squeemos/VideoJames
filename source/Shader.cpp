@@ -5,10 +5,8 @@
 #include <GLFW/glfw3.h>
 
 #pragma warning(disable : 4201)
-#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
