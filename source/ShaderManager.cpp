@@ -1,6 +1,9 @@
 #include "ShaderManager.h"
 #include "Shader.h"
 
+#include <rapidjson/document.h>
+#include <rapidjson/filereadstream.h>
+
 #include <iostream>
 
 static ShaderManager sm = ShaderManager();
@@ -8,9 +11,6 @@ static ShaderManager sm = ShaderManager();
 ShaderManager::ShaderManager()
 {
 	std::cout << "Creating Shader Manager" << std::endl;
-
-	// Reserve space for 10 shaders, can be changed later
-	shaders.reserve(10 * sizeof(std::shared_ptr<Shader>));
 }
 
 ShaderManager::~ShaderManager()
@@ -19,23 +19,43 @@ ShaderManager::~ShaderManager()
 	shaders.clear();
 }
 
-std::shared_ptr<Shader> ShaderManager::construct(const std::string& vertex, const std::string& fragment)
+std::shared_ptr<Shader> ShaderManager::construct(const std::string& path)
 {
-	// Check if the shader already exists
-	for (auto& shader : shaders)
-	{
-		if (shader->vert_path == vertex && shader->frag_path == fragment)
-			return shader;
-	}
+	const auto iterator = shaders.find(path);
+	if (iterator != shaders.end())
+		return iterator->second;
 
-	// Doesn't exist, so construct a new one
-	std::shared_ptr<Shader> new_shader = std::make_shared<Shader>(vertex, fragment);
-	shaders.push_back(new_shader);
+	rapidjson::Document doc;
+	char buffer[1000]{};
+	FILE* fp;
+
+	auto val = fopen_s(&fp, path.c_str(), "rb");
+	if (val != 0)
+		throw std::runtime_error("Error reading from: " + path);
+
+	rapidjson::FileReadStream is(fp, buffer, sizeof(buffer));
+
+	doc.ParseStream(is);
+	assert(doc.IsObject());
+
+	assert(doc.HasMember("vertex"));
+	assert(doc["vertex"].IsString());
+
+	auto vertex = "./shaders/" + std::string(doc["vertex"].GetString());
+
+	assert(doc.HasMember("fragment"));
+	assert(doc["fragment"].IsString());
+
+	auto fragment = "./shaders/" + std::string(doc["fragment"].GetString());
+
+	std::cout << "Making Shader: " + path << std::endl;
+	auto new_shader = std::make_shared<Shader>(vertex, fragment);
+	shaders[path] = new_shader;
 
 	return new_shader;
 }
 
-std::shared_ptr<Shader> construct_shader(const std::string& vertex, const std::string& fragment)
+std::shared_ptr<Shader> construct_shader(const std::string& path)
 {
-	return sm.construct(vertex, fragment);
+	return sm.construct(path);
 }

@@ -10,7 +10,7 @@ TextureManager::TextureManager()
 	std::cout << "Creating Texture Manager" << std::endl;
 
 	// Reserve space for 10 textures, can be changed later
-	textures.reserve(10 * sizeof(std::shared_ptr<Texture>));
+	textures.reserve(10);
 }
 
 TextureManager::~TextureManager()

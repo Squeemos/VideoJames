@@ -27,7 +27,7 @@ SandboxScene::SandboxScene() : Scene()
 	auto& material = registry.emplace<Material>(entity);
 
 	// Set all parts of the material
-	material.shader = construct_shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+	material.shader = construct_shader("./data/simple_shader.json");
 	material.mesh = construct_mesh("./data/1b1.json");
 	material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
@@ -39,7 +39,7 @@ SandboxScene::SandboxScene() : Scene()
 	{
 		entt::entity e = registry.create();
 		auto& m = registry.emplace<Material>(e);
-		m.shader = construct_shader("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+		m.shader = construct_shader("./data/simple_shader.json");
 		m.texture = construct_texture("./assets/rgb_tex.jpg", rgb_mode::rgb);
 		m.mesh = construct_mesh("./data/1b1.json");
 

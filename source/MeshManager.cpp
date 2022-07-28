@@ -14,7 +14,7 @@ MeshManager::MeshManager()
 	std::cout << "Creating Mesh Manager" << std::endl;
 
 	// Reserve space for 10 meshes, can be changed later
-	meshes.reserve(10 * sizeof(std::shared_ptr<Mesh>));
+	meshes.reserve(10);
 }
 
 MeshManager::~MeshManager()
