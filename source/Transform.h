@@ -9,7 +9,6 @@ public:
 	Transform(glm::vec3 tform) : position(tform) {}
 	~Transform() {}
 
-	operator glm::vec3() { return position; }
 	operator glm::vec3& () { return position; }
 	operator const glm::vec3& () const { return position; }
 
