@@ -160,8 +160,6 @@
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
     <ClCompile Include="source\MeshManager.cpp" />
-    <ClCompile Include="source\NewMesh.cpp" />
-    <ClCompile Include="source\NewShader.cpp" />
     <ClCompile Include="source\OpenGLHandler.cpp" />
     <ClCompile Include="source\SandboxScene.cpp" />
     <ClCompile Include="source\Scene.cpp" />
@@ -182,8 +180,6 @@
     <ClInclude Include="source\Mesh.h" />
     <ClInclude Include="source\MeshManager.h" />
     <ClInclude Include="source\Name.h" />
-    <ClInclude Include="source\NewMesh.h" />
-    <ClInclude Include="source\NewShader.h" />
     <ClInclude Include="source\OpenGLHandler.h" />
     <ClInclude Include="source\SandboxScene.h" />
     <ClInclude Include="source\Scene.h" />
