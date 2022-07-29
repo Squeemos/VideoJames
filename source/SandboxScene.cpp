@@ -28,11 +28,11 @@ SandboxScene::SandboxScene() : Scene()
 
 	// Set all parts of the material
 	material.shader = construct_shader("./data/simple_shader.json");
-	material.model = std::make_shared<Model>("./assets/backpack/backpack.obj");
+	material.model = std::make_shared<Model>("./assets/teapot/teapot.obj");
 	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	// Give the entity a name and transform
-	registry.emplace<Name>(entity, "Backpack");
+	registry.emplace<Name>(entity, "Teapot");
 	registry.emplace<Transform>(entity);
 }
 

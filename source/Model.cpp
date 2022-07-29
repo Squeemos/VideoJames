@@ -34,82 +34,117 @@ void Model::draw(Shader& shader)
 
 void Model::load_model(const std::string& path)
 {
-	Assimp::Importer imp;
-	const aiScene* scene = imp.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	// read file via ASSIMP
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	// check for errors
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
-		throw ModelError("Error creating model from: " + path);
+		throw ModelError("Problem loading model: " + path);
 	}
-
+	// retrieve the directory path of the filepath
 	directory = path.substr(0, path.find_last_of('/'));
 
+	// process ASSIMP's root node recursively
 	process_node(scene->mRootNode, scene);
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene)
 {
-	for (unsigned int i = 0; i < node->mNumMeshes; ++i)
-		meshes.push_back(process_mesh(scene->mMeshes[node->mMeshes[i]], scene));
-
-	for (unsigned int i = 0; i < node->mNumChildren; ++i)
+	// process each mesh located at the current node
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		// the node object only contains indices to index the actual objects in the scene. 
+		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		meshes.push_back(process_mesh(mesh, scene));
+	}
+	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
 		process_node(node->mChildren[i], scene);
+	}
 }
 
 Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
+	// data to fill
 	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
+	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
-	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	// walk through each of the mesh's vertices
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
-		Vertex v;
-		v.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-		v.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-		vertices.push_back(v);
-
-		if (mesh->mTextureCoords[0])
+		Vertex vertex;
+		glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+		// positions
+		vector.x = mesh->mVertices[i].x;
+		vector.y = mesh->mVertices[i].y;
+		vector.z = mesh->mVertices[i].z;
+		vertex.position = vector;
+		// normals
+		if (mesh->HasNormals())
 		{
-			v.tex_coords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.normal = vector;
+		}
+		// texture coordinates
+		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		{
+			glm::vec2 vec;
+			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
+			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+			vec.x = mesh->mTextureCoords[0][i].x;
+			vec.y = mesh->mTextureCoords[0][i].y;
+			vertex.tex_coords = vec;
 		}
 		else
-			v.tex_coords = glm::vec2(0.0f, 0.0f);
-	}
+			vertex.tex_coords = glm::vec2(0.0f, 0.0f);
 
-	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+		vertices.push_back(vertex);
+	}
+	// now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; ++j)
+		// retrieve all indices of the face and store them in the indices vector
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
+	// process materials
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
+	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
+	// Same applies to other texture as the following list summarizes:
+	// diffuse: texture_diffuseN
+	// specular: texture_specularN
+	// normal: texture_normalN
 
-	if (mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<Texture> diffuse_maps = load_material_textures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		std::vector<Texture> specular_maps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
+	// 1. diffuse maps
+	std::vector<Texture> diffuseMaps = load_material_textures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	// 2. specular maps
+	std::vector<Texture> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
+	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-		textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
-		textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
-	}
-
-
+	// return a mesh object created from the extracted mesh data
 	return Mesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name)
 {
 	std::vector<Texture> textures;
-
-	for (unsigned int i = 0; i < mat->GetTextureCount(type); ++i)
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
-		aiString st;
-		mat->GetTexture(type, i, &st);
+		aiString str;
+		mat->GetTexture(type, i, &str);
 		Texture texture;
-		texture.id = texture_from_file(st.C_Str(), directory);
+		texture.id = texture_from_file(str.C_Str(), directory);
 		texture.type = type_name;
-		texture.path = std::string(st.C_Str());
+		texture.path = str.C_Str();
 		textures.push_back(texture);
 	}
 	return textures;
@@ -119,36 +154,33 @@ unsigned int texture_from_file(const std::string& path, const std::string& dir, 
 {
 	gamma;
 
-	std::string filename = dir + '/' + path;
-	std::cout << "Creating texture from: " << filename << std::endl;
+	std::string filename = std::string(path);
+	filename = dir+ '/' + filename;
 
-	GLuint texture_id;
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
 
-	glGenTextures(1, &texture_id);
-
-	int width, height, num_components;
-	stbi_uc* data = stbi_load(filename.c_str(), &width, &height, &num_components, 0);
-
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 	if (data)
 	{
 		GLenum format;
-		if (num_components == 1)
+		if (nrComponents == 1)
 			format = GL_RED;
-		else if (num_components == 3)
+		else if (nrComponents == 3)
 			format = GL_RGB;
-		else if (num_components == 4)
+		else if (nrComponents == 4)
 			format = GL_RGBA;
 		else
 		{
-			stbi_image_free(data);
-			throw TextureError("Format of image not implemented, from file: " + filename);
+			format = GL_RED;
+			std::cout << "Texture may not be loaded correctly: " << filename << std::endl;
 		}
 
-		glBindTexture(GL_TEXTURE_2D, texture_id);
+		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		// handle for tiling or not
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -158,9 +190,9 @@ unsigned int texture_from_file(const std::string& path, const std::string& dir, 
 	}
 	else
 	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
 		stbi_image_free(data);
-		throw TextureError("Error creating texture from: " + filename);
 	}
 
-	return texture_id;
+	return textureID;
 }
