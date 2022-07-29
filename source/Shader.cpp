@@ -20,8 +20,6 @@ Shader::Shader() : program_id(0), vert_path(""), frag_path("")
 
 Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_path(vertex), frag_path(fragment)
 {
-	std::cout << "Creating Shader" << std::endl;
-
 	// For error checking
 	GLint success;
 	GLchar info_log[1024];

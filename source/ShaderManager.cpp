@@ -48,7 +48,7 @@ std::shared_ptr<Shader> ShaderManager::construct(const std::string& path)
 
 	auto fragment = "./shaders/" + std::string(doc["fragment"].GetString());
 
-	std::cout << "Making Shader: " + path << std::endl;
+	std::cout << "Creating Shader: " + path << std::endl;
 	auto new_shader = std::make_shared<Shader>(vertex, fragment);
 	shaders[path] = new_shader;
 
