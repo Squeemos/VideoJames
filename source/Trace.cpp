@@ -5,6 +5,11 @@
 #include <iostream>
 #include "Error.h"
 
+#ifndef _DEBUG
+#define _DEBUG false
+#endif
+
+
 static FILE* trace_file;
 
 void trace_init()
@@ -20,6 +25,8 @@ void send_trace_message(const std::string& message)
 {
 	if (trace_file)
 	{
+		if (_DEBUG)
+			std::cout << message << std::endl;
 		fprintf(trace_file, message.c_str());
 		fprintf(trace_file, "\n");
 	}
