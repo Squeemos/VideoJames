@@ -1,12 +1,13 @@
 #include "SandboxScene.h"
 #include "Camera.h"
 #include "ShaderManager.h"
-#include "Model.h"
+#include "Trace.h"
 
 // Components
 #include "Name.h"
 #include "Transform.h"
 #include "Material.h"
+#include "Model.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -18,7 +19,7 @@
 
 SandboxScene::SandboxScene() : Scene()
 {
-	std::cout << "Creating Sandbox Scene" << std::endl;
+	send_trace_message("Creating Sandbox Scene");
 
 	camera = std::make_unique<Camera>();
 
@@ -38,7 +39,7 @@ SandboxScene::SandboxScene() : Scene()
 
 SandboxScene::~SandboxScene()
 {
-	std::cout << "Destroying Sandbox Scene" << std::endl;
+	send_trace_message("Destroying Sandbox Scene");
 }
 
 void SandboxScene::update(double dt, glm::vec2& mouse)
@@ -120,6 +121,7 @@ void SandboxScene::draw()
 
    		// Set the transform uniform
    		glm::mat4 model = glm::mat4(1);
+		model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
    		model = glm::translate(model, static_cast<glm::vec3>(transform)); // <- I think there's a way to just use transform since it should be able to convert?
    		material.shader->set_mat4("model", model);
    	

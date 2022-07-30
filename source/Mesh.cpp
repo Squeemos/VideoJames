@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Error.h"
 #include "Shader.h"
+#include "Trace.h"
 
 #include <iostream>
 
@@ -14,7 +15,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<Texture> t) : vertices(v), indices(i), textures(t), VAO(0), VBO(0), EBO(0)
 {
-	std::cout << "Creating Mesh" << std::endl;
+	send_trace_message("Creating Mesh");
 	setup();
 }
 
@@ -64,7 +65,7 @@ Mesh::Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<Texture> t)
 
 Mesh::~Mesh()
 {
-	std::cout << "Destroying Mesh" << std::endl;
+	send_trace_message("Destroying Mesh");
 	
 	// Delete the vao and the buffers
 	glDeleteVertexArrays(1, &VAO);

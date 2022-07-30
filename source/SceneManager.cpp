@@ -1,14 +1,12 @@
 #include "SceneManager.h"
 #include "Scene.h"
-#include "Camera.h"
+#include "Trace.h"
 
 #include "SandboxScene.h"
 
-#include <iostream>
-
 SceneManager::SceneManager()
 {
-	std::cout << "Creating Scene Manager" << std::endl;
+	send_trace_message("Creating Scene Manager");
 
 	current_scene = std::make_shared<SandboxScene>();
 	add_scene(current_scene);
@@ -16,7 +14,7 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager()
 {
-	std::cout << "Destorying Scene Manager" << std::endl;
+	send_trace_message("Destroying Scene Manager");
 }
 
 

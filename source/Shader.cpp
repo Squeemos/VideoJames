@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -95,7 +96,7 @@ Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_pa
 
 Shader::~Shader()
 {
-	std::cout << "Destroying Shader " + vert_path + " " + frag_path << std::endl;
+	send_trace_message("Destroying Shader " + vert_path + " " + frag_path);
 }
 
 void Shader::use()
@@ -140,13 +141,17 @@ void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
 
 static std::string read_shader(std::string file_name)
 {
-	std::cout << "Loading shader: " << file_name << std::endl;
+	send_trace_message("Loading shader: " + file_name);
 
 	std::string contents;
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		throw ShaderError(std::string("File failed to open: " + file_name));
+		throw ShaderError("File failed to open: " + file_name);
 	}
-	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
+	std::string ret = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+	file.close();
+
+	return ret;
 }

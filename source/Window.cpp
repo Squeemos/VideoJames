@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Input.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -20,7 +21,7 @@ static void mouse_callback_function(GLFWwindow* glmfw_window, double x_pos, doub
 // Initialize everything for the window
 Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(1280), height(720), mouse(0.0f, 0.0f)
 {
-	std::cout << "Creating Window" << std::endl;
+	send_trace_message("Creating Window");
 
 	// Set some window stuff (quality, resizable)
 	glfwWindowHint(GLFW_SAMPLES, 4); // 4x MSAA
@@ -76,7 +77,7 @@ Window::Window() : fullscreen(false), red(0.0f), green(0.0f), blue(0.0f), width(
 // Shutdown the window
 Window::~Window()
 {
-	std::cout << "Destroying Window" << std::endl;
+	send_trace_message("Destroying Window");
 	// Once done, cleanup
 	glfwDestroyWindow(window);
 }

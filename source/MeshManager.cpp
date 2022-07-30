@@ -1,5 +1,6 @@
 #include "MeshManager.h"
 #include "Mesh.h"
+#include "Trace.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
@@ -11,7 +12,7 @@ static MeshManager mm = MeshManager();
 
 MeshManager::MeshManager()
 {
-	std::cout << "Creating Mesh Manager" << std::endl;
+	send_trace_message("Creating Mesh Manager");
 
 	// Reserve space for 10 meshes, can be changed later
 	meshes.reserve(10);
@@ -19,7 +20,7 @@ MeshManager::MeshManager()
 
 MeshManager::~MeshManager()
 {
-	std::cout << "Destroying Mesh Manager" << std::endl;
+	send_trace_message("Destroying Mesh Manager");
 	meshes.clear();
 }
 

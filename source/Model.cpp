@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <glad/glad.h>
 
@@ -17,13 +18,14 @@ Model::Model()
 
 Model::Model(const std::string& path)
 {
-	std::cout << "Creating Model: " << path << std::endl;
+	send_trace_message("Creating Model: " + path);
 	stbi_set_flip_vertically_on_load(true);
 	load_model(path);
 }
 
 Model::~Model()
 {
+	send_trace_message("Destroying Model: " + directory);
 }
 
 void Model::draw(Shader& shader)
@@ -57,7 +59,7 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 		// the node object only contains indices to index the actual objects in the scene. 
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(process_mesh(mesh, scene));
+		meshes.push_back(*process_mesh(mesh, scene));
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -66,7 +68,7 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 	}
 }
 
-Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill
 	std::vector<Vertex> vertices;
@@ -131,7 +133,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 	// return a mesh object created from the extracted mesh data
-	return Mesh(vertices, indices, textures);
+	return new Mesh(vertices, indices, textures);
 }
 
 std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name)

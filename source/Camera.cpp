@@ -7,17 +7,18 @@
 
 #include "Camera.h"
 #include "Input.h"
+#include "Trace.h"
 
 #include <iostream>
 
 Camera::Camera() : position(0, 0, 3.0f), target(0, 0, -1.0f), speed(10.0f), size(1920.0f, 1080.0f, 1000.0f), mouse(0.0f, 0.0f), rotation(0.0f, 0.0f)
 {
-	std::cout << "Creating Camera" << std::endl;
+	send_trace_message("Creating Camera");
 }
 
 Camera::~Camera()
 {
-	std::cout << "Destroying Camera" << std::endl;
+	send_trace_message("Destroying Camwera");
 }
 
 void Camera::update(double dt, glm::vec2& vector)

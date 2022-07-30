@@ -1,16 +1,15 @@
 #include "Scene.h"
+#include "Trace.h"
 #include "Camera.h"
-
-#include <iostream>
 
 Scene::Scene()
 {
-	std::cout << "Creating Scene" << std::endl;
+	send_trace_message("Creating Scene");
 }
 
 Scene::~Scene()
 {
-	std::cout << "Destroying Scene" << std::endl;
+	send_trace_message("Destroying Scene");
 }
 
 Camera& Scene::get_camera()
