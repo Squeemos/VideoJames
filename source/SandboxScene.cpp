@@ -27,8 +27,8 @@ SandboxScene::SandboxScene() : Scene()
 	auto& material = registry.emplace<Material>(entity);
 
 	// Set all parts of the material
-	material.shader = construct_shader("./data/simple_shader.json");
-	material.model = std::make_shared<Model>("./assets/teapot/teapot.obj");
+	material.shader = construct_shader("./data/simple_3d.json");
+	material.model = std::make_shared<Model>("./assets/1b1/1b1.obj");
 	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	// Give the entity a name and transform
@@ -123,8 +123,8 @@ void SandboxScene::draw()
    		model = glm::translate(model, static_cast<glm::vec3>(transform)); // <- I think there's a way to just use transform since it should be able to convert?
    		material.shader->set_mat4("model", model);
    	
-
-		material.model->draw(*material.shader);
+		Shader& shad = *material.shader;
+		material.model->draw(shad);
 		material.shader->unbind();
 	}
 }
