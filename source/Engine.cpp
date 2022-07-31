@@ -3,21 +3,21 @@
 #include "Window.h"
 #include "SceneManager.h"
 #include "Camera.h"
+#include "Trace.h"
 
-#include <iostream>
 
 // Start everything in the engine
 GameEngine::GameEngine() : opengl_handler (std::make_unique<OpenGLHandler>()),
 						   window(std::make_unique<Window>()),
 	                       scene_manager(std::make_unique<SceneManager>())
 {
-	std::cout << "Creating Engine" << std::endl;
+	send_trace_message("Creating Engine");
 }
 
 // Shutdown everything in the engine
 GameEngine::~GameEngine()
 {
-	std::cout << "Destroying Engine" << std::endl;
+	send_trace_message("Destroying Engine");
 }
 
 // Update everything in the game engine

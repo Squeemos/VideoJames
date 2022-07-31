@@ -3,6 +3,7 @@
 
 #include "Engine.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <iostream>
 #include <memory>
@@ -10,6 +11,16 @@
 // Main
 int main()
 {
+	try
+	{
+		trace_init();
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	try
 	{
 		std::unique_ptr<GameEngine> engine = std::make_unique<GameEngine>();
@@ -21,9 +32,11 @@ int main()
 	}
 	catch (std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		send_trace_message(e.what());
+		trace_shutdown();
 		return EXIT_FAILURE;
 	}
 
+	trace_shutdown();
 	return EXIT_SUCCESS;
 }

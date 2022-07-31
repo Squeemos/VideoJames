@@ -1,21 +1,21 @@
 #include "ShaderManager.h"
 #include "Shader.h"
+#include "Trace.h"
+#include "Error.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
-
-#include <iostream>
 
 static ShaderManager sm = ShaderManager();
 
 ShaderManager::ShaderManager()
 {
-	std::cout << "Creating Shader Manager" << std::endl;
+	send_trace_message("Creating Shader Manager");
 }
 
 ShaderManager::~ShaderManager()
 {
-	std::cout << "Destroying Shader Manager" << std::endl;
+	send_trace_message("Destroying Shader Manager");
 	shaders.clear();
 }
 
@@ -48,7 +48,7 @@ std::shared_ptr<Shader> ShaderManager::construct(const std::string& path)
 
 	auto fragment = "./shaders/" + std::string(doc["fragment"].GetString());
 
-	std::cout << "Making Shader: " + path << std::endl;
+	send_trace_message("Creating Shader: " + path);
 	auto new_shader = std::make_shared<Shader>(vertex, fragment);
 	shaders[path] = new_shader;
 

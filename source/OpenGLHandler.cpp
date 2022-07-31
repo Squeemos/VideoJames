@@ -3,12 +3,13 @@
 
 #include "OpenGLHandler.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <iostream>
 
 OpenGLHandler::OpenGLHandler()
 {
-	std::cout << "Creating OpenGLHandler" << std::endl;
+	send_trace_message("Creating OpenGLHandler");
 
 	// Init glfw
 	if (!glfwInit())
@@ -17,7 +18,7 @@ OpenGLHandler::OpenGLHandler()
 
 OpenGLHandler::~OpenGLHandler()
 {
-	std::cout << "Destroying OpenGLHandler" << std::endl;
+	send_trace_message("Destryoing OpenGLHandler");
 
 	// Terminate opengl
 	glfwTerminate();

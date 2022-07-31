@@ -60,5 +60,18 @@ private:
 class MeshError : public std::exception
 {
 public:
-	const char* what() const { return "Creating a default mesh"; }
+	MeshError(const std::string& message) : message_(message) {}
+	const char* what() const { return message_.c_str(); }
+private:
+	std::string message_;
+};
+
+// Error for loading a model
+class ModelError : public std::exception
+{
+public:
+	ModelError(const std::string& message) : message_(message) {}
+	const char* what() const { return message_.c_str(); }
+private:
+	std::string message_;
 };

@@ -116,7 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.\dependencies\GLAD\include;.\dependencies\glm;.\dependencies\GLFW\include;.\dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\dependencies\GLAD\include;.\dependencies\glm;.\dependencies\assimp\include;.\dependencies\GLFW\include;.\dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -125,9 +125,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>.\dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\dependencies\assimp\lib;.\dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /y "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,7 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>.\dependencies\GLAD\include;.\dependencies\glm;.\dependencies\GLFW\include;.\dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\dependencies\GLAD\include;.\dependencies\glm;.\dependencies\assimp\include;.\dependencies\GLFW\include;.\dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -148,9 +151,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\dependencies\assimp\lib;.\dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /y "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\GLAD\src\glad.c" />
@@ -160,25 +166,27 @@
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
     <ClCompile Include="source\MeshManager.cpp" />
+    <ClCompile Include="source\Model.cpp" />
     <ClCompile Include="source\OpenGLHandler.cpp" />
     <ClCompile Include="source\SandboxScene.cpp" />
     <ClCompile Include="source\Scene.cpp" />
     <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\ShaderManager.cpp" />
-    <ClCompile Include="source\Texture.cpp" />
-    <ClCompile Include="source\TextureManager.cpp" />
+    <ClCompile Include="source\Trace.cpp" />
     <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\Error.h" />
+    <ClInclude Include="source\Scale.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\linmath.h" />
     <ClInclude Include="source\Material.h" />
     <ClInclude Include="source\Mesh.h" />
     <ClInclude Include="source\MeshManager.h" />
+    <ClInclude Include="source\Model.h" />
     <ClInclude Include="source\Name.h" />
     <ClInclude Include="source\OpenGLHandler.h" />
     <ClInclude Include="source\SandboxScene.h" />
@@ -187,8 +195,7 @@
     <ClInclude Include="source\Shader.h" />
     <ClInclude Include="source\ShaderManager.h" />
     <ClInclude Include="source\stb_image.h" />
-    <ClInclude Include="source\Texture.h" />
-    <ClInclude Include="source\TextureManager.h" />
+    <ClInclude Include="source\Trace.h" />
     <ClInclude Include="source\Transform.h" />
     <ClInclude Include="source\Window.h" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Error.h"
+#include "Trace.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -20,8 +21,6 @@ Shader::Shader() : program_id(0), vert_path(""), frag_path("")
 
 Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_path(vertex), frag_path(fragment)
 {
-	std::cout << "Creating Shader" << std::endl;
-
 	// For error checking
 	GLint success;
 	GLchar info_log[1024];
@@ -97,7 +96,7 @@ Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_pa
 
 Shader::~Shader()
 {
-	std::cout << "Destroying Shader " + vert_path + " " + frag_path << std::endl;
+	send_trace_message("Destroying Shader " + vert_path + " " + frag_path);
 }
 
 void Shader::use()
@@ -125,14 +124,9 @@ void Shader::set_float(const std::string& name, float value) const
 	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
 }
 
-void Shader::set_color(const std::string& name, glm::vec4 color) const
+void Shader::set_vec4(const std::string& name, glm::vec4 vec) const
 {
-	glUniform4f(glGetUniformLocation(program_id, name.c_str()), color.x, color.y, color.z, color.w);
-}
-
-void Shader::set_location(const std::string& name, glm::vec3 pos) const
-{
-	glUniform3f(glGetUniformLocation(program_id, name.c_str()), pos.x, pos.y, pos.z);
+	glUniform4f(glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z, vec.w);
 }
 
 void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
@@ -142,13 +136,17 @@ void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
 
 static std::string read_shader(std::string file_name)
 {
-	std::cout << "Loading shader: " << file_name << std::endl;
+	send_trace_message("Loading shader: " + file_name);
 
 	std::string contents;
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		throw ShaderError(std::string("File failed to open: " + file_name));
+		throw ShaderError("File failed to open: " + file_name);
 	}
-	return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
+	std::string ret = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+	file.close();
+
+	return ret;
 }
