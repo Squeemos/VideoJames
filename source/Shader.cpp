@@ -124,14 +124,9 @@ void Shader::set_float(const std::string& name, float value) const
 	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
 }
 
-void Shader::set_color(const std::string& name, glm::vec4 color) const
+void Shader::set_vec4(const std::string& name, glm::vec4 vec) const
 {
-	glUniform4f(glGetUniformLocation(program_id, name.c_str()), color.x, color.y, color.z, color.w);
-}
-
-void Shader::set_location(const std::string& name, glm::vec3 pos) const
-{
-	glUniform3f(glGetUniformLocation(program_id, name.c_str()), pos.x, pos.y, pos.z);
+	glUniform4f(glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z, vec.w);
 }
 
 void Shader::set_mat4(const std::string& name, glm::mat4 mat) const

@@ -143,11 +143,25 @@ std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureTyp
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
-		Texture texture;
-		texture.id = texture_from_file(str.C_Str(), directory);
-		texture.type = type_name;
-		texture.path = str.C_Str();
-		textures.push_back(texture);
+		bool skip = false;
+		for (unsigned int j = 0; j < textures_loaded.size(); j++)
+		{
+			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+			{
+				textures.push_back(textures_loaded[j]);
+				skip = true;
+				break;
+			}
+		}
+		if (!skip)
+		{   // if texture hasn't been loaded already, load it
+			Texture texture;
+			texture.id = texture_from_file(str.C_Str(), directory);
+			texture.type = type_name;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+			textures_loaded.push_back(texture); // add to loaded textures
+		}
 	}
 	return textures;
 }
@@ -176,7 +190,7 @@ unsigned int texture_from_file(const std::string& path, const std::string& dir, 
 		else
 		{
 			format = GL_RED;
-			std::cout << "Texture may not be loaded correctly: " << filename << std::endl;
+			send_trace_message("Texture may not be loaded correctly:" + filename);
 		}
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -192,7 +206,7 @@ unsigned int texture_from_file(const std::string& path, const std::string& dir, 
 	}
 	else
 	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
+		send_trace_message("Texture failed to load at path: " + path);
 		stbi_image_free(data);
 	}
 

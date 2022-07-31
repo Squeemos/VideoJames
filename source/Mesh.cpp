@@ -4,7 +4,6 @@
 #include "Mesh.h"
 #include "Error.h"
 #include "Shader.h"
-#include "Trace.h"
 
 #include <iostream>
 
@@ -107,22 +106,31 @@ void Mesh::draw(Shader& shader)
 	GLuint diffuse = 1;
 	GLuint specular = 1;
 
-	for (auto i = 0; i < textures.size(); ++i)
+	if (textures.size() != 0)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
+		shader.set_int("textured", 1);
+		for (auto i = 0; i < textures.size(); ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
 
-		std::string tex_num;
-		std::string tex_name = textures[i].type;
+			std::string tex_num;
+			std::string tex_name = textures[i].type;
 
-		if (tex_name == "texture_diffuse")
-			tex_num = std::to_string(diffuse++);
-		else if (tex_name == "texture_specular")
-			tex_num = std::to_string(specular++);
-		else
-			throw std::runtime_error("Trying to set uniform that doesn't exist");
+			if (tex_name == "texture_diffuse")
+				tex_num = std::to_string(diffuse++);
+			else if (tex_name == "texture_specular")
+				tex_num = std::to_string(specular++);
+			else
+				throw std::runtime_error("Trying to set uniform that doesn't exist");
 
-		shader.set_int(("material" + tex_name + tex_num).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+			shader.set_int(("material" + tex_name + tex_num).c_str(), i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		}
+	}
+	else
+	{
+		shader.set_int("textured", 0);
+		shader.set_vec4("other_color", glm::vec4(1.0f, 0.6f, 0.0f, 1.0f));
 	}
 
 	glBindVertexArray(VAO);

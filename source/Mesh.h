@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Trace.h" // Move to cpp along with the struct/class info
+
 #include <glm/glm.hpp>
 
 class Shader;
@@ -20,6 +22,7 @@ public:
 struct Texture
 {
 public:
+	~Texture() { send_trace_message("Destroying Texture: " + path); }
 	GLuint id;
 	std::string type;
 	std::string path;
