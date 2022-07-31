@@ -125,5 +125,8 @@
     <ClInclude Include="source\Trace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Scale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

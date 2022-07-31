@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "Material.h"
 #include "Model.h"
+#include "Scale.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -29,12 +30,13 @@ SandboxScene::SandboxScene() : Scene()
 
 	// Set all parts of the material
 	material.shader = construct_shader("./data/simple_3d.json");
-	material.model = std::make_shared<Model>("./assets/1b1/1b1.obj");
+	material.model = std::make_shared<Model>("./assets/teapot/teapot.obj");
 	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	// Give the entity a name and transform
 	registry.emplace<Name>(entity, "Teapot");
 	registry.emplace<Transform>(entity);
+	registry.emplace<Scale>(entity, glm::vec3(0.1f, 0.1f, 0.15f));
 }
 
 SandboxScene::~SandboxScene()
@@ -121,7 +123,11 @@ void SandboxScene::draw()
 
    		// Set the transform uniform
    		glm::mat4 model = glm::mat4(1);
-		model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
+
+		if (registry.all_of<Scale>(entity))
+		{
+			model = glm::scale(model, static_cast<glm::vec3>(registry.get<Scale>(entity)));
+		}
    		model = glm::translate(model, static_cast<glm::vec3>(transform)); // <- I think there's a way to just use transform since it should be able to convert?
    		material.shader->set_mat4("model", model);
    	

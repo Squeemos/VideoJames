@@ -180,6 +180,7 @@
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\Error.h" />
+    <ClInclude Include="source\Scale.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\linmath.h" />
     <ClInclude Include="source\Material.h" />

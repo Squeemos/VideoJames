@@ -54,5 +54,5 @@ glm::mat4 Camera::get_projection()
 
 glm::mat4 Camera::get_view()
 {
-	return glm::lookAt(position, target, glm::vec3(0, 1.0f, 0));
+	return glm::lookAt(position, position + target, glm::vec3(0, 1.0f, 0));
 }
