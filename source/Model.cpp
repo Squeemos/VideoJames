@@ -2,15 +2,9 @@
 #include "Mesh.h"
 #include "Error.h"
 #include "Trace.h"
-
-#include <glad/glad.h>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "TextureManager.h"
 
 #include <iostream>
-
-static unsigned int texture_from_file(const std::string& path, const std::string& dir, bool gamma = false);
 
 Model::Model()
 {
@@ -19,13 +13,12 @@ Model::Model()
 Model::Model(const std::string& path)
 {
 	send_trace_message("Creating Model: " + path);
-	stbi_set_flip_vertically_on_load(true);
 	load_model(path);
 }
 
 Model::~Model()
 {
-	send_trace_message("Destroying Model: " + directory);
+	send_trace_message("Destroying Model: " + directory + ".obj");
 }
 
 void Model::draw(Shader& shader)
@@ -58,8 +51,7 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 	{
 		// the node object only contains indices to index the actual objects in the scene. 
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(*process_mesh(mesh, scene));
+		meshes.push_back(process_mesh(scene->mMeshes[node->mMeshes[i]], scene));
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -68,12 +60,12 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 	}
 }
 
-Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 
 	// walk through each of the mesh's vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -88,20 +80,17 @@ Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 		// normals
 		if (mesh->HasNormals())
 		{
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.normal = vector;
+			vertex.normal.x = mesh->mNormals[i].x;
+			vertex.normal.y = mesh->mNormals[i].y;
+			vertex.normal.z = mesh->mNormals[i].z;
 		}
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 		{
-			glm::vec2 vec;
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-			vec.x = mesh->mTextureCoords[0][i].x;
-			vec.y = mesh->mTextureCoords[0][i].y;
-			vertex.tex_coords = vec;
+			vertex.tex_coords.x = mesh->mTextureCoords[0][i].x;
+			vertex.tex_coords.y = mesh->mTextureCoords[0][i].y;
 		}
 		else
 			vertex.tex_coords = glm::vec2(0.0f, 0.0f);
@@ -126,89 +115,24 @@ Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 	// normal: texture_normalN
 
 	// 1. diffuse maps
-	std::vector<Texture> diffuseMaps = load_material_textures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	std::vector<std::shared_ptr<Texture>> diffuseMaps = load_material_textures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 	// 2. specular maps
-	std::vector<Texture> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
+	std::vector<std::shared_ptr<Texture>> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 	// return a mesh object created from the extracted mesh data
-	return new Mesh(vertices, indices, textures);
+	return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name)
+std::vector<std::shared_ptr<Texture>> Model::load_material_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name)
 {
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
-		bool skip = false;
-		for (unsigned int j = 0; j < textures_loaded.size(); j++)
-		{
-			if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
-			{
-				textures.push_back(textures_loaded[j]);
-				skip = true;
-				break;
-			}
-		}
-		if (!skip)
-		{   // if texture hasn't been loaded already, load it
-			Texture texture;
-			texture.id = texture_from_file(str.C_Str(), directory);
-			texture.type = type_name;
-			texture.path = str.C_Str();
-			textures.push_back(texture);
-			textures_loaded.push_back(texture); // add to loaded textures
-		}
+		textures.push_back(construct_texture(str.C_Str(), directory, type_name));
 	}
 	return textures;
-}
-
-unsigned int texture_from_file(const std::string& path, const std::string& dir, bool gamma)
-{
-	gamma;
-
-	std::string filename = std::string(path);
-	filename = dir+ '/' + filename;
-
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-	if (data)
-	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-		else
-		{
-			format = GL_RED;
-			send_trace_message("Texture may not be loaded correctly:" + filename);
-		}
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		send_trace_message("Texture failed to load at path: " + path);
-		stbi_image_free(data);
-	}
-
-	return textureID;
 }

@@ -2,8 +2,8 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#pragma warning(disable : 4201)
-#include <glm/gtc/quaternion.hpp>
+//#pragma warning(disable : 4201)
+//#include <glm/gtc/quaternion.hpp>
 
 #include "Camera.h"
 #include "Input.h"
