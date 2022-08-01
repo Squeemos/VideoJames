@@ -19,6 +19,8 @@ Mesh::Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<std::shared
 	assert(v.size());
 	assert(i.size());
 
+	textures = t;
+
 	num_indices = static_cast<GLsizei>(i.size());
 
 	glGenVertexArrays(1, &VAO);
