@@ -12,7 +12,7 @@ Mesh::Mesh()
 	throw MeshError("Trying to create default mesh");
 }
 
-Mesh::Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<std::shared_ptr<Texture>> t)
+Mesh::Mesh(const std::vector<Vertex>& v, const std::vector<GLuint>& i, std::vector<std::shared_ptr<Texture>> t)
 {
 	send_trace_message("Creating Mesh");
 

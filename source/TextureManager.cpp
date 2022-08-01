@@ -27,8 +27,6 @@ GLuint TextureManager::load_texture(const std::string& path, const std::string& 
 {
 	gamma;
 
-	//std::string filename = std::string(path);
-	//filename = dir + '/' + filename;
 	std::string filename = dir + '/' + path;
 
 	unsigned int textureID;

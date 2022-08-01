@@ -35,7 +35,7 @@ class Mesh
 {
 public:
 	Mesh();
-	Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<std::shared_ptr<Texture>> t);
+	Mesh(const std::vector<Vertex>& v, const std::vector<GLuint>& i, std::vector<std::shared_ptr<Texture>> t);
 	Mesh(Mesh&& other) noexcept;
 	// Mesh(const GLfloat* v, GLuint n_v, const GLuint* i, GLuint n_i, const std::string& n);
 	~Mesh();
