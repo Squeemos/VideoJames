@@ -7,7 +7,7 @@
 #include "Name.h"
 #include "Transform.h"
 #include "Material.h"
-#include "Model.h"
+#include "ModelManager.h"
 #include "Scale.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,13 +30,25 @@ SandboxScene::SandboxScene() : Scene()
 
 	// Set all parts of the material
 	material.shader = construct_shader("./data/simple_3d.json");
-	material.model = std::make_shared<Model>("./assets/capsule/capsule.obj");
+	material.model = construct_model("./assets/capsule/capsule.obj");
 	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	// Give the entity a name and transform
 	registry.emplace<Name>(entity, "Capsule");
 	registry.emplace<Transform>(entity);
 	//registry.emplace<Scale>(entity, glm::vec3(0.1f, 0.1f, 0.1f));
+	
+	for (auto i = 0; i < 100; ++i)
+	{
+		entt::entity e = registry.create();
+		auto& m = registry.emplace<Material>(e);
+
+
+		m.shader = construct_shader("./data/simple_3d.json");
+		m.model = construct_model("./assets/capsule/capsule.obj");
+		registry.emplace<Name>(e, "Clone");
+		registry.emplace<Transform>(e, glm::vec3(1.0f * static_cast<float>(rand() % 10), 1.0f * static_cast<float>(rand() % 10), 1.0f * static_cast<float>(rand() % 10)));
+	}
 }
 
 SandboxScene::~SandboxScene()

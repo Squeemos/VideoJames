@@ -17,6 +17,8 @@ public:
 
 	void draw(Shader& shader);
 
+	friend class ModelManager;
+
 private:
 	std::vector<Mesh> meshes;
 	std::string directory;

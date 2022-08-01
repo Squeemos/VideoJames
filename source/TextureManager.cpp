@@ -13,13 +13,15 @@ static TextureManager tm = TextureManager();
 
 TextureManager::TextureManager()
 {
-	std::cout << "Creating Texture Manager" << std::endl;
+	//std::cout << "Creating Texture Manager" << std::endl;
+	send_trace_message("Creating Texture Manager");
 	stbi_set_flip_vertically_on_load(true);
 }
 
 TextureManager::~TextureManager()
 {
-	std::cout << "Destroying Texture Manager" << std::endl;
+	//std::cout << "Destroying Texture Manager" << std::endl;
+	send_trace_message("Destroying Texture Manager");
 	textures.clear();
 }
 
@@ -71,7 +73,7 @@ GLuint TextureManager::load_texture(const std::string& path, const std::string& 
 
 std::shared_ptr<Texture> TextureManager::find(const std::string& path)
 {
-	const auto iterator = textures.find(path);
+	const auto& iterator = textures.find(path);
 	if (iterator != textures.end())
 		return iterator->second;
 	else
@@ -85,12 +87,13 @@ void TextureManager::insert(std::shared_ptr<Texture> t)
 
 std::shared_ptr<Texture> construct_texture(const std::string& path, const std::string& dir, const std::string& type_name, bool gamma)
 {
-	std::shared_ptr<Texture> found = tm.find(path);
+	std::string filename = dir + '/' + path;
+	std::shared_ptr<Texture> found = tm.find(filename);
 	if (found)
 		return found;
 	else
 	{
-		found = std::make_shared<Texture>(path, type_name, tm.load_texture(path, dir, gamma));
+		found = std::make_shared<Texture>(filename, type_name, tm.load_texture(path, dir, gamma));
 		tm.insert(found);
 		return found;
 	}

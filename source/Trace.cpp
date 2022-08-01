@@ -9,10 +9,9 @@
 #define _DEBUG false
 #endif
 
+static Trace t = Trace();
 
-static FILE* trace_file;
-
-void trace_init()
+Trace::Trace()
 {
 	trace_file = fopen("trace.log", "w");
 	if (!trace_file)
@@ -21,7 +20,14 @@ void trace_init()
 	}
 }
 
-void send_trace_message(const std::string& message)
+Trace::~Trace()
+{
+	if (trace_file)
+		fclose(trace_file);
+	trace_file = nullptr;
+}
+
+void Trace::trace_message(const std::string& message)
 {
 	if (trace_file)
 	{
@@ -32,9 +38,7 @@ void send_trace_message(const std::string& message)
 	}
 }
 
-void trace_shutdown()
+void send_trace_message(const std::string& message)
 {
-	if(trace_file)
-		fclose(trace_file);
-	trace_file = nullptr;
+	t.trace_message(message);
 }

@@ -177,8 +177,8 @@
     <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
-    <ClCompile Include="source\MeshManager.cpp" />
     <ClCompile Include="source\Model.cpp" />
+    <ClCompile Include="source\ModelManager.cpp" />
     <ClCompile Include="source\OpenGLHandler.cpp" />
     <ClCompile Include="source\SandboxScene.cpp" />
     <ClCompile Include="source\Scene.cpp" />
@@ -193,12 +193,12 @@
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\Error.h" />
+    <ClInclude Include="source\ModelManager.h" />
     <ClInclude Include="source\Scale.h" />
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\linmath.h" />
     <ClInclude Include="source\Material.h" />
     <ClInclude Include="source\Mesh.h" />
-    <ClInclude Include="source\MeshManager.h" />
     <ClInclude Include="source\Model.h" />
     <ClInclude Include="source\Name.h" />
     <ClInclude Include="source\OpenGLHandler.h" />

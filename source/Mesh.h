@@ -44,8 +44,6 @@ public:
 
 	void draw(Shader& shader);
 
-	friend class MeshManager;
-
 protected:
 	GLuint VBO, EBO, VAO;
 	GLsizei num_indices;
