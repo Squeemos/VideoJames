@@ -173,6 +173,7 @@
     <ClCompile Include="source\SceneManager.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\ShaderManager.cpp" />
+    <ClCompile Include="source\TextureManager.cpp" />
     <ClCompile Include="source\Trace.cpp" />
     <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
@@ -195,6 +196,7 @@
     <ClInclude Include="source\Shader.h" />
     <ClInclude Include="source\ShaderManager.h" />
     <ClInclude Include="source\stb_image.h" />
+    <ClInclude Include="source\TextureManager.h" />
     <ClInclude Include="source\Trace.h" />
     <ClInclude Include="source\Transform.h" />
     <ClInclude Include="source\Window.h" />

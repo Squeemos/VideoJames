@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Trace.h" // Move to cpp along with the struct/class info
 
@@ -10,6 +11,7 @@
 class Shader;
 typedef unsigned int GLuint;
 typedef float GLfloat;
+typedef int GLsizei;
 
 struct Vertex
 {
@@ -22,6 +24,7 @@ public:
 struct Texture
 {
 public:
+	Texture(const std::string& p, const std::string& t, GLuint i) : path(p), type(t), id(i) { send_trace_message("Creating Texture: " + path); }
 	~Texture() { send_trace_message("Destroying Texture: " + path); }
 	GLuint id;
 	std::string type;
@@ -32,9 +35,12 @@ class Mesh
 {
 public:
 	Mesh();
-	Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<Texture> t);
+	Mesh(std::vector<Vertex> v, std::vector<GLuint> i, std::vector<std::shared_ptr<Texture>> t);
+	Mesh(Mesh&& other) noexcept;
 	// Mesh(const GLfloat* v, GLuint n_v, const GLuint* i, GLuint n_i, const std::string& n);
 	~Mesh();
+
+	Mesh& operator=(Mesh&& other) noexcept;
 
 	void draw(Shader& shader);
 
@@ -42,9 +48,6 @@ public:
 
 protected:
 	GLuint VBO, EBO, VAO;
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
-	std::vector<Texture> textures;
-
-	void setup();
+	GLsizei num_indices;
+	std::vector<std::shared_ptr<Texture>> textures;
 };
