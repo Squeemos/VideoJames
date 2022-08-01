@@ -12,7 +12,6 @@
 // Main
 int main()
 {
-
 	try
 	{
 		std::unique_ptr<GameEngine> engine = std::make_unique<GameEngine>();

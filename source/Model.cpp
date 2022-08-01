@@ -23,6 +23,7 @@ Model::~Model()
 
 void Model::draw(Shader& shader)
 {
+	// For each mesh, go and draw it
 	for (auto& mesh : meshes)
 		mesh.draw(shader);
 }

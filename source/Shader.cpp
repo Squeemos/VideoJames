@@ -104,7 +104,7 @@ void Shader::use()
 	glUseProgram(program_id);
 }
 
-void Shader::unbind()
+void Shader::unuse()
 {
 	glUseProgram(0);
 }

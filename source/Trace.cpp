@@ -8,6 +8,7 @@
 #ifndef _DEBUG
 #define _DEBUG false
 #endif
+// Used to see if we're printing to the console as well
 
 static Trace t = Trace();
 

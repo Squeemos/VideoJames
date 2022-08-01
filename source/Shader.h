@@ -10,9 +10,9 @@ public:
 	Shader();
 	Shader(const std::string& vertex, const std::string& fragment);
 	~Shader();
-	void use();
 
-	void unbind();
+	void use();
+	void unuse();
 
 	void set_bool(const std::string& name, bool value) const;
 	void set_int(const std::string& name, int value) const;

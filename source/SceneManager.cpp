@@ -4,6 +4,9 @@
 
 #include "SandboxScene.h"
 
+// Basically this thing will let us swap between scenes at some point
+// that way we can load in scenes in another thread or something while still running the game to speed up loading
+
 SceneManager::SceneManager()
 {
 	send_trace_message("Creating Scene Manager");

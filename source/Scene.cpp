@@ -10,6 +10,7 @@ Scene::Scene()
 Scene::~Scene()
 {
 	send_trace_message("Destroying Scene");
+	registry.clear();
 }
 
 Camera& Scene::get_camera()

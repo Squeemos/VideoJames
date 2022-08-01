@@ -3,6 +3,8 @@
 
 #include <map>
 
+// This whole thing will probably be changed with an event system but I'm not entirely sure yet
+
 static std::map<int, int> input_handler;
 
 void update_input(int key, int action)

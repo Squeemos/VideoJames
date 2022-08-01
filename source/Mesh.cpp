@@ -16,13 +16,17 @@ Mesh::Mesh(const std::vector<Vertex>& v, const std::vector<GLuint>& i, std::vect
 {
 	send_trace_message("Creating Mesh");
 
+	// Make sure the mesh we're creating has stuff in it, otherwise there's problems
 	assert(v.size());
 	assert(i.size());
 
+	// Set the textures
 	textures = t;
 
+	// Set the number of indices since we'll need this for drawing
 	num_indices = static_cast<GLsizei>(i.size());
 
+	// Below is all OpenGL stuff, this will get edited as meshes become more complex
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -47,6 +51,7 @@ Mesh::Mesh(const std::vector<Vertex>& v, const std::vector<GLuint>& i, std::vect
 	glBindVertexArray(0);
 }
 
+// Move ctor
 Mesh::Mesh(Mesh&& other) noexcept
 {
 	VBO = other.VBO;
@@ -64,6 +69,7 @@ Mesh::Mesh(Mesh&& other) noexcept
 	textures = std::move(other.textures);
 }
 
+// Move assignment operator
 Mesh& Mesh::operator=(Mesh&& other) noexcept
 {
 	VBO = other.VBO;
@@ -98,16 +104,19 @@ void Mesh::draw(Shader& shader)
 	GLuint diffuse = 1;
 	GLuint specular = 1;
 
+	// If there's textures to draw
 	if (textures.size() != 0)
 	{
 		shader.set_int("textured", 1);
 		for (auto i = 0; i < textures.size(); ++i)
 		{
+			// Set the current texture pointer
 			glActiveTexture(GL_TEXTURE0 + i);
 
 			std::string tex_num;
 			std::string tex_name = textures[i]->type;
 
+			// Get the type of texture it is
 			if (tex_name == "texture_diffuse")
 				tex_num = std::to_string(diffuse++);
 			else if (tex_name == "texture_specular")
@@ -115,16 +124,20 @@ void Mesh::draw(Shader& shader)
 			else
 				throw std::runtime_error("Trying to set uniform that doesn't exist");
 
+			// Set the uniform
 			shader.set_int(("material" + tex_name + tex_num).c_str(), i);
+			// Bind the texture
 			glBindTexture(GL_TEXTURE_2D, textures[i]->id);
 		}
 	}
+	// Otherwise draw the mesh with vertices
 	else
 	{
 		shader.set_int("textured", 0);
 		shader.set_vec4("other_color", glm::vec4(1.0f, 0.6f, 0.0f, 1.0f));
 	}
 
+	// Actual draw step
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

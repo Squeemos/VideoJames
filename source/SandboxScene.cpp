@@ -22,6 +22,7 @@ SandboxScene::SandboxScene() : Scene()
 {
 	send_trace_message("Creating Sandbox Scene");
 
+	// Add the camera
 	camera = std::make_unique<Camera>();
 
 	// Add entity to the registry, and add a material
@@ -30,14 +31,16 @@ SandboxScene::SandboxScene() : Scene()
 
 	// Set all parts of the material
 	material.shader = construct_shader("./data/simple_3d.json");
-	material.model = construct_model("./assets/capsule/capsule.obj");
+	material.model = construct_model("./assets/backpack/backpack.obj");
 	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
-	// Give the entity a name and transform
+	// Give the entity a name, transform, and scale
 	registry.emplace<Name>(entity, "Capsule");
-	registry.emplace<Transform>(entity);
-	//registry.emplace<Scale>(entity, glm::vec3(0.1f, 0.1f, 0.1f));
+	registry.emplace<Transform>(entity, glm::vec3(-10, -10, 0));
+	registry.emplace<Scale>(entity, glm::vec3(1) * .2f);
 	
+
+	// Do the same thing as above but add a shit ton of capsules
 	for (auto i = 0; i < 100; ++i)
 	{
 		entt::entity e = registry.create();
@@ -58,93 +61,48 @@ SandboxScene::~SandboxScene()
 
 void SandboxScene::update(double dt, glm::vec2& mouse)
 {
+	// Update the camera
 	camera->update(dt, mouse);
+
+	// TODO: add in upadtes for all entities that need them
 }
 
 // This might be able to be moved into the base scene class
 void SandboxScene::draw()
 {
-	//// Create a group with all entities with a transform and a material (therefore, renderable)
-	//auto group = registry.group<Transform>(entt::get<Material>);
-	//for (auto& entity : group)
-	//{
-	//	// Get the transform and the material of the current entity
-	//	const auto& [transform, material] = group.get<Transform, Material>(entity);
-
-	//	// This is the render loop
-
-	//	// Use the shader
-	//	material.shader->use();
-
-	//	// Set the camera uniforms
- //		material.shader->set_mat4("projection", camera->get_projection());
-
- //		auto view = camera->get_view();
-	//	material.shader->set_mat4("view", view);
-
-	//	// Set the transform uniform
-	//	glm::mat4 model = glm::mat4(1);
-	//	model = glm::translate(model, static_cast<glm::vec3>(transform)); // <- I think there's a way to just use transform since it should be able to convert?
-	//	material.shader->set_mat4("model", model);
-	//	
-	//	// Prep the texture
-	//	material.shader->set_int("texture0", 0);
-
-	//	// If the material has a texture
-	//	//if (material.texture)
-	//	//{
-	//	//	// Set the uniform to use the texture and bind it
-	//	//	material.shader->set_int("texture_or_color", 1);
-	//	//	material.texture->bind();
-	//	//}
-	//	//else
-	//	//{
-	//	//	// Set the uniform to use the color of the vertices
-	//	//	material.shader->set_int("texture_or_color", 0);
-	//	//}
-
-	//	material.shader->set_int("texture_or_color", 0);
-
-	//	// Bind the mesh
-	//	//material.mesh->bind_vao();
-
-	//	// Unbind the mesh
-	//	//material.mesh->unbind_vao();
-
-	//	// If there's a texture, unbind the texture
-	//	//if(material.texture)
-	//	//	material.texture->unbind();
-	//	
-	//	// Unbind the shader
-	//	material.shader->unbind();
-	//}
-
+	// Create group of entities that all have a transform and a material
 	auto group = registry.group<Transform>(entt::get<Material>);
 	for (auto& entity : group)
 	{
+		// Get the transform and material
 		const auto& [transform, material] = group.get<Transform, Material>(entity);
 
+		// Use the shader of the material
 		material.shader->use();
-		
 
 		// Set the camera uniforms
 		material.shader->set_mat4("projection", camera->get_projection());
-
-		auto view = camera->get_view();
-   		material.shader->set_mat4("view", view);
+	
+		// Set the view uniform
+   		material.shader->set_mat4("view", camera->get_view());
 
    		// Set the transform uniform
    		glm::mat4 model = glm::mat4(1);
 
+		// Check if the entity has a scale component, and if it does, scale the model
 		if (registry.all_of<Scale>(entity))
 		{
 			model = glm::scale(model, static_cast<glm::vec3>(registry.get<Scale>(entity)));
 		}
+
+		// Translate the model into world space and set the uniform
    		model = glm::translate(model, static_cast<glm::vec3>(transform)); // <- I think there's a way to just use transform since it should be able to convert?
    		material.shader->set_mat4("model", model);
    	
-		Shader& shad = *material.shader;
-		material.model->draw(shad);
-		material.shader->unbind();
+		// Draw
+		material.model->draw(*material.shader);
+
+		// Unbind so we clean everything up
+		material.shader->unuse();
 	}
 }

@@ -29,11 +29,14 @@ GLuint TextureManager::load_texture(const std::string& path, const std::string& 
 {
 	gamma;
 
+	// Get the path to the texture
 	std::string filename = dir + '/' + path;
 
+	// Generate a texture in opengl
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 
+	// Read in the texture with stb_image
 	int width, height, nrComponents;
 	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 	if (data)
@@ -51,10 +54,12 @@ GLuint TextureManager::load_texture(const std::string& path, const std::string& 
 			send_trace_message("Texture may not be loaded correctly:" + filename);
 		}
 
+		// Use opengl to bind the texture to the id
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
+		// Maybe have something to determine if we're tiling or not
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -73,6 +78,7 @@ GLuint TextureManager::load_texture(const std::string& path, const std::string& 
 
 std::shared_ptr<Texture> TextureManager::find(const std::string& path)
 {
+	// If we've already loaded the texture, just go get it
 	const auto& iterator = textures.find(path);
 	if (iterator != textures.end())
 		return iterator->second;
@@ -87,10 +93,13 @@ void TextureManager::insert(std::shared_ptr<Texture> t)
 
 std::shared_ptr<Texture> construct_texture(const std::string& path, const std::string& dir, const std::string& type_name, bool gamma)
 {
+	// Get the path to the texture
 	std::string filename = dir + '/' + path;
+	// See if it's already been loaded, if it has return it
 	std::shared_ptr<Texture> found = tm.find(filename);
 	if (found)
 		return found;
+	// Otherwise, load the texture and store it so we can make copies
 	else
 	{
 		found = std::make_shared<Texture>(filename, type_name, tm.load_texture(path, dir, gamma));

@@ -19,6 +19,8 @@ ShaderManager::~ShaderManager()
 	shaders.clear();
 }
 
+// This function should be changed to operate more like the other ones
+// This will change when I update all managers
 std::shared_ptr<Shader> ShaderManager::construct(const std::string& path)
 {
 	const auto iterator = shaders.find(path);

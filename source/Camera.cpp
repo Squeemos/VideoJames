@@ -23,6 +23,7 @@ Camera::~Camera()
 
 void Camera::update(double dt, glm::vec2& vector)
 {
+	// Current Camera update allows us to fly around. I think eventually this will be attached to an entity so we can swap between them
 	rotation.x += (vector.x - mouse.x) * static_cast<float>(dt) * speed;
 	rotation.y += (mouse.y - vector.y) * static_cast<float>(dt) * speed;
 
@@ -68,6 +69,7 @@ void Camera::update(double dt, glm::vec2& vector)
 
 glm::mat4 Camera::get_projection()
 {
+	// We use a perspective camera since it's 3d. If we want 2d we can swap back to ortho
 	// return glm::ortho(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f), position.y - (size.y / 2.0f), position.y + (size.y / 2.0f), -size.z, size.z);
 	return glm::perspective(glm::radians(70.0f), size.x / size.y, .0001f, size.z);
 }

@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+// Opengl starter and ender, that way we can control when it starts and ends
+
 OpenGLHandler::OpenGLHandler()
 {
 	send_trace_message("Creating OpenGLHandler");
