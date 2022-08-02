@@ -19,6 +19,10 @@ public:
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 tex_coords;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	int bone_ids[4];
+	GLfloat weights[4];
 };
 
 struct Texture

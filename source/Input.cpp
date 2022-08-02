@@ -1,6 +1,3 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <map>
 
 // This whole thing will probably be changed with an event system but I'm not entirely sure yet

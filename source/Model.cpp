@@ -72,12 +72,10 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
 		// positions
-		vector.x = mesh->mVertices[i].x;
-		vector.y = mesh->mVertices[i].y;
-		vector.z = mesh->mVertices[i].z;
-		vertex.position = vector;
+		vertex.position.x = mesh->mVertices[i].x;
+		vertex.position.y = mesh->mVertices[i].y;
+		vertex.position.z = mesh->mVertices[i].z;
 		// normals
 		if (mesh->HasNormals())
 		{
@@ -86,12 +84,22 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 			vertex.normal.z = mesh->mNormals[i].z;
 		}
 		// texture coordinates
-		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
 		{
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			vertex.tex_coords.x = mesh->mTextureCoords[0][i].x;
 			vertex.tex_coords.y = mesh->mTextureCoords[0][i].y;
+
+			// Load the tangents
+			vertex.tangent.x = mesh->mTangents[i].x;
+			vertex.tangent.y = mesh->mTangents[i].y;
+			vertex.tangent.z = mesh->mTangents[i].z;
+
+			// Load the bitangents
+			vertex.bitangent.x = mesh->mBitangents[i].x;
+			vertex.bitangent.y = mesh->mBitangents[i].y;
+			vertex.bitangent.z = mesh->mBitangents[i].z;
 		}
 		else
 			vertex.tex_coords = glm::vec2(0.0f, 0.0f);
@@ -121,6 +129,12 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 	// 2. specular maps
 	std::vector<std::shared_ptr<Texture>> specularMaps = load_material_textures(material, aiTextureType_SPECULAR, "texture_specular");
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	// 3. normal maps
+	std::vector<std::shared_ptr<Texture>> normalMaps = load_material_textures(material, aiTextureType_HEIGHT, "texture_normal");
+	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+	// 4. height maps
+	std::vector<std::shared_ptr<Texture>> heightMaps = load_material_textures(material, aiTextureType_AMBIENT, "texture_height");
+	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 	// return a mesh object created from the extracted mesh data
 	return Mesh(vertices, indices, textures);

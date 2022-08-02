@@ -1,0 +1,4 @@
+{
+	"fragment" : "3d_light.frag",
+	"vertex" : "3d_light.vert"
+}

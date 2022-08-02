@@ -48,6 +48,18 @@ Mesh::Mesh(const std::vector<Vertex>& v, const std::vector<GLuint>& i, std::vect
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
 
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, bone_ids));
+
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+
 	glBindVertexArray(0);
 }
 
@@ -103,11 +115,13 @@ void Mesh::draw(Shader& shader)
 {
 	GLuint diffuse = 1;
 	GLuint specular = 1;
+	GLuint normal = 1;
+	GLuint height = 1;
 
 	// If there's textures to draw
 	if (textures.size() != 0)
 	{
-		shader.set_int("textured", 1);
+		//shader.set_int("textured", 1);
 		for (auto i = 0; i < textures.size(); ++i)
 		{
 			// Set the current texture pointer
@@ -121,6 +135,10 @@ void Mesh::draw(Shader& shader)
 				tex_num = std::to_string(diffuse++);
 			else if (tex_name == "texture_specular")
 				tex_num = std::to_string(specular++);
+			else if (tex_name == "texture_normal")
+				tex_num = std::to_string(normal++);
+			else if (tex_name == "texture_height")
+				tex_num = std::to_string(height++);
 			else
 				throw std::runtime_error("Trying to set uniform that doesn't exist");
 
@@ -133,8 +151,8 @@ void Mesh::draw(Shader& shader)
 	// Otherwise draw the mesh with vertices
 	else
 	{
-		shader.set_int("textured", 0);
-		shader.set_vec4("other_color", glm::vec4(1.0f, 0.6f, 0.0f, 1.0f));
+		//shader.set_int("textured", 0);
+		//shader.set_vec4("other_color", glm::vec4(1.0f, 0.6f, 0.0f, 1.0f));
 	}
 
 	// Actual draw step

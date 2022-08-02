@@ -134,6 +134,11 @@ void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
 	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, false, glm::value_ptr(mat));
 }
 
+void Shader::set_vec3(const std::string& name, glm::vec3 vec) const
+{
+	glUniform3f(glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z);
+}
+
 static std::string read_shader(std::string file_name)
 {
 	send_trace_message("Loading shader: " + file_name);
