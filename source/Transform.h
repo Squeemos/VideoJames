@@ -4,11 +4,14 @@
 
 #include <string>
 
+typedef float GLfloat;
+
 class Transform
 {
 public:
 	Transform() : position(0.0f, 0.0f, 0.0f) {}
 	Transform(glm::vec3 tform) : position(tform) {}
+	Transform(GLfloat x, GLfloat y, GLfloat z) : position(glm::vec3(x, y, z)) {}
 	~Transform() {}
 
 	operator glm::vec3& ()

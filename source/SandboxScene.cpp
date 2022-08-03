@@ -21,7 +21,11 @@
 #include <tuple>
 #include <cstdlib>
 
-static entt::entity light;
+static void add_to_registry_entity_name(entt::registry& reg, std::unordered_map<std::string, entt::entity>& map, const entt::entity& ent, const std::string& name)
+{
+	reg.emplace<Name>(ent, name);
+	map[name] = ent;
+}
 
 SandboxScene::SandboxScene() : Scene()
 {
@@ -37,16 +41,24 @@ SandboxScene::SandboxScene() : Scene()
 	// Set all parts of the material
 	material.shader = construct_shader("./data/simple_light.json");
 	material.model = construct_model("./assets/backpack/backpack.obj");
-	//material.texture = construct_texture("./assets/rgba_tex.png", rgb_mode::rgba);
 
 	// Give the entity a name, transform, and scale
-	registry.emplace<Name>(entity, "Capsule");
-	registry.emplace<Transform>(entity, glm::vec3(0,0,0));
-	registry.emplace<Scale>(entity, glm::vec3(1) * 2.0f);
+	registry.emplace<Transform>(entity, glm::vec3(0,2,0));
+	registry.emplace<Scale>(entity, glm::vec3(1) * 1.5f);
+	add_to_registry_entity_name(registry, entities_with_names, entity, "Backpack");
+	
 
-	light = registry.create();
+	entt::entity light = registry.create();
 	registry.emplace<Transform>(light, glm::vec3(1));
-	registry.emplace<Name>(light, "Light");
+	add_to_registry_entity_name(registry, entities_with_names, light, "Light");
+
+	entt::entity capsule = registry.create();
+	registry.emplace<Transform>(capsule, glm::vec3(0,10,0));
+	registry.emplace<Scale>(capsule, glm::vec3(1) * 1.0f);
+	auto& capsule_material = registry.emplace<Material>(capsule);
+	capsule_material.shader = construct_shader("./data/simple_light.json");
+	capsule_material.model = construct_model("./assets/capsule/capsule.obj");
+	add_to_registry_entity_name(registry, entities_with_names, capsule, "Capsule");
 
 	//// Do the same thing as above but add a shit ton of capsules
 	//for (auto i = 0; i < 100; ++i)
@@ -57,9 +69,9 @@ SandboxScene::SandboxScene() : Scene()
 
 	//	m.shader = construct_shader("./data/simple_3d.json");
 	//	m.model = construct_model("./assets/capsule/capsule.obj");
-	//	registry.emplace<Name>(e, "Clone");
 	//	registry.emplace<Transform>(e, glm::vec3(1.0f * static_cast<float>(rand() % 10), 1.0f * static_cast<float>(rand() % 10), 1.0f * static_cast<float>(rand() % 10)));
 	//}
+
 }
 
 SandboxScene::~SandboxScene()
@@ -77,9 +89,9 @@ void SandboxScene::update(double dt, glm::vec2& mouse)
 	// TODO: add in upadtes for all entities that need them
 
 
-	auto& tform = registry.get<Transform>(light);
+	auto& tform = registry.get<Transform>(entities_with_names["Light"]);
 	float time = static_cast<float>(glfwGetTime());
-	tform += glm::vec3(sinf(time), cosf(time), sinf(time) + cosf(time));
+	tform = glm::vec3(sinf(time), cosf(time), sinf(time) + cosf(time));
 }
 
 // This might be able to be moved into the base scene class
@@ -95,7 +107,7 @@ void SandboxScene::draw()
 		// Use the shader of the material
 		material.shader->use();
 
-		// Set the camera uniforms
+		// Set the camera uniforms (this will be changed with UBO)
 		material.shader->set_mat4("projection", camera->get_projection());
 		material.shader->set_vec3("viewPos", camera->get_position());
 	
@@ -103,7 +115,7 @@ void SandboxScene::draw()
    		material.shader->set_mat4("view", camera->get_view());
 
 		material.shader->set_bool("blinn", false);
-		material.shader->set_vec3("lightPos", static_cast<glm::vec3>(registry.get<Transform>(light)));
+		material.shader->set_vec3("lightPos", static_cast<glm::vec3>(registry.get<Transform>(entities_with_names["Light"])));
 
    		// Set the transform uniform
    		glm::mat4 model = glm::mat4(1);
