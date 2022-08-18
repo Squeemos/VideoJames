@@ -1,5 +1,7 @@
 #include "Engine.h"
 #include "Systems/Window.h"
+#include "Systems/SceneManager.h"
+#include "Systems/Renderer.h"
 
 #include "Trace.h"
 
@@ -13,7 +15,9 @@ Engine::Engine()
 		std::abort();
 	}
 
-	window = std::make_shared<Window>();
+	window = std::make_unique<Window>();
+	renderer = std::make_unique<Renderer>();
+	scene_manager = std::make_unique<SceneManager>();
 }
 
 Engine::~Engine()
@@ -30,7 +34,10 @@ void Engine::run()
 		window->reset();
 		double dt = window->update();
 
-		dt;
+		scene_manager->update(dt);
+
+		const auto& renderables = scene_manager->get_renderables();
+		renderer->render(renderables);
 
 		window->swap_buffers();
 	}

@@ -19,6 +19,7 @@ public:
 
 private:
 	bool fullscreen;
+	double previous_time;
 	GLuint width, height;
 	GLFWwindow* window;
 };

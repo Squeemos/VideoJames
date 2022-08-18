@@ -36,6 +36,8 @@ Window::Window() : fullscreen(false), width(1280), height(720)
 	glfwSwapInterval(0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	previous_time = glfwGetTime();
 }
 
 Window::~Window()
@@ -63,7 +65,11 @@ double Window::update()
 {
 	glfwPollEvents();
 
-	return 0.0;
+	double current = glfwGetTime();
+	double dt = current - previous_time;
+	previous_time = current;
+
+	return dt;
 }
 
 void Window::reset()

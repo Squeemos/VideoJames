@@ -172,14 +172,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\GLAD\src\glad.c" />
+    <ClCompile Include="source\Components\Transform.cpp" />
     <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\Systems\Renderer.cpp" />
+    <ClCompile Include="source\Systems\SceneManager.cpp" />
     <ClCompile Include="source\Systems\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Components\Transform.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\external\linmath.h" />
     <ClInclude Include="source\external\stb_image.h" />
+    <ClInclude Include="source\Systems\Renderer.h" />
+    <ClInclude Include="source\Systems\SceneManager.h" />
     <ClInclude Include="source\Systems\Window.h" />
     <ClInclude Include="source\Trace.h" />
   </ItemGroup>
