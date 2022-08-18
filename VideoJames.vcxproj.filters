@@ -16,6 +16,15 @@
     <Filter Include="Source Files\External">
       <UniqueIdentifier>{75e2fa79-9dea-4508-8173-09aee94a7430}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{6d1270b4-7016-4d52-81ad-7ca047265806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{5555f79f-c161-486e-b0b3-f5b1ea93a008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{c22d749e-cfc6-4427-929f-0deb0d4d58c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Main.cpp">
@@ -24,5 +33,28 @@
     <ClCompile Include="dependencies\GLAD\src\glad.c">
       <Filter>Source Files\External</Filter>
     </ClCompile>
+    <ClCompile Include="source\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Systems\Window.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\external\linmath.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="source\external\stb_image.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Trace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\Window.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
