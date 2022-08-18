@@ -172,46 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\GLAD\src\glad.c" />
-    <ClCompile Include="source\Camera.cpp" />
-    <ClCompile Include="source\Engine.cpp" />
-    <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Main.cpp" />
-    <ClCompile Include="source\Mesh.cpp" />
-    <ClCompile Include="source\Model.cpp" />
-    <ClCompile Include="source\ModelManager.cpp" />
-    <ClCompile Include="source\OpenGLHandler.cpp" />
-    <ClCompile Include="source\SandboxScene.cpp" />
-    <ClCompile Include="source\Scene.cpp" />
-    <ClCompile Include="source\SceneManager.cpp" />
-    <ClCompile Include="source\Shader.cpp" />
-    <ClCompile Include="source\ShaderManager.cpp" />
-    <ClCompile Include="source\TextureManager.cpp" />
-    <ClCompile Include="source\Trace.cpp" />
-    <ClCompile Include="source\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\Camera.h" />
-    <ClInclude Include="source\Engine.h" />
-    <ClInclude Include="source\Error.h" />
-    <ClInclude Include="source\ModelManager.h" />
-    <ClInclude Include="source\Scale.h" />
-    <ClInclude Include="source\Input.h" />
-    <ClInclude Include="source\linmath.h" />
-    <ClInclude Include="source\Material.h" />
-    <ClInclude Include="source\Mesh.h" />
-    <ClInclude Include="source\Model.h" />
-    <ClInclude Include="source\Name.h" />
-    <ClInclude Include="source\OpenGLHandler.h" />
-    <ClInclude Include="source\SandboxScene.h" />
-    <ClInclude Include="source\Scene.h" />
-    <ClInclude Include="source\SceneManager.h" />
-    <ClInclude Include="source\Shader.h" />
-    <ClInclude Include="source\ShaderManager.h" />
-    <ClInclude Include="source\stb_image.h" />
-    <ClInclude Include="source\TextureManager.h" />
-    <ClInclude Include="source\Trace.h" />
-    <ClInclude Include="source\Transform.h" />
-    <ClInclude Include="source\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
