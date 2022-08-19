@@ -35,6 +35,7 @@ Window::Window() : fullscreen(false), width(1280), height(720)
 
 	glfwSwapInterval(0);
 	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	previous_time = glfwGetTime();
@@ -75,7 +76,7 @@ double Window::update()
 void Window::reset()
 {
 	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::swap_buffers()

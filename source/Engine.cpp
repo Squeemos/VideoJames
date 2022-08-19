@@ -16,8 +16,8 @@ Engine::Engine()
 	}
 
 	window = std::make_unique<Window>();
-	renderer = std::make_unique<Renderer>();
 	scene_manager = std::make_unique<SceneManager>();
+	renderer = std::make_unique<Renderer>(scene_manager->get_camera());
 }
 
 Engine::~Engine()
@@ -35,6 +35,12 @@ void Engine::run()
 		double dt = window->update();
 
 		scene_manager->update(dt);
+
+		if (scene_manager->scene_changed())
+		{
+			renderer->update_camera(scene_manager->get_camera());
+			continue;
+		}
 
 		const auto& renderables = scene_manager->get_renderables();
 		renderer->render(renderables);

@@ -16,7 +16,7 @@ public:
 
 private:
 	std::unique_ptr<Window> window;
-	std::unique_ptr<Renderer> renderer;
 	std::unique_ptr<SceneManager> scene_manager;
+	std::unique_ptr<Renderer> renderer;
 };
 

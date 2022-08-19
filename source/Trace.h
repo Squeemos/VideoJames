@@ -12,7 +12,10 @@ public:
 	{
 		file.open(file_path);
 		if (file.rdstate() & std::ofstream::failbit)
+		{
 			std::cerr << "Cannot create the trace file. Error from: " << file_path << std::endl;
+			std::abort();
+		}
 	}
 	~TraceSystem()
 	{
