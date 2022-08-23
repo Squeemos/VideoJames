@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{6b5a554e-f67b-45e3-b487-7492bd80e9c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{8efa53d1-a3fa-4b98-9895-dece0e1038ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{cc84dd63-bd28-4577-9899-77a492c575f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Main.cpp">
@@ -65,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="source\Components\Mesh.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scenes\Sandbox.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="source\Systems\TextureManager.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scenes\Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scenes\Sandbox.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\InputManager.h">
+      <Filter>Source Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

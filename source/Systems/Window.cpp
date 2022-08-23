@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include "../Trace.h"
+#include "InputManager.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -92,4 +93,6 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(glfw_window, true);
+
+	InputManager::get_instance().update_key(key, action);
 }

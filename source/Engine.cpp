@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Systems/Window.h"
 #include "Systems/Renderer.h"
+#include "Systems/InputManager.h"
 
 #include "Trace.h"
 
@@ -31,6 +32,9 @@ void Engine::run()
 	while (window->running())
 	{
 		window->reset();
+
+		InputManager::get_instance().update();
+
 		double dt = window->update();
 
 		scene_manager->update(dt);
