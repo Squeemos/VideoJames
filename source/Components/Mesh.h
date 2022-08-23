@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <string>
+
 typedef unsigned int GLuint;
 typedef int GLsizei;
 
@@ -16,4 +19,3 @@ private:
 	GLuint VAO, VBO, EBO;
 	GLsizei num_indices;
 };
-

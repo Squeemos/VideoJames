@@ -1,6 +1,5 @@
 #include "Engine.h"
 #include "Systems/Window.h"
-#include "Systems/SceneManager.h"
 #include "Systems/Renderer.h"
 
 #include "Trace.h"
@@ -42,7 +41,7 @@ void Engine::run()
 			continue;
 		}
 
-		const auto& renderables = scene_manager->get_renderables();
+		auto renderables = scene_manager->get_renderables();
 		renderer->render(renderables);
 
 		window->swap_buffers();

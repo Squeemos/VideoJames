@@ -104,5 +104,14 @@
     <ClInclude Include="source\Components\Mesh.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="source\Components\Material.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\MeshManager.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\TextureManager.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

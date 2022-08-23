@@ -19,13 +19,3 @@ const glm::mat4 Camera::get_projection_view() const
 
 	return projection * view;
 }
-
-const glm::mat4 Camera::get1() const
-{
-	return glm::ortho(position.x - (size.x / 2.0f), position.x + (size.x / 2.0f), position.y - (size.y / 2.0f), position.y + (size.y / 2.0f), near_clipping, far_clipping);
-}
-
-const glm::mat4 Camera::get2() const
-{
-	return glm::lookAt(position, position + target, glm::vec3(0, 1.0f, 0));
-}

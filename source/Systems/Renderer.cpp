@@ -2,10 +2,6 @@
 #include "Graphics.h"
 #include "Camera.h"
 
-#include "../Components/Transform.h"
-#include "../Components/Texture.h"
-#include "../Components/Mesh.h"
-
 #include "../Trace.h"
 
 #include <glad/glad.h>
@@ -22,47 +18,37 @@ Renderer::~Renderer()
 	trace_message("Destroying Render System");
 }
 
-void Renderer::render(const entt::registry& renderables)
+void Renderer::render(RenderList renderables)
 {
-	// Set the camera transform
-	//for (auto e : renderables)
-	//{
-	//	const auto& [transform] = renderables.get<Transform>(e);
-
-	//	trace_message(transform.as_string());
-	//}
-
 	shader->use();
-
 	// Set the camera transform
 	shader->set_uniform("projection_view", camera->get_projection_view());
 
-	const auto& view = renderables.view<Transform, Mesh>();
-	for (auto e : view)
+
+	for (auto e : renderables)
 	{
-		const auto& [transform, mesh] = view.get<Transform, Mesh>(e);
+		const auto& [transform, material] = renderables.get<Transform, Material>(e);
 
-		shader->set_uniform("model", transform.get_world());
-		//shader->set_uniform("model", glm::mat4(1));
-		
-		if (renderables.all_of<Texture>(e))
+		if (material.has_mesh())
 		{
-			shader->set_uniform("textured", true);
-			const auto& texture = renderables.get<Texture>(e);
-			texture.bind();
-			
-			shader->set_uniform("texture0", static_cast<int>(0));
+			shader->set_uniform("model", transform.get_world());
+			if (material.has_texture())
+			{
+				shader->set_uniform("textured", true);
+				material.bind_texture();
+				shader->set_uniform("texture0", 0); //static_cast<int>(mesh.texture->id) ?
 
-			mesh.bind();
-			mesh.unbind();
-			
-			texture.unbind();
-		}
-		else
-		{
-			shader->set_uniform("textured", false);
-			mesh.bind();
-			mesh.unbind();
+				material.bind_mesh();
+				material.unbind_mesh();
+
+				material.unbind_texture();
+			}
+			else
+			{
+				shader->set_uniform("texture", false);
+				material.bind_mesh();
+				material.unbind_mesh();
+			}
 		}
 	}
 	shader->unuse();

@@ -6,6 +6,11 @@
 #include <string>
 #include <memory>
 
+#include "../Components/Transform.h"
+#include "../Components/Material.h"
+
+typedef entt::basic_view<entt::type_list<entt::constness_as_t<entt::storage_type_t<Transform, entt::entity>, Transform>, entt::constness_as_t<entt::storage_type_t<Material, entt::entity>, Material>>, entt::type_list<>, void> RenderList;
+
 class Camera;
 
 class SceneManager
@@ -15,8 +20,10 @@ public:
 	~SceneManager();
 
 	void update(double& dt);
+	void change_scene(const std::string& scene_name);
 
-	const entt::registry& get_renderables() const;
+	RenderList get_renderables();
+
 	std::shared_ptr<Camera>& get_camera() const;
 
 	bool scene_changed() const;

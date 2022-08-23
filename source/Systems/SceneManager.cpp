@@ -1,19 +1,22 @@
 #include "SceneManager.h"
 #include "Camera.h"
 
-#include "../Components/Transform.h"
-#include "../Components/Texture.h"
-#include "../Components/Mesh.h"
+#include "MeshManager.h"
+#include "TextureManager.h"
 
 #include "../Trace.h"
 
+static double total_time;
+
 SceneManager::SceneManager() : changing_scene(false)
 {
+	total_time = 0;
 	trace_message("Creating Scene Manager");
 
-	current_scene = std::make_shared<Scene>("Sandbox");
+	scenes["Sandbox"] = std::make_shared<Scene>("Sandbox");
+	scenes["Simple"] = std::make_shared<Scene>("Simple");
 
-	scenes["Sandbox"] = current_scene;
+	current_scene = scenes["Sandbox"];
 }
 
 SceneManager::~SceneManager()
@@ -23,12 +26,30 @@ SceneManager::~SceneManager()
 
 void SceneManager::update(double& dt)
 {
+	changing_scene = false;
+	total_time += dt;
+	if (total_time >= 2)
+	{
+		if(current_scene->scene_name == "Sandbox")
+			change_scene("Simple");
+		else if (current_scene->scene_name == "Simple")
+			change_scene("Sandbox");
+
+		changing_scene = true;
+		total_time = 0;
+		return;
+	}
 	current_scene->update(dt);
 }
 
-const entt::registry& SceneManager::get_renderables() const
+void SceneManager::change_scene(const std::string& scene_name)
 {
-	return current_scene->registry;
+	current_scene = scenes[scene_name];
+}
+
+RenderList SceneManager::get_renderables()
+{
+	return current_scene->registry.view<Transform, Material>();
 }
 
 std::shared_ptr<Camera>& SceneManager::get_camera() const
@@ -57,22 +78,25 @@ SceneManager::Scene::Scene(const std::string& name) : scene_name(name)
 
 	entt::entity e = registry.create();
 	registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(100, 100), 0.0f);
-	registry.emplace<Texture>(e, "./assets/rgba_tex.png", "test");
-	registry.emplace<Mesh>(e);
+	auto& mat = registry.emplace<Material>(e);
+	mat.add_mesh(get_mesh("Simple Mesh"));
+	mat.add_texture(get_texture("./assets/rgba_tex.png"));
 
-	e = registry.create();
-	registry.emplace<Transform>(e, glm::vec2(1, 0), glm::vec2(100, 100), 45.0f);
-	registry.emplace<Texture>(e, "./assets/rgb_tex.jpg", "tes2t");
-	registry.emplace<Mesh>(e);
-
-	e = registry.create();
-	registry.emplace<Transform>(e, glm::vec2(0, 1), glm::vec2(100, 100), 45.0f);
-	registry.emplace<Texture>(e, "./assets/rgb_tex.jpg", "tes2t");
-	registry.emplace<Mesh>(e);
+	entt::entity e2 = registry.create();
+	registry.emplace<Transform>(e2, glm::vec2(0.0f, 100.0f), glm::vec2(100, 100), 0.0f);
+	auto& mat2 = registry.emplace<Material>(e2);
+	mat2.add_mesh(get_mesh("Simple Mesh"));
+	mat2.add_texture(get_texture("./assets/rgba_tex.png"));
 }
 
 void SceneManager::Scene::update(double& dt)
 {
 	trace_message("Updating Scene: " + scene_name);
-	dt;
+
+	auto view = registry.view<Transform>();
+	for (auto e : view)
+	{
+		auto& transform = view.get<Transform>(e);
+		transform.rotate(static_cast<float>(dt) * 45);
+	}
 }

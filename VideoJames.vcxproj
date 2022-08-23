@@ -184,6 +184,7 @@
     <ClCompile Include="source\Systems\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Components\Material.h" />
     <ClInclude Include="source\Components\Mesh.h" />
     <ClInclude Include="source\Components\Texture.h" />
     <ClInclude Include="source\Components\Transform.h" />
@@ -192,8 +193,10 @@
     <ClInclude Include="source\external\stb_image.h" />
     <ClInclude Include="source\Systems\Camera.h" />
     <ClInclude Include="source\Systems\Graphics.h" />
+    <ClInclude Include="source\Systems\MeshManager.h" />
     <ClInclude Include="source\Systems\Renderer.h" />
     <ClInclude Include="source\Systems\SceneManager.h" />
+    <ClInclude Include="source\Systems\TextureManager.h" />
     <ClInclude Include="source\Systems\Window.h" />
     <ClInclude Include="source\Trace.h" />
   </ItemGroup>

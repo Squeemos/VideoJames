@@ -1,11 +1,8 @@
 #pragma once
 
-#include <entt/entt.hpp>
-
-#include <memory>
-
 class Shader;
-class Camera;
+
+#include "SceneManager.h"
 
 class Renderer
 {
@@ -13,7 +10,7 @@ public:
 	Renderer(std::shared_ptr<Camera>& cam);
 	~Renderer();
 
-	void render(const entt::registry& renderables);
+	void render(RenderList renderables);
 	void update_camera(std::shared_ptr<Camera>& cam);
 
 private:

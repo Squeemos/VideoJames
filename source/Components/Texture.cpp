@@ -7,17 +7,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../External/stb_image.h"
 
-Texture::Texture(const std::string& p) : path(p), name(p)
+Texture::Texture(const std::string& p) : path(p)
 {
 	stbi_set_flip_vertically_on_load(true);
 	trace_message("Creating texture from: " + path);
-	load_texture(p);
-}
-
-Texture::Texture(const std::string& p, const std::string& n) : path(p), name(n)
-{
-	stbi_set_flip_vertically_on_load(true);
-	trace_message("Creating texture from: " + path + " with name: " + name);
 	load_texture(p);
 }
 

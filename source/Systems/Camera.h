@@ -10,9 +10,6 @@ public:
 
 	const glm::mat4 get_projection_view() const;
 
-	const glm::mat4 get1() const;
-	const glm::mat4 get2() const;
-
 private:
 	glm::vec3 position, target;
 	glm::vec2 size;

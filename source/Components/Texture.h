@@ -9,7 +9,6 @@ class Texture
 public:
 	Texture() = delete;
 	Texture(const std::string& p);
-	Texture(const std::string& p, const std::string& n);
 	~Texture();
 
 	void load_texture(const std::string& p);
@@ -19,6 +18,6 @@ public:
 
 	GLuint id;
 private:
-	std::string path, name;
+	std::string path;
 };
 
