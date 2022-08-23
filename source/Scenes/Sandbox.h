@@ -1,5 +1,7 @@
 #pragma once
 #include "Scene.h"
+
+// Sandbox scene for testing
 class Sandbox : public Scene
 {
 public:

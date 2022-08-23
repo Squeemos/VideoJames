@@ -38,7 +38,7 @@ void SceneManager::add_scene(const std::shared_ptr<Scene>& scene)
 	}
 }
 
-RenderList SceneManager::get_renderables()
+RenderList SceneManager::get_renderables() const
 {
 	return current_scene->registry.view<Transform, Material>();
 }

@@ -197,10 +197,9 @@
     <ClInclude Include="source\Systems\Camera.h" />
     <ClInclude Include="source\Systems\Graphics.h" />
     <ClInclude Include="source\Systems\InputManager.h" />
-    <ClInclude Include="source\Systems\MeshManager.h" />
     <ClInclude Include="source\Systems\Renderer.h" />
+    <ClInclude Include="source\Systems\ResourceManager.h" />
     <ClInclude Include="source\Systems\SceneManager.h" />
-    <ClInclude Include="source\Systems\TextureManager.h" />
     <ClInclude Include="source\Systems\Window.h" />
     <ClInclude Include="source\Trace.h" />
   </ItemGroup>

@@ -128,9 +128,13 @@
 #define GLFW_KEY_LAST               GLFW_KEY_MENU
 #pragma endregion Input Defines
 
+// How many keys we currently care about
 constexpr auto TOTAL_KEYS = 348;
 #include <bitset>
 
+// A manager so we can keep track of what keys have been pressed
+// Later this will also take care of the mouse
+// TODO : Also allow for having multiple frames worth of buffering, could be useful
 class InputManager
 {
 private:
@@ -141,28 +145,38 @@ private:
 	}
 	~InputManager() = default;
 
+	// To prevent copying
+	InputManager(InputManager&& other) = delete;
+	InputManager& operator=(const InputManager& other) = delete;
+	InputManager& operator=(InputManager&& other) = delete;
+
 public:
-	static InputManager& get_instance()
+	// Get the one instance of the input manager
+	inline static InputManager& get_instance()
 	{
 		static InputManager im;
 		return im;
 	}
 
+	// Update the previous keys to what was just pressed
 	void update()
 	{
 		previous_keys = current_keys;
 	}
 
+	// Check if the key was pressed for a single frame
 	bool check_key_pressed(unsigned int key)
 	{
 		return current_keys[key] && !previous_keys[key];
 	}
 
+	// Check if the key was held for for more than one frame
 	bool check_key_held(unsigned int key)
 	{
 		return current_keys[key];
 	}
 
+	// Update the key based on an action
 	void update_key(unsigned int key, unsigned int action)
 	{
 		switch (action)
@@ -179,6 +193,7 @@ public:
 	}
 
 private:
+	// Use bitsets for the keys since it's a smaller amount of memory and quick to work with
 	std::bitset<TOTAL_KEYS> current_keys;
 	std::bitset<TOTAL_KEYS> previous_keys;
 };

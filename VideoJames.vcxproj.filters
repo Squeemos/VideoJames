@@ -116,12 +116,6 @@
     <ClInclude Include="source\Components\Material.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="source\Systems\MeshManager.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Systems\TextureManager.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="source\Scenes\Scene.h">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
@@ -129,7 +123,10 @@
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="source\Systems\InputManager.h">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\ResourceManager.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,19 +7,21 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../External/stb_image.h"
 
-Texture::Texture(const std::string& p) : path(p)
+Texture::Texture(const std::string& p)
 {
+	// This only needs to be done once but I'm not quite sure where else to put it
 	stbi_set_flip_vertically_on_load(true);
-	trace_message("Creating texture from: " + path);
 	load_texture(p);
 }
 
 Texture::~Texture()
 {
+	glDeleteTextures(1, &id);
 }
 
 void Texture::load_texture(const std::string& p)
 {
+	trace_message("Creating texture from: " + p);
 	glGenTextures(1, &id);
 
 	int width, height, num_channels;
