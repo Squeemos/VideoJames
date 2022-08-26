@@ -1,46 +1,53 @@
 #include "Engine.h"
-#include "OpenGLHandler.h"
-#include "Window.h"
-#include "SceneManager.h"
-#include "Camera.h"
+#include "Systems/Window.h"
+#include "Systems/Renderer.h"
+#include "Systems/InputManager.h"
+
 #include "Trace.h"
 
-
-// Start everything in the engine
-GameEngine::GameEngine() : opengl_handler (std::make_unique<OpenGLHandler>()),
-						   window(std::make_unique<Window>()),
-	                       scene_manager(std::make_unique<SceneManager>())
+Engine::Engine()
 {
-	send_trace_message("Creating Engine");
+	trace_message("Starting Engine");
+	
+	if (!Window::start_opengl())
+	{
+		trace_message("Error starting opengl");
+		std::abort();
+	}
+
+	window = std::make_unique<Window>();
+	scene_manager = std::make_unique<SceneManager>();
+	renderer = std::make_unique<Renderer>(scene_manager->get_camera());
 }
 
-// Shutdown everything in the engine
-GameEngine::~GameEngine()
+Engine::~Engine()
 {
-	send_trace_message("Destroying Engine");
+	trace_message("Destroying Engine");
+
+	Window::shutdown_opengl();
 }
 
-// Update everything in the game engine
-void GameEngine::update()
+void Engine::run()
 {
-	double dt = window->get_dt();
+	while (window->running())
+	{
+		window->reset();
 
-	// Update
-	scene_manager->update(dt, window->get_mouse());
-	window->update(dt);
+		InputManager::get_instance().update();
 
-	// Empty buffers
-	window->reset();
+		double dt = window->update();
 
-	// Draw everything in the scene
-	scene_manager->draw();
+		scene_manager->update(dt);
 
-	// Swap buffers
-	window->swap_buffer();
-}
+		if (scene_manager->scene_changed())
+		{
+			renderer->update_camera(scene_manager->get_camera());
+			continue;
+		}
 
-// Check while the game engine is running
-bool GameEngine::running()
-{
-	return window->running();
+		auto renderables = scene_manager->get_renderables();
+		renderer->render(renderables);
+
+		window->swap_buffers();
+	}
 }

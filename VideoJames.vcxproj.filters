@@ -13,126 +13,120 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\External">
+      <UniqueIdentifier>{75e2fa79-9dea-4508-8173-09aee94a7430}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{6d1270b4-7016-4d52-81ad-7ca047265806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{5555f79f-c161-486e-b0b3-f5b1ea93a008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{c22d749e-cfc6-4427-929f-0deb0d4d58c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{0beddfb5-9aca-4463-ad76-931b3284eae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{6b5a554e-f67b-45e3-b487-7492bd80e9c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{8efa53d1-a3fa-4b98-9895-dece0e1038ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{cc84dd63-bd28-4577-9899-77a492c575f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\OpenGLHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\SceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\SandboxScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dependencies\GLAD\src\glad.c">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ShaderManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\Systems\Window.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="source\Model.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\Systems\Renderer.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="source\Trace.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\Systems\SceneManager.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="source\TextureManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\Components\Transform.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="source\ModelManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\Components\Texture.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Systems\Graphics.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Systems\Camera.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Components\Mesh.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scenes\Sandbox.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\external\linmath.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="source\external\stb_image.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
     <ClInclude Include="source\Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\linmath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\OpenGLHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\SceneManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\SandboxScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ShaderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Name.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Trace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Scale.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="source\Systems\Window.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="source\TextureManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="source\Systems\Renderer.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="source\ModelManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="source\Systems\SceneManager.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Transform.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Texture.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\Graphics.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\Camera.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Mesh.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Material.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scenes\Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scenes\Sandbox.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\InputManager.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Systems\ResourceManager.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

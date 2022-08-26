@@ -1,6 +1,4 @@
-#include "Shader.h"
-#include "Error.h"
-#include "Trace.h"
+#include "Graphics.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -8,18 +6,65 @@
 #pragma warning(disable : 4201)
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
 #include <fstream>
-#include <sstream>
 
 static std::string read_shader(std::string file_name);
 
-Shader::Shader() : program_id(0), vert_path(""), frag_path("")
+Shader::Shader(const std::string& vertex, const std::string& fragment) : vertex_path(vertex), fragment_path(fragment), name(vertex + fragment)
 {
-	throw ShaderError("Creating blank shader");
+	load_shader(vertex, fragment);
 }
 
-Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_path(vertex), frag_path(fragment)
+Shader::Shader(const std::string& vertex, const std::string& fragment, const std::string& n) : vertex_path(vertex), fragment_path(fragment), name(n)
+{
+	load_shader(vertex, fragment);
+}
+
+Shader::~Shader()
+{
+}
+
+void Shader::use()
+{
+	glUseProgram(program_id);
+}
+
+void Shader::unuse()
+{
+	glUseProgram(0);
+}
+
+void Shader::set_uniform(const std::string& n, bool value) const
+{
+	glUniform1i(glGetUniformLocation(program_id, n.c_str()), static_cast<int>(value));
+}
+
+void Shader::set_uniform(const std::string& n, int value) const
+{
+	glUniform1i(glGetUniformLocation(program_id, n.c_str()), static_cast<int>(value));
+}
+
+void Shader::set_uniform(const std::string& n, float value) const
+{
+	glUniform1f(glGetUniformLocation(program_id, n.c_str()), value);
+}
+
+void Shader::set_uniform(const std::string& n, const glm::vec2 vec2) const
+{
+	glUniform2f(glGetUniformLocation(program_id, n.c_str()), vec2.x, vec2.y);
+}
+
+void Shader::set_uniform(const std::string& n, const glm::vec3 vec3) const
+{
+	glUniform3f(glGetUniformLocation(program_id, n.c_str()), vec3.x, vec3.y, vec3.z);
+}
+
+void Shader::set_uniform(const std::string& n, const glm::mat4 mat4) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(program_id, n.c_str()), 1, false, glm::value_ptr(mat4));
+}
+
+void Shader::load_shader(const std::string& vertex, const std::string& fragment)
 {
 	// For error checking
 	GLint success;
@@ -35,16 +80,13 @@ Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_pa
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &shader_src, NULL);
 	glCompileShader(vertex_shader);
-	
+
 	// Check that the vertex shader is properly compiled
 	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex_shader, 1024, NULL, info_log);
-
-		std::stringstream error;
-		error << "Vertex shader ran into a problem compiling" << std::endl << info_log << std::endl;
-		throw ShaderError(error.str());
+		std::abort();
 	}
 
 	// Load the fragment shader
@@ -60,14 +102,10 @@ Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_pa
 	{
 		// Properly throw error at some point
 		glGetShaderInfoLog(frag_shader, 1024, NULL, info_log);
-
-		std::stringstream error;
-		error << "Fragment shader ran into a problem compiling" << std::endl << info_log << std::endl;
-
 		// Delete vertex shader before exiting
 		glDeleteShader(vertex_shader);
 
-		throw ShaderError(error.str());
+		std::abort();
 	}
 
 	// Create the shader program
@@ -87,67 +125,20 @@ Shader::Shader(const std::string& vertex, const std::string& fragment) : vert_pa
 		glDeleteShader(vertex_shader);
 		glDeleteShader(frag_shader);
 
-		throw ProgramError("Linking the shaders into a program ran into a problem");
+		std::abort();
 	}
 
 	glDeleteShader(vertex_shader);
 	glDeleteShader(frag_shader);
 }
 
-Shader::~Shader()
-{
-	send_trace_message("Destroying Shader " + vert_path + " " + frag_path);
-}
-
-void Shader::use()
-{
-	glUseProgram(program_id);
-}
-
-void Shader::unuse()
-{
-	glUseProgram(0);
-}
-
-void Shader::set_bool(const std::string& name, bool value) const
-{
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), static_cast<int>(value));
-}
-
-void Shader::set_int(const std::string& name, int value) const
-{
-	glUniform1i(glGetUniformLocation(program_id, name.c_str()), value);
-}
-
-void Shader::set_float(const std::string& name, float value) const
-{
-	glUniform1f(glGetUniformLocation(program_id, name.c_str()), value);
-}
-
-void Shader::set_vec4(const std::string& name, glm::vec4 vec) const
-{
-	glUniform4f(glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z, vec.w);
-}
-
-void Shader::set_mat4(const std::string& name, glm::mat4 mat) const
-{
-	glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, false, glm::value_ptr(mat));
-}
-
-void Shader::set_vec3(const std::string& name, glm::vec3 vec) const
-{
-	glUniform3f(glGetUniformLocation(program_id, name.c_str()), vec.x, vec.y, vec.z);
-}
-
 static std::string read_shader(std::string file_name)
 {
-	send_trace_message("Loading shader: " + file_name);
-
 	std::string contents;
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		throw ShaderError("File failed to open: " + file_name);
+		std::abort();
 	}
 
 	std::string ret = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());

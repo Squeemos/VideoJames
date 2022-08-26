@@ -1,19 +1,26 @@
 #pragma once
+
 #include <memory>
 
-class OpenGLHandler;
 class Window;
+class Renderer;
 class SceneManager;
 
-class GameEngine
+// The game engine
+class Engine
 {
 public:
-	GameEngine();
-	~GameEngine();
-	void update();
-	bool running();
+	// Starts everything
+	Engine();
+	~Engine();
+
+	// Runs the game
+	void run();
+
 private:
-	std::unique_ptr<OpenGLHandler> opengl_handler;
+	// The members inside that interact
 	std::unique_ptr<Window> window;
 	std::unique_ptr<SceneManager> scene_manager;
+	std::unique_ptr<Renderer> renderer;
 };
+
