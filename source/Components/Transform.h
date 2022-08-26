@@ -28,15 +28,24 @@ public:
 	void translate(const float& x, const float& y);
 	void translate_x(const float& x);
 	void translate_y(const float& y);
+	void set_translation(const glm::vec2& r);
+	void set_translation(const float& x, const float& y);
+	void set_translation_x(const float& x);
+	void set_translation_y(const float& y);
 
 	// Methods to scale with different options
 	void scale(const glm::vec2& s);
 	void scale(const float& x, const float& y);
 	void scale_x(const float& x);
 	void scale_y(const float& y);
+	void set_scale(const glm::vec2& s);
+	void set_scale(const float& x, const float& y);
+	void set_scale_x(const float& x);
+	void sset_scale_y(const float& y);
 
 	// Rotate the object about it's center in degrees
 	void rotate(const float& r);
+	void set_rotation(const float& r);
 
 private:
 	glm::vec2 translation;

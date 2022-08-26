@@ -42,7 +42,7 @@ public:
 		}
 	}
 
-	inline std::shared_ptr<Texture> find_or_construct_texture(const std::string& texture_name)
+	inline std::shared_ptr<Texture> find_or_construct_texture(const std::string& texture_name, TextureType type)
 	{
 		// See if we can find the texture
 		auto iterator = textures.find(texture_name);
@@ -51,7 +51,7 @@ public:
 		else
 		{
 			// Create it if it doesn't exist
-			std::shared_ptr<Texture> new_texture = std::make_shared<Texture>(texture_name);
+			std::shared_ptr<Texture> new_texture = std::make_shared<Texture>(texture_name, type);
 			textures.insert(std::make_pair(texture_name, new_texture));
 
 			return new_texture;

@@ -13,7 +13,7 @@ class Scene
 public:
 
 	// All virtual methods that need to be created for scenes to work
-	Scene() { camera = std::make_shared<Camera>(); }
+	Scene() { }
 	virtual ~Scene() {}
 	virtual void update(double& dt) = 0;
 

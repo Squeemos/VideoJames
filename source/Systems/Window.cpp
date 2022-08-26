@@ -2,20 +2,24 @@
 
 #include "../Trace.h"
 #include "InputManager.h"
+#include <string>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
+static void resize_callback_function(GLFWwindow* glfw_window, int width, int height);
 
-Window::Window() : fullscreen(false), width(1280), height(720)
+Window::Window() : fullscreen(false), width(1920), height(1080)
 {
 	trace_message("Creating Window");
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	window = glfwCreateWindow(width, height, "VideoJames", nullptr, nullptr);
+	monitor = glfwGetPrimaryMonitor();
+
+	window = glfwCreateWindow(width, height, "VideoJames", fullscreen ? monitor : nullptr, nullptr);
 	if (!window)
 	{
 		trace_message("Error creating window.");
@@ -25,6 +29,7 @@ Window::Window() : fullscreen(false), width(1280), height(720)
 	glfwMakeContextCurrent(window);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetKeyCallback(window, key_callback_function);
+	glfwSetFramebufferSizeCallback(window, resize_callback_function);
 	
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	{
@@ -40,6 +45,9 @@ Window::Window() : fullscreen(false), width(1280), height(720)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	previous_time = glfwGetTime();
+	monitor_video_mode = glfwGetVideoMode(monitor);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 Window::~Window()
@@ -71,6 +79,23 @@ double Window::update()
 	double dt = current - previous_time;
 	previous_time = current;
 
+	if (InputManager::get_instance().check_key_pressed(GLFW_KEY_F))
+	{
+		fullscreen = !fullscreen;
+
+		if (fullscreen)
+		{
+			glfwSetWindowMonitor(window, monitor, 0, 0, width, height, monitor_video_mode->refreshRate);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else
+		{
+			glfwSetWindowMonitor(window, nullptr, 0, 0, width, height, monitor_video_mode->refreshRate);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetWindowPos(window, 100, 100);
+		}
+	}
+
 	return dt;
 }
 
@@ -95,4 +120,10 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 		glfwSetWindowShouldClose(glfw_window, true);
 
 	InputManager::get_instance().update_key(key, action);
+}
+
+static void resize_callback_function(GLFWwindow* glfw_window, int width, int height)
+{
+	glfw_window;
+	glViewport(0, 0, width, height);
 }

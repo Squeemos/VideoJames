@@ -61,23 +61,65 @@ void Transform::translate_y(const float& y)
 	translation.y += y;
 }
 
+void Transform::set_translation(const glm::vec2& r)
+{
+	translation = r;
+}
+
+void Transform::set_translation(const float& x, const float& y)
+{
+	translation.x = x;
+	translation.y = y;
+}
+
+void Transform::set_translation_x(const float& x)
+{
+	translation.x = x;
+}
+
+void Transform::set_translation_y(const float& y)
+{
+	translation.y = y;
+}
+
 void Transform::scale(const glm::vec2& s)
+{
+	scaling += s;
+}
+
+void Transform::scale(const float& x, const float& y)
+{
+	scaling.x += x;
+	scaling.y += y;
+}
+
+void Transform::scale_x(const float& x)
+{
+	scaling.x += x;
+}
+
+void Transform::scale_y(const float& y)
+{
+	scaling.y += y;
+}
+
+void Transform::set_scale(const glm::vec2& s)
 {
 	scaling = s;
 }
 
-void Transform::scale(const float& x, const float& y)
+void Transform::set_scale(const float& x, const float& y)
 {
 	scaling.x = x;
 	scaling.y = y;
 }
 
-void Transform::scale_x(const float& x)
+void Transform::set_scale_x(const float& x)
 {
 	scaling.x = x;
 }
 
-void Transform::scale_y(const float& y)
+void Transform::sset_scale_y(const float& y)
 {
 	scaling.y = y;
 }
@@ -85,4 +127,9 @@ void Transform::scale_y(const float& y)
 void Transform::rotate(const float& r)
 {
 	rotation += r;
+}
+
+void Transform::set_rotation(const float& r)
+{
+	rotation = r;
 }

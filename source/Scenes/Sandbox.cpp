@@ -12,6 +12,9 @@
 Sandbox::Sandbox()
 {
 	trace_message("Creating Sandbox Scene");
+
+	camera = std::make_shared<Camera>();
+
 	scene_name = "Sandbox";
 
 	camera = std::make_shared<Camera>();
@@ -20,11 +23,12 @@ Sandbox::Sandbox()
 	registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(100, 100), 0.0f);
 	auto& mat = registry.emplace<Material>(e);
 	mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("Simple Mesh"));
-	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png"));
+	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
 }
 
 Sandbox::~Sandbox()
 {
+	registry.clear();
 }
 
 void Sandbox::update(double& dt)
@@ -44,5 +48,15 @@ void Sandbox::update(double& dt)
 			transform.translate_x(-100 * float_dt);
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_D))
 			transform.translate_x(100 * float_dt);
+
+		if (InputManager::get_instance().check_key_held(GLFW_KEY_E))
+			transform.rotate(-15.0f * float_dt);
+		if (InputManager::get_instance().check_key_held(GLFW_KEY_Q))
+			transform.rotate(15.0f * float_dt);
+
+		if (InputManager::get_instance().check_key_held(GLFW_KEY_UP))
+			transform.scale(50 * float_dt, 50 * float_dt);
+		if (InputManager::get_instance().check_key_held(GLFW_KEY_DOWN))
+			transform.scale(-50 * float_dt, -50 * float_dt);
 	}
 }

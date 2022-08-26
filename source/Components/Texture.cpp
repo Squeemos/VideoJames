@@ -7,11 +7,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../External/stb_image.h"
 
-Texture::Texture(const std::string& p)
+Texture::Texture(const std::string& p, TextureType type)
 {
 	// This only needs to be done once but I'm not quite sure where else to put it
 	stbi_set_flip_vertically_on_load(true);
-	load_texture(p);
+	load_texture(p, type);
 }
 
 Texture::~Texture()
@@ -19,7 +19,7 @@ Texture::~Texture()
 	glDeleteTextures(1, &id);
 }
 
-void Texture::load_texture(const std::string& p)
+void Texture::load_texture(const std::string& p, TextureType type)
 {
 	trace_message("Creating texture from: " + p);
 	glGenTextures(1, &id);
@@ -47,8 +47,22 @@ void Texture::load_texture(const std::string& p)
 
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		switch (type)
+		{
+		case TextureType::Tile:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			break;
+		case TextureType::Single:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			break;
+		default:
+			trace_message("Invalid type provided for: " + p + " assuming single");
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			break;
+		}
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_2D);

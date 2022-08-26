@@ -3,6 +3,8 @@
 // typedefs so we don't have to include glfw/glad
 typedef unsigned int GLuint;
 struct GLFWwindow;
+struct GLFWmonitor;
+struct GLFWvidmode;
 
 // A window that everything will be rendered in
 class Window
@@ -37,5 +39,10 @@ private:
 
 	// Actual pointer to the window we'll be using
 	GLFWwindow* window;
+
+	// Pointer to the monitor the window will be on
+	GLFWmonitor* monitor;
+
+	const GLFWvidmode* monitor_video_mode;
 };
 
