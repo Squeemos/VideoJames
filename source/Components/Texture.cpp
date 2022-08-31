@@ -1,16 +1,14 @@
 #include "Texture.h"
 
 #include "../Trace.h"
+#include "../Errors.h"
 
 #include <glad/glad.h>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "../External/stb_image.h"
 
 Texture::Texture(const std::string& p, TextureType type)
 {
-	// This only needs to be done once but I'm not quite sure where else to put it
-	stbi_set_flip_vertically_on_load(true);
 	load_texture(p, type);
 }
 
@@ -41,7 +39,7 @@ void Texture::load_texture(const std::string& p, TextureType type)
 			format = GL_RGBA;
 			break;
 		default:
-			std::abort();
+			throw EngineError(ErrorType::Graphics, "Invalid texture type from: " + p);
 			break;
 		}
 
@@ -53,6 +51,9 @@ void Texture::load_texture(const std::string& p, TextureType type)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			break;
+		case TextureType::MirroredTile:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 		case TextureType::Single:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -68,6 +69,10 @@ void Texture::load_texture(const std::string& p, TextureType type)
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
+	}
+	else
+	{
+		throw EngineError(ErrorType::Graphics, "Error creating texture from: " + p);
 	}
 }
 

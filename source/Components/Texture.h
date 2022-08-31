@@ -7,8 +7,9 @@ typedef unsigned int GLuint;
 
 enum class TextureType
 {
-	Tile = 0,
-	Single = 1
+	Single = 0,
+	Tile = 1,
+	MirroredTile = 2
 };
 
 // A class for textures so we can add images to what we draw
@@ -23,9 +24,6 @@ public:
 	Texture(const std::string& p, TextureType type);
 	~Texture();
 
-	// Used to actually load the texture in case we need to do something else
-	void load_texture(const std::string& p, TextureType type);
-
 	// Binding so the texture will actually draw
 	void bind() const;
 	void unbind() const;
@@ -33,5 +31,8 @@ public:
 private:
 	// Internal id for drawing
 	GLuint id;
+
+	// Used to actually load the texture in case we need to do something else
+	void load_texture(const std::string& p, TextureType type);
 };
 

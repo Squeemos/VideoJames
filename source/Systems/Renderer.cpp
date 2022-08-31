@@ -10,7 +10,7 @@ Renderer::Renderer(std::shared_ptr<Camera>& cam) : camera(cam)
 {
 	trace_message("Creating Render System");
 
-	shader = std::make_shared<Shader>("./shaders/vertex_shader.vert", "./shaders/frag_shader.frag");
+	shader = std::make_shared<Shader>("./data/shaders/vertex_shader.vert", "./data/shaders/frag_shader.frag");
 }
 
 Renderer::~Renderer()
@@ -23,7 +23,6 @@ void Renderer::render(RenderList renderables)
 	shader->use();
 	// Set the camera transform
 	shader->set_uniform("projection_view", camera->get_projection_view());
-
 
 	for (auto e : renderables)
 	{
@@ -45,7 +44,8 @@ void Renderer::render(RenderList renderables)
 			}
 			else
 			{
-				shader->set_uniform("texture", false);
+				shader->set_uniform("textured", false);
+				shader->set_uniform("color", material.get_color());
 				material.bind_mesh();
 				material.unbind_mesh();
 			}

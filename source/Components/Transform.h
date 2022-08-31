@@ -13,6 +13,8 @@ public:
 
 	// Non-defualt so we can specify extras
 	Transform(const glm::vec2& t, const glm::vec2& s, const float& r);
+	Transform(const glm::vec2& t, const glm::vec2& s, const float& r, const float& z);
+
 	~Transform();
 
 	// Gets the world coordinates of the transform
@@ -43,13 +45,20 @@ public:
 	void set_scale_x(const float& x);
 	void sset_scale_y(const float& y);
 
-	// Rotate the object about it's center in degrees
+	// Methods to adjust the rotation
 	void rotate(const float& r);
 	void set_rotation(const float& r);
+
+	// Methods to change the z_order
+	void set_z_order(const float& f);
+
+	// Compare two transforms by z_order
+	inline static bool compare(const Transform& left, const Transform& right) { return left.z_order < right.z_order; }
 
 private:
 	glm::vec2 translation;
 	glm::vec2 scaling;
 	float rotation;
+	float z_order;
 };
 

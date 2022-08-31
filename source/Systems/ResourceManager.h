@@ -3,6 +3,9 @@
 #include "../Components/Mesh.h"
 #include "../Components/Texture.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../External/stb_image.h"
+
 #include <unordered_map>
 #include <string>
 
@@ -10,7 +13,7 @@
 class ResourceManager
 {
 private:
-	ResourceManager() {}
+	ResourceManager() { stbi_set_flip_vertically_on_load(true); }
 	~ResourceManager() = default;
 
 	// To prevent copying
@@ -35,7 +38,8 @@ public:
 		else
 		{
 			// Create it if it doesn't exist
-			std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>();
+			std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>("./data/meshes/" + mesh_name + ".obj");
+			//std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>();
 			meshes.insert(std::make_pair(mesh_name, new_mesh));
 
 			return new_mesh;

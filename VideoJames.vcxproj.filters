@@ -128,5 +128,8 @@
     <ClInclude Include="source\Systems\ResourceManager.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="source\Errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,25 +1,78 @@
 #include "Mesh.h"
 #include "Texture.h"
 
+#include "../Trace.h"
+#include "../Errors.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
-static float vertices[] = {
-	// positions          // colors           // texture coords
-	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-};
+#include <fstream>
+#include <vector>
 
-static GLuint indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-};
-
-Mesh::Mesh()
+struct Vertex
 {
-	num_indices = _countof(indices);
+	glm::vec3 position;
+	glm::vec2 texture_coordinates;
+};
+
+Mesh::~Mesh()
+{
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+}
+
+Mesh::Mesh(const std::string& mesh_path)
+{
+	Assimp::Importer import;
+	const aiScene* scene = import.ReadFile(mesh_path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		throw EngineError(ErrorType::Graphics, "Error creating mesh from: " + mesh_path);
+	}
+	if (scene->mNumMeshes != 1)
+	{
+		throw EngineError(ErrorType::Graphics, "More than one mesh detected: " + mesh_path);
+	}
+	std::vector<Vertex> vs;
+	std::vector<GLuint> is;
+
+	aiMesh* mesh = scene->mMeshes[0];
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	{
+		Vertex vert;
+		vert.position.x = mesh->mVertices[i].x;
+		vert.position.y = mesh->mVertices[i].y;
+		vert.position.z = mesh->mVertices[i].z;
+
+		if (mesh->mTextureCoords[0])
+		{
+			vert.texture_coordinates.x = mesh->mTextureCoords[0][i].x;
+			vert.texture_coordinates.y = mesh->mTextureCoords[0][i].y;
+		}
+		else
+		{
+			vert.texture_coordinates.x = 0.0f;
+			vert.texture_coordinates.y = 0.0f;
+		}
+
+		vs.push_back(vert);
+	}
+	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		{
+			is.push_back(face.mIndices[j]);
+		}
+	}
+
+	num_indices = static_cast<GLsizei>(is.size());
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -28,29 +81,18 @@ Mesh::Mesh()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vs.size() * sizeof(Vertex), vs.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, is.size() * sizeof(GLuint), is.data(), GL_STATIC_DRAW);
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+
 	glEnableVertexAttribArray(1);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texture_coordinates)));
 
 	glBindVertexArray(0);
-}
-
-Mesh::~Mesh()
-{
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 }
 
 void Mesh::bind() const

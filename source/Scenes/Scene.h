@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt/entt.hpp>
+#include <unordered_map>
 #include "../Systems/Camera.h"
 
 class SceneManager;
@@ -18,9 +19,10 @@ public:
 	virtual void update(double& dt) = 0;
 
 protected:
-	// Each scene at least has a name, camera, and registry
+	// Each scene at least has a name, camera, registry, and map
 	entt::registry registry;
 	std::string scene_name;
 	std::shared_ptr<Camera> camera;
+	std::unordered_map<std::string, entt::entity> entities_map;
 };
 

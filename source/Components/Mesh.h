@@ -11,8 +11,8 @@ typedef int GLsizei;
 class Mesh
 {
 public:
-	// Defaults create a 1x1 mesh
-	Mesh();
+	// Constructor to build a mesh
+	Mesh(const std::string& mesh_path);
 	~Mesh();
 
 	// Bind the VAO so it will actually draw

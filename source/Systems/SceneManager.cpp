@@ -40,6 +40,9 @@ void SceneManager::add_scene(const std::shared_ptr<Scene>& scene)
 
 RenderList SceneManager::get_renderables() const
 {
+	// Sort things by z_order
+	current_scene->registry.sort<Transform>(Transform::compare);
+
 	return current_scene->registry.view<Transform, Material>();
 }
 

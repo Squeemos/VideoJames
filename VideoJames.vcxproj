@@ -190,6 +190,7 @@
     <ClInclude Include="source\Components\Texture.h" />
     <ClInclude Include="source\Components\Transform.h" />
     <ClInclude Include="source\Engine.h" />
+    <ClInclude Include="source\Errors.h" />
     <ClInclude Include="source\external\linmath.h" />
     <ClInclude Include="source\external\stb_image.h" />
     <ClInclude Include="source\Scenes\Sandbox.h" />

@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "../Errors.h"
 
 #include "../Trace.h"
 #include "InputManager.h"
@@ -22,8 +23,7 @@ Window::Window() : fullscreen(false), width(1920), height(1080)
 	window = glfwCreateWindow(width, height, "VideoJames", fullscreen ? monitor : nullptr, nullptr);
 	if (!window)
 	{
-		trace_message("Error creating window.");
-		std::abort();
+		throw EngineError(ErrorType::Window, "Error creating window.");
 	}
 
 	glfwMakeContextCurrent(window);
@@ -33,10 +33,9 @@ Window::Window() : fullscreen(false), width(1920), height(1080)
 	
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	{
-		trace_message("Error starting glad");
 		glfwDestroyWindow(window);
 		glfwTerminate();
-		std::abort();
+		throw EngineError(ErrorType::Window, "Error starting GLAD.");
 	}
 
 	glfwSwapInterval(0);

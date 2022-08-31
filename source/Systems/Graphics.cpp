@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "../Errors.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -86,7 +87,7 @@ void Shader::load_shader(const std::string& vertex, const std::string& fragment)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertex_shader, 1024, NULL, info_log);
-		std::abort();
+		throw EngineError(ErrorType::Graphics, info_log);
 	}
 
 	// Load the fragment shader
@@ -105,7 +106,7 @@ void Shader::load_shader(const std::string& vertex, const std::string& fragment)
 		// Delete vertex shader before exiting
 		glDeleteShader(vertex_shader);
 
-		std::abort();
+		throw EngineError(ErrorType::Graphics, info_log);
 	}
 
 	// Create the shader program
@@ -125,7 +126,7 @@ void Shader::load_shader(const std::string& vertex, const std::string& fragment)
 		glDeleteShader(vertex_shader);
 		glDeleteShader(frag_shader);
 
-		std::abort();
+		throw EngineError(ErrorType::Graphics, info_log);
 	}
 
 	glDeleteShader(vertex_shader);
@@ -138,7 +139,7 @@ static std::string read_shader(std::string file_name)
 	std::ifstream file(file_name.c_str());
 	if (!file.is_open())
 	{
-		std::abort();
+		throw EngineError(ErrorType::Graphics, "Unable to open file: " + file_name);
 	}
 
 	std::string ret = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
