@@ -11,16 +11,17 @@
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 static void resize_callback_function(GLFWwindow* glfw_window, int width, int height);
 
-Window::Window() : fullscreen(false), width(1920), height(1080)
+Window::Window() : state(WindowState::WindowedFullscreen), width(1920), height(1080)
 {
 	trace_message("Creating Window");
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
 	monitor = glfwGetPrimaryMonitor();
 
-	window = glfwCreateWindow(width, height, "VideoJames", fullscreen ? monitor : nullptr, nullptr);
+	window = glfwCreateWindow(width, height, "VideoJames", (state == WindowState::Fullscreen) ? monitor : nullptr, nullptr);
 	if (!window)
 	{
 		throw EngineError(ErrorType::Window, "Error creating window.");
@@ -46,7 +47,7 @@ Window::Window() : fullscreen(false), width(1920), height(1080)
 	previous_time = glfwGetTime();
 	monitor_video_mode = glfwGetVideoMode(monitor);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	update_state(state);
 }
 
 Window::~Window()
@@ -78,23 +79,6 @@ double Window::update()
 	double dt = current - previous_time;
 	previous_time = current;
 
-	if (InputManager::get_instance().check_key_pressed(GLFW_KEY_F))
-	{
-		fullscreen = !fullscreen;
-
-		if (fullscreen)
-		{
-			glfwSetWindowMonitor(window, monitor, 0, 0, width, height, monitor_video_mode->refreshRate);
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-		else
-		{
-			glfwSetWindowMonitor(window, nullptr, 0, 0, width, height, monitor_video_mode->refreshRate);
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			glfwSetWindowPos(window, 100, 100);
-		}
-	}
-
 	return dt;
 }
 
@@ -109,6 +93,45 @@ void Window::swap_buffers()
 	glfwSwapBuffers(window);
 }
 
+void Window::update_state(const WindowState& s)
+{
+	state = s;
+	switch (s)
+	{
+	case WindowState::WindowedFullscreen:
+		set_windowed_fullscreen();
+		break;
+	case WindowState::Windowed:
+		set_windowed();
+		break;
+	case WindowState::Fullscreen:
+		set_fullscreen();
+		break;
+	default:
+		break;
+	}
+}
+
+void Window::set_fullscreen()
+{
+	glfwSetWindowMonitor(window, monitor, 0, 0, width, height, monitor_video_mode->refreshRate);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Window::set_windowed()
+{
+	glfwSetWindowMonitor(window, nullptr, 0, 0, width, height, monitor_video_mode->refreshRate);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetWindowPos(window, 100, 100);
+}
+
+void Window::set_windowed_fullscreen()
+{
+	glfwSetWindowMonitor(window, nullptr, 0, 0, monitor_video_mode->width, monitor_video_mode->height, monitor_video_mode->refreshRate);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetWindowPos(window, 0, 0);
+}
+
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
 	scancode;
@@ -117,6 +140,12 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(glfw_window, true);
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::WindowedFullscreen);
+	if (key == GLFW_KEY_H && action == GLFW_PRESS)
+		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Windowed);
 
 	InputManager::get_instance().update_key(key, action);
 }
