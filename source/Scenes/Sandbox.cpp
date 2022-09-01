@@ -6,6 +6,7 @@
 
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
+#include "../Components/CameraFollow.h"
 
 #include "../Systems/InputManager.h"
 
@@ -17,10 +18,9 @@ Sandbox::Sandbox()
 
 	scene_name = "Sandbox";
 
-	camera = std::make_shared<Camera>();
-
 	entt::entity e = registry.create();
 	registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(400, 400), 0.0f, 0.0f);
+	registry.emplace<CameraFollow>(e, camera);
 	auto& mat = registry.emplace<Material>(e);
 	mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
@@ -49,10 +49,11 @@ void Sandbox::update(double& dt)
 {
 	float float_dt = static_cast<float>(dt);
 
-	auto e = entities_map.find("Player1");
-	if (e != entities_map.end())
+	auto player = entities_map.find("Player1");
+	if (player != entities_map.end())
 	{
-		auto& tform = registry.get<Transform>(e->second);
+		auto& tform = registry.get<Transform>(player->second);
+
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_W))
 			tform.translate_y(400 * float_dt);
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_S))
@@ -61,18 +62,25 @@ void Sandbox::update(double& dt)
 			tform.translate_x(-400 * float_dt);
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_D))
 			tform.translate_x(400 * float_dt);
+
 		if(InputManager::get_instance().check_key_pressed(GLFW_KEY_UP))
 			tform.set_z_order(2.0f);
 		if (InputManager::get_instance().check_key_pressed(GLFW_KEY_DOWN))
 			tform.set_z_order(-2.0f);
+
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_Q))
 			tform.rotate(90 * float_dt);
+		if (InputManager::get_instance().check_key_held(GLFW_KEY_E))
+			tform.rotate(-90 * float_dt);
 
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_LEFT))
 			tform.scale(-100 * float_dt, -100 * float_dt);
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_RIGHT))
 			tform.scale(100 * float_dt, 100 * float_dt);
-
-		camera->set_translation(tform.get_translation());
 	}
+
+	registry.view<CameraFollow, Transform>().each([](CameraFollow& cf, const Transform& t)
+		{
+			cf.update(t.get_translation());
+		});
 }

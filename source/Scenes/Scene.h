@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../Systems/Camera.h"
+
 #include <entt/entt.hpp>
 #include <unordered_map>
-#include "../Systems/Camera.h"
 
 class SceneManager;
 

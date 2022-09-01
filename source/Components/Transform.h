@@ -21,36 +21,36 @@ public:
 	glm::mat4 get_world() const;
 
 	// Other getters for specific sections
-	const glm::vec2& get_translation() const;
-	const glm::vec2& get_scale() const;
-	const float& get_rotation() const;
+	inline const glm::vec2& get_translation() const { return translation; }
+	inline const glm::vec2& get_scale() const { return scaling; }
+	inline const float& get_rotation() const { return rotation; }
 	
 	// Methods to translate with different options
-	void translate(const glm::vec2& r);
-	void translate(const float& x, const float& y);
-	void translate_x(const float& x);
-	void translate_y(const float& y);
-	void set_translation(const glm::vec2& r);
-	void set_translation(const float& x, const float& y);
-	void set_translation_x(const float& x);
-	void set_translation_y(const float& y);
+	inline void translate(const glm::vec2& r) { translation += r; }
+	inline void translate(const float& x, const float& y) { translation.x += x; translation.y += y; }
+	inline void translate_x(const float& x) { translation.x += x; }
+	inline void translate_y(const float& y) { translation.y += y; }
+	inline void set_translation(const glm::vec2& r) { translation = r; }
+	inline void set_translation(const float& x, const float& y) { translation.x = x; translation.y = y; }
+	inline void set_translation_x(const float& x) { translation.x = x; }
+	inline void set_translation_y(const float& y) { translation.y = y; }
 
 	// Methods to scale with different options
-	void scale(const glm::vec2& s);
-	void scale(const float& x, const float& y);
-	void scale_x(const float& x);
-	void scale_y(const float& y);
-	void set_scale(const glm::vec2& s);
-	void set_scale(const float& x, const float& y);
-	void set_scale_x(const float& x);
-	void sset_scale_y(const float& y);
+	inline void scale(const glm::vec2& s) { scaling += s; }
+	inline void scale(const float& x, const float& y) { scaling.x += x; scaling.y += y; }
+	inline void scale_x(const float& x) { scaling.x += x; }
+	inline void scale_y(const float& y) { scaling.y += y; }
+	inline void set_scale(const glm::vec2& s) { scaling = s; }
+	inline void set_scale(const float& x, const float& y) { scaling.x = x; scaling.y = y; }
+	inline void set_scale_x(const float& x) { scaling.x = x; }
+	inline void set_scale_y(const float& y) { scaling.y = y; }
 
 	// Methods to adjust the rotation
-	void rotate(const float& r);
-	void set_rotation(const float& r);
+	inline void rotate(const float& r) { rotation += r; }
+	inline void set_rotation(const float& r) { rotation = r; }
 
 	// Methods to change the z_order
-	void set_z_order(const float& f);
+	inline void set_z_order(const float& f) { z_order = f; }
 
 	// Compare two transforms by z_order
 	inline static bool compare(const Transform& left, const Transform& right) { return left.z_order < right.z_order; }

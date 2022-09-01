@@ -12,16 +12,17 @@ public:
 	// Gets the projection * view matrix for drawing
 	const glm::mat4 get_projection_view() const;
 
-	// So we can move and rotate the camera
-	void translate(const glm::vec2& direction);
-	void translate(const float& x, const float& y);
-	void translate_x(const float& x);
-	void translate_y(const float& y);
-	void set_translation(const glm::vec2& pos);
-	void set_translation(const float& x, const float& y);
+	// So we can move the camera
+	inline void translate(const glm::vec2& direction) { position.x += direction.x; position.y += direction.y; }
+	inline void translate(const float& x, const float& y) { position.x += x; position.y += y; }
+	inline void translate_x(const float& x) { position.x += x; }
+	inline void translate_y(const float& y) { position.y += y; }
+	inline void set_translation(const glm::vec2& pos) { position.x = pos.x; position.y = pos.y; }
+	inline void set_translation(const float& x, const float& y) { position.x = x; position.y = y; }
 
-	void rotate(const float& degrees);
-	void set_rotation(const float& degrees);
+	// So we can rotate the camera
+	inline void rotate(const float& degrees) { rotation += degrees; }
+	inline void set_rotation(const float& degrees) { rotation = degrees; }
 
 private:
 	// Position is where the center of the camera is

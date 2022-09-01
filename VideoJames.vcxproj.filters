@@ -131,5 +131,8 @@
     <ClInclude Include="source\Errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Components\CameraFollow.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

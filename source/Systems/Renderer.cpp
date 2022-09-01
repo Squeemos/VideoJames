@@ -21,6 +21,7 @@ Renderer::~Renderer()
 void Renderer::render(RenderList renderables)
 {
 	shader->use();
+
 	// Set the camera transform
 	shader->set_uniform("projection_view", camera->get_projection_view());
 
@@ -52,9 +53,4 @@ void Renderer::render(RenderList renderables)
 		}
 	}
 	shader->unuse();
-}
-
-void Renderer::update_camera(std::shared_ptr<Camera>& cam)
-{
-	camera = cam;
 }

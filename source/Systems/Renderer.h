@@ -15,7 +15,7 @@ public:
 	void render(RenderList renderables);
 
 	// A method to update the camera
-	void update_camera(std::shared_ptr<Camera>& cam);
+	inline void update_camera(std::shared_ptr<Camera>& cam) { camera = cam; }
 
 private:
 	std::shared_ptr<Shader> shader;

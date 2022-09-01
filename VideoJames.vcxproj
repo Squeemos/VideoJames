@@ -189,6 +189,7 @@ xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     <ClCompile Include="source\Systems\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Components\CameraFollow.h" />
     <ClInclude Include="source\Components\Material.h" />
     <ClInclude Include="source\Components\Mesh.h" />
     <ClInclude Include="source\Components\Texture.h" />
