@@ -14,7 +14,14 @@ public:
 
 	// So we can move and rotate the camera
 	void translate(const glm::vec2& direction);
+	void translate(const float& x, const float& y);
+	void translate_x(const float& x);
+	void translate_y(const float& y);
+	void set_translation(const glm::vec2& pos);
+	void set_translation(const float& x, const float& y);
+
 	void rotate(const float& degrees);
+	void set_rotation(const float& degrees);
 
 private:
 	// Position is where the center of the camera is

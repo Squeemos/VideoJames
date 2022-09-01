@@ -21,7 +21,7 @@ public:
 	~Window();
 
 	// These static methods are so we can start opengl and shutdown opengl before we create windows
-	static bool start_opengl();
+	static void start_opengl();
 	static void shutdown_opengl();
 
 	// If the window is still running

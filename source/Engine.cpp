@@ -9,11 +9,7 @@ Engine::Engine()
 {
 	trace_message("Starting Engine");
 	
-	if (!Window::start_opengl())
-	{
-		trace_message("Error starting opengl");
-		std::abort();
-	}
+	Window::start_opengl();
 
 	window = std::make_unique<Window>();
 	scene_manager = std::make_unique<SceneManager>();
@@ -45,7 +41,7 @@ void Engine::run()
 			continue;
 		}
 
-		auto renderables = scene_manager->get_renderables();
+		const auto renderables = scene_manager->get_renderables();
 		renderer->render(renderables);
 
 		window->swap_buffers();

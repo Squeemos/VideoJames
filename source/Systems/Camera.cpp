@@ -27,7 +27,40 @@ void Camera::translate(const glm::vec2& direction)
 	position.y += direction.y;
 }
 
+void Camera::translate(const float& x, const float& y)
+{
+	position.x += x;
+	position.y += y;
+}
+
+void Camera::translate_x(const float& x)
+{
+	position.x += x;
+}
+
+void Camera::translate_y(const float& y)
+{
+	position.y += y;
+}
+
+void Camera::set_translation(const glm::vec2& pos)
+{
+	position.x = pos.x;
+	position.y = pos.y;
+}
+
+void Camera::set_translation(const float& x, const float& y)
+{
+	position.x = x;
+	position.y = y;
+}
+
 void Camera::rotate(const float& degrees)
 {
 	rotation += degrees;
+}
+
+void Camera::set_rotation(const float& degrees)
+{
+	rotation = degrees;
 }

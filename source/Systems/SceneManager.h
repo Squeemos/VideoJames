@@ -11,13 +11,8 @@
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
 
-// A really ugly typedef so we can return a view of the current scene's registry of renderables
-typedef entt::basic_view<
-	entt::type_list<
-		entt::constness_as_t<entt::storage_type_t<Transform, entt::entity>, Transform>, 
-		entt::constness_as_t<entt::storage_type_t<Material, entt::entity>, Material>>,
-	entt::type_list<>, 
-	void> RenderList;
+// Typedef for a list of objects to render, this way we only need to edit it in one place
+typedef entt::view<entt::get_t<const Transform, const Material>> RenderList;
 
 // The manager of the things on the screen
 class SceneManager

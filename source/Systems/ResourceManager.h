@@ -13,7 +13,7 @@
 class ResourceManager
 {
 private:
-	ResourceManager() { stbi_set_flip_vertically_on_load(true); }
+	ResourceManager() = default;
 	~ResourceManager() = default;
 
 	// To prevent copying

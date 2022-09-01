@@ -43,7 +43,7 @@ RenderList SceneManager::get_renderables() const
 	// Sort things by z_order
 	current_scene->registry.sort<Transform>(Transform::compare);
 
-	return current_scene->registry.view<Transform, Material>();
+	return current_scene->registry.view<const Transform, const Material>();
 }
 
 std::shared_ptr<Camera>& SceneManager::get_camera() const

@@ -11,7 +11,7 @@
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 static void resize_callback_function(GLFWwindow* glfw_window, int width, int height);
 
-Window::Window() : state(WindowState::WindowedFullscreen), width(1920), height(1080)
+Window::Window() : state(WindowState::Windowed), width(1920), height(1080)
 {
 	trace_message("Creating Window");
 
@@ -24,7 +24,7 @@ Window::Window() : state(WindowState::WindowedFullscreen), width(1920), height(1
 	window = glfwCreateWindow(width, height, "VideoJames", (state == WindowState::Fullscreen) ? monitor : nullptr, nullptr);
 	if (!window)
 	{
-		throw EngineError(ErrorType::Window, "Error creating window.");
+		throw EngineError(ErrorType::Window, "Error creating window");
 	}
 
 	glfwMakeContextCurrent(window);
@@ -36,7 +36,7 @@ Window::Window() : state(WindowState::WindowedFullscreen), width(1920), height(1
 	{
 		glfwDestroyWindow(window);
 		glfwTerminate();
-		throw EngineError(ErrorType::Window, "Error starting GLAD.");
+		throw EngineError(ErrorType::Window, "Error starting GLAD");
 	}
 
 	glfwSwapInterval(0);
@@ -56,9 +56,12 @@ Window::~Window()
 	glfwDestroyWindow(window);
 }
 
-bool Window::start_opengl()
+void Window::start_opengl()
 {
-	return glfwInit();
+	if (!glfwInit())
+	{
+		throw EngineError(ErrorType::Window, "Failed to start OpenGL");
+	}
 }
 
 void Window::shutdown_opengl()

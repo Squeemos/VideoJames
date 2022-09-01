@@ -141,7 +141,9 @@
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glfw3dll.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)data" "$(TargetDir)data" /e /y /i /r
+xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +169,9 @@
       <AdditionalLibraryDirectories>.\dependencies\assimp\lib;.\dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)dependencies\assimp\lib\assimp-vc143-mtd.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)data" "$(TargetDir)data" /e /y /i /r
+xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
