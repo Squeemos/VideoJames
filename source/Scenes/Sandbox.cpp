@@ -27,7 +27,7 @@ Sandbox::Sandbox()
 	entt::entity e = registry.create();
 	auto& tform = registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200, 200), 0.0f, 2.0f);
 	registry.emplace<RigidBody>(e, &tform);
-	registry.emplace<LinearCameraFollow>(e, camera);
+	registry.emplace<LinearCameraFollow>(e, camera, 1.0f);
 	auto& mat = registry.emplace<Material>(e);
 	mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
@@ -98,4 +98,25 @@ void Sandbox::update(double& dt)
 		mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 		mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgb_tex.jpg", TextureType::Single));
 	}
+
+	if (InputManager::get_instance().check_mouse_held(GLFW_MOUSE_BUTTON_RIGHT))
+	{
+		glm::vec2 mouse_world = camera->mouse_to_world(InputManager::get_instance().get_mouse_position());
+		entt::entity e = registry.create();
+		registry.emplace<Transform>(e, mouse_world, glm::vec2(200, 200), 0.0f, 2.0f);
+		auto& mat = registry.emplace<Material>(e);
+		mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
+		mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgb_tex.jpg", TextureType::Single));
+	}
+
+	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_5))
+		camera->reset_zoom();
+	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_8))
+		camera->zoom_y(-.001f);
+	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_2))
+		camera->zoom_y(.001f);
+	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_4))
+		camera->zoom_x(-.001f);
+	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_6))
+		camera->zoom_x(.001f);
 }
