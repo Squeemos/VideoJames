@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 
+#include <map>
+
 Renderer::Renderer(std::shared_ptr<Camera>& cam) : camera(cam)
 {
 	trace_message("Creating Render System");
@@ -20,15 +22,19 @@ Renderer::~Renderer()
 
 void Renderer::render(RenderList renderables)
 {
+	std::multimap<float, entt::entity> render_list;
+
+	for (const auto& [e, transform, material] : renderables.each())
+		render_list.insert(std::pair<float, entt::entity>(transform.get_z_order(), e));
+
 	shader->use();
 
 	// Set the camera transform
 	shader->set_uniform("projection_view", camera->get_projection_view());
 
-	for (auto e : renderables)
+	for (auto iterator = render_list.begin(); iterator != render_list.end(); ++iterator)
 	{
-		const auto& [transform, material] = renderables.get<Transform, Material>(e);
-
+		const auto& [transform, material] = renderables.get<Transform, Material>(iterator->second);
 		if (material.has_mesh())
 		{
 			shader->set_uniform("model", transform.get_world());
@@ -52,5 +58,9 @@ void Renderer::render(RenderList renderables)
 			}
 		}
 	}
+	//for (const auto& [e, transform, material] : renderables.each())
+	//{
+	//	
+	//}
 	shader->unuse();
 }

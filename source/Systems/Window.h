@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 // typedefs so we don't have to include glfw/glad
 typedef unsigned int GLuint;
 struct GLFWwindow;
@@ -42,10 +44,13 @@ public:
 	void set_windowed();
 	void set_windowed_fullscreen();
 
+	std::pair<double, double> screen_coordinates(double x, double y) const;
+
 private:
 	// Members to describe the state of the window
 	WindowState state;
 	GLuint width, height;
+	GLuint current_width, current_height;
 
 	// Used to calculate dt
 	double previous_time;

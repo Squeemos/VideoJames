@@ -24,6 +24,12 @@ public:
 	inline void rotate(const float& degrees) { rotation += degrees; }
 	inline void set_rotation(const float& degrees) { rotation = degrees; }
 
+	// Getter
+	inline const glm::vec3& get_position() const { return position; }
+	inline const glm::vec3& get_target() const { return target; }
+
+	glm::vec2 mouse_to_world(const glm::vec2& mouse_screen);
+
 private:
 	// Position is where the center of the camera is
 	// Target is where the camera is pointing (ideally this doesn't change that often)

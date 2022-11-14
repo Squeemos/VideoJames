@@ -75,6 +75,9 @@
     <ClCompile Include="source\Scenes\Sandbox.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="source\Components\RigidBody.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\external\linmath.h">
@@ -132,6 +135,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Components\CameraFollow.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\RigidBody.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

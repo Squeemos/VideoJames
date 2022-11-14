@@ -24,6 +24,7 @@ public:
 	inline const glm::vec2& get_translation() const { return translation; }
 	inline const glm::vec2& get_scale() const { return scaling; }
 	inline const float& get_rotation() const { return rotation; }
+	inline const float& get_z_order() const { return z_order; }
 	
 	// Methods to translate with different options
 	inline void translate(const glm::vec2& r) { translation += r; }

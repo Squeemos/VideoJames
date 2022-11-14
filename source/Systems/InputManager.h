@@ -128,9 +128,27 @@
 #define GLFW_KEY_LAST               GLFW_KEY_MENU
 #pragma endregion Input Defines
 
+#pragma region Mouse Defines
+#define GLFW_MOUSE_BUTTON_1         0
+#define GLFW_MOUSE_BUTTON_2         1
+#define GLFW_MOUSE_BUTTON_3         2
+#define GLFW_MOUSE_BUTTON_4         3
+#define GLFW_MOUSE_BUTTON_5         4
+#define GLFW_MOUSE_BUTTON_6         5
+#define GLFW_MOUSE_BUTTON_7         6
+#define GLFW_MOUSE_BUTTON_8         7
+#define GLFW_MOUSE_BUTTON_LAST      GLFW_MOUSE_BUTTON_8
+#define GLFW_MOUSE_BUTTON_LEFT      GLFW_MOUSE_BUTTON_1
+#define GLFW_MOUSE_BUTTON_RIGHT     GLFW_MOUSE_BUTTON_2
+#define GLFW_MOUSE_BUTTON_MIDDLE    GLFW_MOUSE_BUTTON_3
+#pragma endregion Mouse Defines
+
 // How many keys we currently care about
 constexpr auto TOTAL_KEYS = 348;
+constexpr auto TOTAL_MOUSE_BUTTONS = 8;
 #include <bitset>
+#include <utility>
+#include <glm/vec2.hpp>
 
 // A manager so we can keep track of what keys have been pressed
 // Later this will also take care of the mouse
@@ -138,10 +156,13 @@ constexpr auto TOTAL_KEYS = 348;
 class InputManager
 {
 private:
-	InputManager()
+	InputManager() : mouse_x(0.0), mouse_y(0.0)
 	{
 		current_keys.reset();
 		previous_keys.reset();
+
+		current_mouse.reset();
+		previous_mouse.reset();
 	}
 	~InputManager() = default;
 
@@ -162,16 +183,17 @@ public:
 	void update()
 	{
 		previous_keys = current_keys;
+		previous_mouse = current_mouse;
 	}
 
 	// Check if the key was pressed for a single frame
-	bool check_key_pressed(unsigned int key)
+	bool check_key_pressed(unsigned int key) const
 	{
 		return current_keys[key] && !previous_keys[key];
 	}
 
 	// Check if the key was held for for more than one frame
-	bool check_key_held(unsigned int key)
+	bool check_key_held(unsigned int key) const
 	{
 		return current_keys[key];
 	}
@@ -192,8 +214,48 @@ public:
 		}
 	}
 
+	void update_mouse_position(std::pair<double, double> mouse_pos)
+	{
+		mouse_x = mouse_pos.first;
+		mouse_y = mouse_pos.second;
+	}
+
+	glm::vec2 get_mouse_position() const
+	{
+		return glm::vec2(mouse_x, mouse_y);
+	}
+
+	void update_mouse_click(unsigned int button, unsigned int action)
+	{
+		button;
+		switch (action)
+		{
+		case GLFW_PRESS:
+			current_mouse.set(button);
+			break;
+		case GLFW_RELEASE:
+			current_mouse.reset(button);
+		default:
+			break;
+		}
+	}
+
+	bool check_mouse_clicked(unsigned int button) const
+	{
+		return current_mouse[button] && !previous_mouse[button];
+	}
+
+	bool check_mouse_held(unsigned int button) const
+	{
+		return current_mouse[button];
+	}
+
 private:
 	// Use bitsets for the keys since it's a smaller amount of memory and quick to work with
 	std::bitset<TOTAL_KEYS> current_keys;
 	std::bitset<TOTAL_KEYS> previous_keys;
+
+	double mouse_x, mouse_y;
+	std::bitset<TOTAL_MOUSE_BUTTONS> current_mouse;
+	std::bitset<TOTAL_MOUSE_BUTTONS> previous_mouse;
 };

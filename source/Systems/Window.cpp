@@ -10,8 +10,10 @@
 
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 static void resize_callback_function(GLFWwindow* glfw_window, int width, int height);
+static void mouse_callback_function(GLFWwindow* glfw_window, double x, double y);
+static void mouse_click_callback_function(GLFWwindow* glfw_window, int button, int action, int mods);
 
-Window::Window() : state(WindowState::Windowed), width(1920), height(1080)
+Window::Window() : state(WindowState::Windowed), width(1920), height(1080), current_width(1920), current_height(1080)
 {
 	trace_message("Creating Window");
 
@@ -31,6 +33,8 @@ Window::Window() : state(WindowState::Windowed), width(1920), height(1080)
 	glfwSetWindowUserPointer(window, this);
 	glfwSetKeyCallback(window, key_callback_function);
 	glfwSetFramebufferSizeCallback(window, resize_callback_function);
+	glfwSetCursorPosCallback(window, mouse_callback_function);
+	glfwSetMouseButtonCallback(window, mouse_click_callback_function);
 	
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	{
@@ -124,6 +128,8 @@ void Window::set_fullscreen()
 void Window::set_windowed()
 {
 	glfwSetWindowMonitor(window, nullptr, 0, 0, width, height, monitor_video_mode->refreshRate);
+	current_width = width;
+	current_height = height;
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetWindowPos(window, 100, 100);
 }
@@ -131,14 +137,22 @@ void Window::set_windowed()
 void Window::set_windowed_fullscreen()
 {
 	glfwSetWindowMonitor(window, nullptr, 0, 0, monitor_video_mode->width, monitor_video_mode->height, monitor_video_mode->refreshRate);
+	current_width = monitor_video_mode->width;
+	current_height = monitor_video_mode->height;
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetWindowPos(window, 0, 0);
+}
+
+std::pair<double, double> Window::screen_coordinates(double x, double y) const
+{
+	double new_x = x / static_cast<double>(current_width);
+	double new_y = 1 - y / static_cast<double>(current_height);
+	return std::pair<double, double>(new_x, new_y);
 }
 
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
 	scancode;
-	action;
 	mods;
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -157,4 +171,18 @@ static void resize_callback_function(GLFWwindow* glfw_window, int width, int hei
 {
 	glfw_window;
 	glViewport(0, 0, width, height);
+}
+
+static void mouse_callback_function(GLFWwindow* glfw_window, double x, double y)
+{
+	glfw_window;
+	std::pair<double, double> mouse_pos = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->screen_coordinates(x, y);
+	InputManager::get_instance().update_mouse_position(mouse_pos);
+}
+
+static void mouse_click_callback_function(GLFWwindow* glfw_window, int button, int action, int mods)
+{
+	glfw_window;
+	mods;
+	InputManager::get_instance().update_mouse_click(button, action);
 }
