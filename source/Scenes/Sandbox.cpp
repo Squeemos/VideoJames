@@ -6,7 +6,7 @@
 
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
-#include "../Components/CameraFollow.h"
+#include "../Components/LinearCameraFollow.h"
 #include "../Components/RigidBody.h"
 
 #include "../Systems/InputManager.h"
@@ -27,7 +27,7 @@ Sandbox::Sandbox()
 	entt::entity e = registry.create();
 	auto& tform = registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200, 200), 0.0f, 2.0f);
 	registry.emplace<RigidBody>(e, &tform);
-	registry.emplace<CameraFollow>(e, camera);
+	registry.emplace<LinearCameraFollow>(e, camera);
 	auto& mat = registry.emplace<Material>(e);
 	mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
@@ -48,8 +48,8 @@ void Sandbox::update(double& dt)
 {
 	float float_dt = static_cast<float>(dt);
 
-	auto group = registry.group<Player, Transform>();
-	for (auto [p, tform] : group.each())
+	auto player_view = registry.view<Player, Transform>();
+	for (auto [p, tform] : player_view.each())
 	{
 		//auto& tform = group.get<Transform>(p);
 		if (InputManager::get_instance().check_key_held(GLFW_KEY_W))
@@ -77,13 +77,13 @@ void Sandbox::update(double& dt)
 			tform.scale(100 * float_dt, 100 * float_dt);
 	}
 
-	auto view = registry.view<RigidBody>();
-	for (auto e : view)
+	auto rigidbody_view = registry.view<RigidBody>();
+	for (auto [e, rb] : rigidbody_view.each())
 	{
-		view.get<RigidBody>(e).update(dt);
+		rb.update(dt);
 	}
 
-	registry.view<CameraFollow, Transform>().each([](CameraFollow& cf, Transform& t)
+	registry.view<LinearCameraFollow, Transform>().each([](LinearCameraFollow& cf, Transform& t)
 		{
 			cf.update(t.get_translation());
 		}

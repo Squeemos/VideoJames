@@ -78,6 +78,9 @@
     <ClCompile Include="source\Components\RigidBody.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="source\Components\LinearCameraFollow.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\external\linmath.h">
@@ -134,7 +137,7 @@
     <ClInclude Include="source\Errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\Components\CameraFollow.h">
+    <ClInclude Include="source\Components\LinearCameraFollow.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="source\Components\RigidBody.h">

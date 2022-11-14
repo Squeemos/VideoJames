@@ -32,9 +32,8 @@ void Renderer::render(RenderList renderables)
 	// Set the camera transform
 	shader->set_uniform("projection_view", camera->get_projection_view());
 
-	for (auto iterator = render_list.begin(); iterator != render_list.end(); ++iterator)
+	for (const auto& [e, transform, material] : renderables.each())
 	{
-		const auto& [transform, material] = renderables.get<Transform, Material>(iterator->second);
 		if (material.has_mesh())
 		{
 			shader->set_uniform("model", transform.get_world());
@@ -58,9 +57,5 @@ void Renderer::render(RenderList renderables)
 			}
 		}
 	}
-	//for (const auto& [e, transform, material] : renderables.each())
-	//{
-	//	
-	//}
 	shader->unuse();
 }

@@ -7,16 +7,17 @@
 #include <memory>
 
 
-class CameraFollow
+class LinearCameraFollow
 {
 public:
-	CameraFollow() {}
-	CameraFollow(std::shared_ptr<Camera> cam) : camera(cam) {}
-	~CameraFollow() {}
+	LinearCameraFollow() : lerp_speed(1.0f) {}
+	LinearCameraFollow(std::shared_ptr<Camera> cam) : camera(cam), lerp_speed(0.001f) {}
+	~LinearCameraFollow() {}
 
 	inline void add_camera(const std::shared_ptr<Camera> ptr) { camera = ptr; }
-	inline void update(const glm::vec2& position) { camera->set_translation(position); }
+	void update(const glm::vec2& position);
 
 private:
 	std::shared_ptr<Camera> camera;
+	float lerp_speed;
 };
