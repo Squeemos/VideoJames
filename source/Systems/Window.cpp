@@ -95,6 +95,11 @@ void Window::reset()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Window::close()
+{
+	glfwSetWindowShouldClose(window, true);
+}
+
 void Window::swap_buffers()
 {
 	glfwSwapBuffers(window);
@@ -155,8 +160,6 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 	scancode;
 	mods;
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(glfw_window, true);
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
 	if (key == GLFW_KEY_G && action == GLFW_PRESS)

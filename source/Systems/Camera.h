@@ -10,7 +10,9 @@ public:
 	~Camera();
 
 	// Gets the projection * view matrix for drawing
-	const glm::mat4 get_projection_view() const;
+	const glm::mat4 get_projection() const;
+	const glm::mat4 get_view() const;
+	const glm::mat4 get_rotation() const;
 
 	// So we can move the camera
 	inline void translate(const glm::vec2& direction) { position.x += direction.x; position.y += direction.y; }

@@ -36,9 +36,10 @@ void Engine::run()
 		scene_manager->update(dt);
 
 		if (scene_manager->scene_changed())
-		{
 			renderer->update_camera(scene_manager->get_camera());
-		}
+
+		if (scene_manager->shutdown())
+			window->close();
 
 		const auto renderables = scene_manager->get_renderables();
 		renderer->render(renderables);

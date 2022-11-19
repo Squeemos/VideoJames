@@ -22,21 +22,30 @@ Renderer::~Renderer()
 
 void Renderer::render(RenderList renderables)
 {
-	std::multimap<float, entt::entity> render_list;
-
-	for (const auto& [e, transform, material] : renderables.each())
-		render_list.insert(std::pair<float, entt::entity>(transform.get_z_order(), e));
-
 	shader->use();
 
 	// Set the camera transform
-	shader->set_uniform("projection_view", camera->get_projection_view());
+	shader->set_uniform("projection", camera->get_projection());
+	shader->set_uniform("view", camera->get_view());
+	shader->set_uniform("rotation", camera->get_rotation());
 
-	for (const auto& [e, transform, material] : renderables.each())
+	for (const auto& [e, transform, material, tag] : renderables.each())
 	{
 		if (material.has_mesh())
 		{
-			shader->set_uniform("model", transform.get_world());
+			shader->set_uniform("model", transform.get_matrix());
+			switch (tag.get_type())
+			{
+			case RenderType::World:
+				shader->set_uniform("screen_or_world", true);
+				break;
+			case RenderType::Screen:
+				shader->set_uniform("screen_or_world", false);
+				break;
+			default:
+				break;
+			}
+			
 			if (material.has_texture())
 			{
 				shader->set_uniform("textured", true);

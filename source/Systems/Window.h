@@ -35,6 +35,8 @@ public:
 	// Reset buffers inside the window
 	void reset();
 
+	void close();
+
 	// Swap the buffers to actually draw
 	void swap_buffers();
 

@@ -10,9 +10,10 @@
 // Rendering components
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
+#include "../Components/RenderTag.h"
 
 // Typedef for a list of objects to render, this way we only need to edit it in one place
-typedef entt::view<entt::get_t<const Transform, const Material>> RenderList;
+typedef entt::view<entt::get_t<const Transform, const Material, const RenderTag>> RenderList;
 
 // The manager of the things on the screen
 class SceneManager
@@ -35,6 +36,9 @@ public:
 
 	// To let the engine know if we need to update anything since the scene changed
 	bool scene_changed() const;
+
+	bool finished() const;
+	bool shutdown() const;
 
 private:
 	// A map of the scenes that are loaded

@@ -8,6 +8,7 @@ public:
 	Sandbox();
 	virtual ~Sandbox();
 
-	virtual void update(double& dt);
+	void update(double& dt);
+	void init();
 };
 

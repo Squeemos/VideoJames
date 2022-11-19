@@ -5,13 +5,21 @@ layout (location = 1) in vec2 aTexCoord;
 out vec3 ourColor;
 out vec2 TexCoord;
 
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 rotation;
+
 uniform mat4 model;
-uniform mat4 projection_view;
 uniform vec3 color;
+
+uniform bool screen_or_world;
 
 void main()
 {
-	gl_Position = projection_view * model * vec4(aPos, 1.0);
+	if(screen_or_world)
+		gl_Position = projection * view * rotation * model * vec4(aPos, 1.0);
+	else
+		gl_Position = projection * model * vec4(aPos, 1.0);
 	ourColor = color;
 	TexCoord = aTexCoord;
 }

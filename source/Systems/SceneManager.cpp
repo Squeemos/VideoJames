@@ -42,9 +42,8 @@ RenderList SceneManager::get_renderables() const
 {
 	// Sort things by z_order
 	current_scene->registry.sort<Transform>(Transform::compare);
-	const auto& view = current_scene->registry.view<const Transform, const Material>();
 
-	return view;
+	return current_scene->registry.view<const Transform, const Material, const RenderTag>();
 }
 
 std::shared_ptr<Camera>& SceneManager::get_camera() const
@@ -56,3 +55,13 @@ bool SceneManager::scene_changed() const
 {
 	return changing_scene;
 } 
+
+bool SceneManager::finished() const
+{
+	return current_scene->scene_finished;
+}
+
+bool SceneManager::shutdown() const
+{
+	return current_scene->shutdown;
+}

@@ -20,10 +20,10 @@ Transform::~Transform()
 {
 }
 
-glm::mat4 Transform::get_world() const
+glm::mat4 Transform::get_matrix() const
 {
 	glm::mat4 world = glm::mat4(1);
-	world = glm::translate(world, glm::vec3(translation.x, translation.y, z_order));
+	world = glm::translate(world, glm::vec3(translation.x, translation.y, 0.0f));
 	world = glm::rotate(world, glm::radians(rotation), glm::vec3(0, 0, 0.1f));
 	world = glm::scale(world, glm::vec3(scaling, 1.0f));
 	return world;

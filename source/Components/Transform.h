@@ -18,7 +18,7 @@ public:
 	~Transform();
 
 	// Gets the world coordinates of the transform
-	glm::mat4 get_world() const;
+	glm::mat4 get_matrix() const;
 
 	// Other getters for specific sections
 	inline const glm::vec2& get_translation() const { return translation; }
