@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
+#include <algorithm>
+
+constexpr float min_camera_zoom = 0.00001f;
 
 // Camera class so we can look at things and move around the scene
 class Camera
@@ -10,7 +13,8 @@ public:
 	~Camera();
 
 	// Gets the projection * view matrix for drawing
-	const glm::mat4 get_projection() const;
+	const glm::mat4 get_world_projection() const;
+	const glm::mat4 get_sceen_projection() const;
 	const glm::mat4 get_view() const;
 	const glm::mat4 get_rotation() const;
 
@@ -30,11 +34,15 @@ public:
 	inline const glm::vec3& get_position() const { return position; }
 	inline const glm::vec3& get_target() const { return target; }
 
-	inline void zoom_x(const float& x) { zoom.x += x; }
-	inline void zoom_y(const float& y) { zoom.y += y; }
+	// Stuff the zoom the camera in/out
+	inline void zoom_x(const float& x) { zoom.x = std::max(min_camera_zoom, zoom.x + x); }
+	inline void zoom_y(const float& y) { zoom.y = std::max(min_camera_zoom, zoom.y + y); }
+	inline void set_zoom_x(const float& x) { zoom.x = x; }
+	inline void set_zoom_y(const float& y) { zoom.y = y; }
 	inline void reset_zoom() { zoom.x = 1.0f; zoom.y = 1.0f; }
 
-	glm::vec2 mouse_to_world(const glm::vec2& mouse_screen);
+	glm::vec2 mouse_to_world(const glm::vec2& mouse_screen) const;
+	glm::vec2 mouse_to_screen(const glm::vec2& mouse_screen) const;
 
 private:
 	// Position is where the center of the camera is

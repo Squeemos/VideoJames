@@ -179,6 +179,7 @@ xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     <ClCompile Include="source\Components\Gui.cpp" />
     <ClCompile Include="source\Components\LinearCameraFollow.cpp" />
     <ClCompile Include="source\Components\Mesh.cpp" />
+    <ClCompile Include="source\Components\Player.cpp" />
     <ClCompile Include="source\Components\RigidBody.cpp" />
     <ClCompile Include="source\Components\Texture.cpp" />
     <ClCompile Include="source\Components\Transform.cpp" />
@@ -196,6 +197,7 @@ xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     <ClInclude Include="source\Components\LinearCameraFollow.h" />
     <ClInclude Include="source\Components\Material.h" />
     <ClInclude Include="source\Components\Mesh.h" />
+    <ClInclude Include="source\Components\Player.h" />
     <ClInclude Include="source\Components\RenderTag.h" />
     <ClInclude Include="source\Components\RigidBody.h" />
     <ClInclude Include="source\Components\Texture.h" />

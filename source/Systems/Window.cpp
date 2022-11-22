@@ -120,6 +120,7 @@ void Window::update_state(const WindowState& s)
 		set_fullscreen();
 		break;
 	default:
+		trace_message("Unhandled WindowState...");
 		break;
 	}
 }
@@ -158,8 +159,19 @@ std::pair<double, double> Window::screen_coordinates(double x, double y) const
 static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
 	scancode;
-	mods;
 
+	if ((mods & GLFW_KEY_LEFT_ALT || mods & GLFW_KEY_RIGHT_ALT) && key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	{
+		WindowState current_state = reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->get_current_state();
+		if (current_state == WindowState::Fullscreen)
+			reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Windowed);
+		else if (current_state == WindowState::WindowedFullscreen)
+			reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Windowed);
+		else if (current_state == WindowState::Windowed)
+			reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
+		else
+			trace_message("Problem trying to change the window using ALT+ENTER...");
+	}
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
 	if (key == GLFW_KEY_G && action == GLFW_PRESS)
@@ -188,4 +200,9 @@ static void mouse_click_callback_function(GLFWwindow* glfw_window, int button, i
 	glfw_window;
 	mods;
 	InputManager::get_instance().update_mouse_click(button, action);
+}
+
+WindowState Window::get_current_state() const
+{
+	return state;
 }

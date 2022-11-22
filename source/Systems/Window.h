@@ -48,6 +48,8 @@ public:
 
 	std::pair<double, double> screen_coordinates(double x, double y) const;
 
+	WindowState get_current_state() const;
+
 private:
 	// Members to describe the state of the window
 	WindowState state;

@@ -25,7 +25,8 @@ void Renderer::render(RenderList renderables)
 	shader->use();
 
 	// Set the camera transform
-	shader->set_uniform("projection", camera->get_projection());
+	shader->set_uniform("world_projection", camera->get_world_projection());
+	shader->set_uniform("screen_projection", camera->get_sceen_projection());
 	shader->set_uniform("view", camera->get_view());
 	shader->set_uniform("rotation", camera->get_rotation());
 

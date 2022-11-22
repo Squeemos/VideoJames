@@ -4,6 +4,7 @@
 
 #include "../Systems/ResourceManager.h"
 
+#include "../Components/Player.h"
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
 #include "../Components/LinearCameraFollow.h"
@@ -12,11 +13,6 @@
 #include "../Components/Gui.h"
 
 #include "../Systems/InputManager.h"
-
-class Player
-{
-
-};
 
 Sandbox::Sandbox()
 {
@@ -36,41 +32,10 @@ Sandbox::~Sandbox()
 
 void Sandbox::update(double& dt)
 {
-	float float_dt = static_cast<float>(dt);
-
 	if (InputManager::get_instance().check_key_pressed(GLFW_KEY_R))
 	{
 		init();
 		return;
-	}
-
-
-	auto player_view = registry.view<Player, Transform>();
-	for (auto [p, tform] : player_view.each())
-	{
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_W))
-			tform.translate_y(400 * float_dt);
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_S))
-			tform.translate_y(-400 * float_dt);
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_A))
-			tform.translate_x(-400 * float_dt);
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_D))
-			tform.translate_x(400 * float_dt);
-
-		if (InputManager::get_instance().check_key_pressed(GLFW_KEY_UP))
-			tform.set_z_order(2.0f);
-		if (InputManager::get_instance().check_key_pressed(GLFW_KEY_DOWN))
-			tform.set_z_order(-2.0f);
-
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_Q))
-			tform.rotate(90 * float_dt);
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_E))
-			tform.rotate(-90 * float_dt);
-
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_LEFT))
-			tform.scale(-100 * float_dt, -100 * float_dt);
-		if (InputManager::get_instance().check_key_held(GLFW_KEY_RIGHT))
-			tform.scale(100 * float_dt, 100 * float_dt);
 	}
 
 	for (auto [e, rb] : registry.view<RigidBody>().each())
@@ -78,11 +43,13 @@ void Sandbox::update(double& dt)
 		rb.update(dt);
 	}
 
-	registry.view<LinearCameraFollow, Transform>().each([](LinearCameraFollow& cf, Transform& t)
-		{
-			cf.update(t.get_translation());
-		}
-	);
+	for (auto [e, player, tform] : registry.view<Player, Transform>().each())
+	{
+		player.update(dt, tform);
+	}
+
+	for (auto [e, cf, tform] : registry.view<LinearCameraFollow, Transform>().each())
+		cf.update(tform.get_translation());
 
 	if (InputManager::get_instance().check_mouse_held(GLFW_MOUSE_BUTTON_RIGHT))
 	{
@@ -117,7 +84,7 @@ void Sandbox::init()
 	registry.clear();
 
 	entt::entity e = registry.create();
-	auto& tform = registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200, 200), 0.0f, 2.0f);
+	auto& tform = registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f, 2.0f);
 	registry.emplace<RigidBody>(e, &tform);
 	registry.emplace<LinearCameraFollow>(e, camera, 1.0f);
 	auto& mat = registry.emplace<Material>(e);
@@ -133,11 +100,11 @@ void Sandbox::init()
 	registry.emplace<RenderTag>(e2, RenderType::World);
 
 	entt::entity e3 = registry.create();
-	registry.emplace<Transform>(e3, glm::vec2(-1230.0f, 670.0f), glm::vec2(100.0f, 100.0f), 0.0f, 4.0f);
+	auto& tform3 = registry.emplace<Transform>(e3, glm::vec2(-1255.0f, 695.0f), glm::vec2(50.0f, 50.0f), 0.0f, 10.0f);
 	auto& mat3 = registry.emplace<Material>(e3);
 	mat3.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat3.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/x.png", TextureType::Single));
 	registry.emplace<RenderTag>(e3, RenderType::Screen);
-	auto& gc = registry.emplace<GuiContainer>(e3);
-	gc.add_element(std::make_shared<ExitButton>(&shutdown));
+	auto& gc = registry.emplace<GuiContainer>(e3, camera);
+	gc.add_element(std::make_shared<ExitButton>(&shutdown, tform3));
 }
