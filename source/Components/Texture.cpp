@@ -14,13 +14,13 @@ Texture::Texture(const std::string& p, TextureType type)
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &id);
+	glDeleteTextures(1, &__id);
 }
 
 void Texture::load_texture(const std::string& p, TextureType type)
 {
 	trace_message("Creating texture from: " + p);
-	glGenTextures(1, &id);
+	glGenTextures(1, &__id);
 
 	int width, height, num_channels;
 	unsigned char* data = stbi_load(p.c_str(), &width, &height, &num_channels, 0);
@@ -43,7 +43,7 @@ void Texture::load_texture(const std::string& p, TextureType type)
 			break;
 		}
 
-		glBindTexture(GL_TEXTURE_2D, id);
+		glBindTexture(GL_TEXTURE_2D, __id);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		switch (type)
 		{
@@ -79,7 +79,7 @@ void Texture::load_texture(const std::string& p, TextureType type)
 void Texture::bind() const
 {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(GL_TEXTURE_2D, __id);
 }
 
 void Texture::unbind() const

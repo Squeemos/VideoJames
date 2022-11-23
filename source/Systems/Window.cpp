@@ -13,7 +13,7 @@ static void resize_callback_function(GLFWwindow* glfw_window, int width, int hei
 static void mouse_callback_function(GLFWwindow* glfw_window, double x, double y);
 static void mouse_click_callback_function(GLFWwindow* glfw_window, int button, int action, int mods);
 
-Window::Window() : state(WindowState::Windowed), width(1920), height(1080), current_width(1920), current_height(1080)
+Window::Window() : __state(WindowState::Windowed), __width(1920), __height(1080), __current_width(1920), __current_height(1080)
 {
 	trace_message("Creating Window");
 
@@ -21,24 +21,24 @@ Window::Window() : state(WindowState::Windowed), width(1920), height(1080), curr
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-	monitor = glfwGetPrimaryMonitor();
+	__monitor = glfwGetPrimaryMonitor();
 
-	window = glfwCreateWindow(width, height, "VideoJames", (state == WindowState::Fullscreen) ? monitor : nullptr, nullptr);
-	if (!window)
+	__window = glfwCreateWindow(__width, __height, "VideoJames", (__state == WindowState::Fullscreen) ? __monitor : nullptr, nullptr);
+	if (!__window)
 	{
 		throw EngineError(ErrorType::Window, "Error creating window");
 	}
 
-	glfwMakeContextCurrent(window);
-	glfwSetWindowUserPointer(window, this);
-	glfwSetKeyCallback(window, key_callback_function);
-	glfwSetFramebufferSizeCallback(window, resize_callback_function);
-	glfwSetCursorPosCallback(window, mouse_callback_function);
-	glfwSetMouseButtonCallback(window, mouse_click_callback_function);
+	glfwMakeContextCurrent(__window);
+	glfwSetWindowUserPointer(__window, this);
+	glfwSetKeyCallback(__window, key_callback_function);
+	glfwSetFramebufferSizeCallback(__window, resize_callback_function);
+	glfwSetCursorPosCallback(__window, mouse_callback_function);
+	glfwSetMouseButtonCallback(__window, mouse_click_callback_function);
 	
 	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	{
-		glfwDestroyWindow(window);
+		glfwDestroyWindow(__window);
 		glfwTerminate();
 		throw EngineError(ErrorType::Window, "Error starting GLAD");
 	}
@@ -48,16 +48,16 @@ Window::Window() : state(WindowState::Windowed), width(1920), height(1080), curr
 	glEnable(GL_DEPTH);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	previous_time = glfwGetTime();
-	monitor_video_mode = glfwGetVideoMode(monitor);
+	__previous_time = glfwGetTime();
+	__monitor_video_mode = glfwGetVideoMode(__monitor);
 
-	update_state(state);
+	update_state(__state);
 }
 
 Window::~Window()
 {
 	trace_message("Destroying Window");
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(__window);
 }
 
 void Window::start_opengl()
@@ -75,7 +75,7 @@ void Window::shutdown_opengl()
 
 bool Window::running()
 {
-	return !glfwWindowShouldClose(window);
+	return !glfwWindowShouldClose(__window);
 }
 
 double Window::update()
@@ -83,8 +83,8 @@ double Window::update()
 	glfwPollEvents();
 
 	double current = glfwGetTime();
-	double dt = current - previous_time;
-	previous_time = current;
+	double dt = current - __previous_time;
+	__previous_time = current;
 
 	return dt;
 }
@@ -97,17 +97,17 @@ void Window::reset()
 
 void Window::close()
 {
-	glfwSetWindowShouldClose(window, true);
+	glfwSetWindowShouldClose(__window, true);
 }
 
 void Window::swap_buffers()
 {
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(__window);
 }
 
 void Window::update_state(const WindowState& s)
 {
-	state = s;
+	__state = s;
 	switch (s)
 	{
 	case WindowState::WindowedFullscreen:
@@ -127,32 +127,32 @@ void Window::update_state(const WindowState& s)
 
 void Window::set_fullscreen()
 {
-	glfwSetWindowMonitor(window, monitor, 0, 0, width, height, monitor_video_mode->refreshRate);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowMonitor(__window, __monitor, 0, 0, __width, __height, __monitor_video_mode->refreshRate);
+	glfwSetInputMode(__window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Window::set_windowed()
 {
-	glfwSetWindowMonitor(window, nullptr, 0, 0, width, height, monitor_video_mode->refreshRate);
-	current_width = width;
-	current_height = height;
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetWindowPos(window, 100, 100);
+	glfwSetWindowMonitor(__window, nullptr, 0, 0, __width, __height, __monitor_video_mode->refreshRate);
+	__current_width = __width;
+	__current_height = __height;
+	glfwSetInputMode(__window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetWindowPos(__window, 100, 100);
 }
 
 void Window::set_windowed_fullscreen()
 {
-	glfwSetWindowMonitor(window, nullptr, 0, 0, monitor_video_mode->width, monitor_video_mode->height, monitor_video_mode->refreshRate);
-	current_width = monitor_video_mode->width;
-	current_height = monitor_video_mode->height;
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetWindowPos(window, 0, 0);
+	glfwSetWindowMonitor(__window, nullptr, 0, 0, __monitor_video_mode->width, __monitor_video_mode->height, __monitor_video_mode->refreshRate);
+	__current_width = __monitor_video_mode->width;
+	__current_height = __monitor_video_mode->height;
+	glfwSetInputMode(__window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetWindowPos(__window, 0, 0);
 }
 
 std::pair<double, double> Window::screen_coordinates(double x, double y) const
 {
-	double new_x = x / static_cast<double>(current_width);
-	double new_y = 1 - y / static_cast<double>(current_height);
+	double new_x = x / static_cast<double>(__current_width);
+	double new_y = 1 - y / static_cast<double>(__current_height);
 	return std::pair<double, double>(new_x, new_y);
 }
 
@@ -170,7 +170,7 @@ static void key_callback_function(GLFWwindow* glfw_window, int key, int scancode
 		else if (current_state == WindowState::Windowed)
 			reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
 		else
-			trace_message("Problem trying to change the window using ALT+ENTER...");
+			trace_message("Problem trying to change the __window using ALT+ENTER...");
 	}
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 		reinterpret_cast<Window*>(glfwGetWindowUserPointer(glfw_window))->update_state(WindowState::Fullscreen);
@@ -204,5 +204,5 @@ static void mouse_click_callback_function(GLFWwindow* glfw_window, int button, i
 
 WindowState Window::get_current_state() const
 {
-	return state;
+	return __state;
 }

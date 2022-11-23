@@ -5,13 +5,13 @@
 
 #include "../Trace.h"
 
-SceneManager::SceneManager() : changing_scene(false)
+SceneManager::SceneManager() : __changing_scene(false)
 {
 	trace_message("Creating Scene Manager");
 
 	std::shared_ptr<Scene> test = std::make_shared<Sandbox>();
 	add_scene(test);
-	change_scene(test->scene_name);
+	change_scene(test->__scene_name);
 }
 
 SceneManager::~SceneManager()
@@ -21,47 +21,47 @@ SceneManager::~SceneManager()
 
 void SceneManager::update(double& dt)
 {
-	changing_scene = false;
-	current_scene->update(dt);
+	__changing_scene = false;
+	__current_scene->update(dt);
 }
 
 void SceneManager::change_scene(const std::string& scene_name)
 {
-	current_scene = scenes[scene_name];
+	__current_scene = __scenes[scene_name];
 }
 
 void SceneManager::add_scene(const std::shared_ptr<Scene>& scene)
 {
 	if (scene)
 	{
-		scenes.emplace(scene->scene_name, scene);
+		__scenes.emplace(scene->__scene_name, scene);
 	}
 }
 
 RenderList SceneManager::get_renderables() const
 {
 	// Sort things by z_order
-	current_scene->registry.sort<Transform>(Transform::compare);
+	__current_scene->__registry.sort<Transform>(Transform::compare);
 
-	return current_scene->registry.view<const Transform, const Material, const RenderTag>();
+	return __current_scene->__registry.view<const Transform, const Material, const RenderTag>();
 }
 
 std::shared_ptr<Camera>& SceneManager::get_camera() const
 {
-	return current_scene->camera;
+	return __current_scene->__camera;
 }
 
 bool SceneManager::scene_changed() const
 {
-	return changing_scene;
+	return __changing_scene;
 } 
 
 bool SceneManager::finished() const
 {
-	return current_scene->scene_finished;
+	return __current_scene->__scene_finished;
 }
 
 bool SceneManager::shutdown() const
 {
-	return current_scene->shutdown;
+	return __current_scene->__shutdown;
 }

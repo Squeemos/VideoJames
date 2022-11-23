@@ -32,15 +32,15 @@ public:
 	inline std::shared_ptr<Mesh> find_or_construct_mesh(const std::string& mesh_name)
 	{
 		// See if we can find the mesh
-		auto iterator = meshes.find(mesh_name);
-		if (iterator != meshes.end())
+		auto iterator = __meshes.find(mesh_name);
+		if (iterator != __meshes.end())
 			return iterator->second;
 		else
 		{
 			// Create it if it doesn't exist
 			std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>("./data/meshes/" + mesh_name + ".obj");
 			//std::shared_ptr<Mesh> new_mesh = std::make_shared<Mesh>();
-			meshes.insert(std::make_pair(mesh_name, new_mesh));
+			__meshes.insert(std::make_pair(mesh_name, new_mesh));
 
 			return new_mesh;
 		}
@@ -49,14 +49,14 @@ public:
 	inline std::shared_ptr<Texture> find_or_construct_texture(const std::string& texture_name, TextureType type)
 	{
 		// See if we can find the texture
-		auto iterator = textures.find(texture_name);
-		if (iterator != textures.end())
+		auto iterator = __textures.find(texture_name);
+		if (iterator != __textures.end())
 			return iterator->second;
 		else
 		{
 			// Create it if it doesn't exist
 			std::shared_ptr<Texture> new_texture = std::make_shared<Texture>(texture_name, type);
-			textures.insert(std::make_pair(texture_name, new_texture));
+			__textures.insert(std::make_pair(texture_name, new_texture));
 
 			return new_texture;
 		}
@@ -64,6 +64,6 @@ public:
 
 private:
 	// Unordered maps of the resources we want to manage
-	std::unordered_map<std::string, std::shared_ptr<Mesh>> meshes;
-	std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
+	std::unordered_map<std::string, std::shared_ptr<Mesh>> __meshes;
+	std::unordered_map<std::string, std::shared_ptr<Texture>> __textures;
 };

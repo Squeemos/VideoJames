@@ -33,11 +33,11 @@ public:
 
 private:
 	// Program id is the opengl program id of the shader
-	GLuint program_id;
+	GLuint __program_id;
 
 	// Vertex Path and Fragment Path are the paths to each part of the shader
 	// The name is the name of the shader, and if none is ever given, it's the two paths concatenated
-	std::string vertex_path, fragment_path, name;
+	std::string __vertex_path, __fragment_path, __name;
 
 	// Method for loading in the shaders
 	void load_shader(const std::string& vertex, const std::string& fragment);

@@ -13,30 +13,30 @@ enum class ErrorType
 class EngineError : public std::exception
 {
 public:
-	EngineError() : message("Default Error thrown") {}
+	EngineError() : __message("Default Error thrown") {}
 	EngineError(const ErrorType& t, const std::string& m)
 	{
-		message = "Error Type : ";
+		__message = "Error Type : ";
 		switch (t)
 		{
 		case ErrorType::None:
-			message += "None";
+			__message += "None";
 			break;
 		case ErrorType::Window:
-			message += "Window";
+			__message += "Window";
 			break;
 		case ErrorType::Graphics:
-			message += "Graphics";
+			__message += "Graphics";
 			break;
 		default:
 			break;
 		}
 
-		message += "\n" + m;
+		__message += "\n" + m;
 	}
 	~EngineError() {}
 
-	const char* what() const noexcept { return message.c_str(); }
+	const char* what() const noexcept { return __message.c_str(); }
 protected:
-	std::string message;
+	std::string __message;
 };

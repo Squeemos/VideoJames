@@ -23,8 +23,8 @@ private:
 	// VAO : Vertex Array Object that holds all the relevant vertex data
 	// VBO : Vertex Buffer Object that holds the vertex data
 	// EBO : Element Buffer Object that holds the vertex index data
-	GLuint VAO, VBO, EBO;
+	GLuint __VAO, __VBO, __EBO;
 
 	// Number of indices for when we go to draw later since we need that info
-	GLsizei num_indices;
+	GLsizei __num_indices;
 };

@@ -156,13 +156,13 @@ constexpr auto TOTAL_MOUSE_BUTTONS = 8;
 class InputManager
 {
 private:
-	InputManager() : mouse_x(0.0), mouse_y(0.0)
+	InputManager() : __mouse_x(0.0), __mouse_y(0.0)
 	{
-		current_keys.reset();
-		previous_keys.reset();
+		__current_keys.reset();
+		__previous_keys.reset();
 
-		current_mouse.reset();
-		previous_mouse.reset();
+		__current_mouse.reset();
+		__previous_mouse.reset();
 	}
 	~InputManager() = default;
 
@@ -182,20 +182,20 @@ public:
 	// Update the previous keys to what was just pressed
 	void update()
 	{
-		previous_keys = current_keys;
-		previous_mouse = current_mouse;
+		__previous_keys = __current_keys;
+		__previous_mouse = __current_mouse;
 	}
 
 	// Check if the key was pressed for a single frame
 	bool check_key_pressed(unsigned int key) const
 	{
-		return current_keys[key] && !previous_keys[key];
+		return __current_keys[key] && !__previous_keys[key];
 	}
 
 	// Check if the key was held for for more than one frame
 	bool check_key_held(unsigned int key) const
 	{
-		return current_keys[key];
+		return __current_keys[key];
 	}
 
 	// Update the key based on an action
@@ -204,10 +204,10 @@ public:
 		switch (action)
 		{
 		case GLFW_PRESS:
-			current_keys.set(key);
+			__current_keys.set(key);
 			break;
 		case GLFW_RELEASE:
-			current_keys.reset(key);
+			__current_keys.reset(key);
 			break;
 		default:
 			break;
@@ -216,13 +216,13 @@ public:
 
 	void update_mouse_position(std::pair<double, double> mouse_pos)
 	{
-		mouse_x = mouse_pos.first;
-		mouse_y = mouse_pos.second;
+		__mouse_x = mouse_pos.first;
+		__mouse_y = mouse_pos.second;
 	}
 
 	glm::vec2 get_mouse_position() const
 	{
-		return glm::vec2(mouse_x, mouse_y);
+		return glm::vec2(__mouse_x, __mouse_y);
 	}
 
 	void update_mouse_click(unsigned int button, unsigned int action)
@@ -231,10 +231,10 @@ public:
 		switch (action)
 		{
 		case GLFW_PRESS:
-			current_mouse.set(button);
+			__current_mouse.set(button);
 			break;
 		case GLFW_RELEASE:
-			current_mouse.reset(button);
+			__current_mouse.reset(button);
 		default:
 			break;
 		}
@@ -242,20 +242,20 @@ public:
 
 	bool check_mouse_clicked(unsigned int button) const
 	{
-		return current_mouse[button] && !previous_mouse[button];
+		return __current_mouse[button] && !__previous_mouse[button];
 	}
 
 	bool check_mouse_held(unsigned int button) const
 	{
-		return current_mouse[button];
+		return __current_mouse[button];
 	}
 
 private:
 	// Use bitsets for the keys since it's a smaller amount of memory and quick to work with
-	std::bitset<TOTAL_KEYS> current_keys;
-	std::bitset<TOTAL_KEYS> previous_keys;
+	std::bitset<TOTAL_KEYS> __current_keys;
+	std::bitset<TOTAL_KEYS> __previous_keys;
 
-	double mouse_x, mouse_y;
-	std::bitset<TOTAL_MOUSE_BUTTONS> current_mouse;
-	std::bitset<TOTAL_MOUSE_BUTTONS> previous_mouse;
+	double __mouse_x, __mouse_y;
+	std::bitset<TOTAL_MOUSE_BUTTONS> __current_mouse;
+	std::bitset<TOTAL_MOUSE_BUTTONS> __previous_mouse;
 };

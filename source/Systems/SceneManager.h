@@ -42,12 +42,12 @@ public:
 
 private:
 	// A map of the scenes that are loaded
-	std::unordered_map<std::string, std::shared_ptr<Scene>> scenes;
+	std::unordered_map<std::string, std::shared_ptr<Scene>> __scenes;
 
 	// The current scene to be processed and rendered
-	std::shared_ptr<Scene> current_scene;
+	std::shared_ptr<Scene> __current_scene;
 
 	// Whether or now the scene is changing so we can tell the engine
-	bool changing_scene;
+	bool __changing_scene;
 };
 

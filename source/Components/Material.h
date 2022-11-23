@@ -12,31 +12,31 @@ class Material
 {
 public:
 	// These don't need to really do anything since the default sets the ptrs to null
-	Material() : color(1.0, 0.65, 0.0) {}
+	Material() : __color(1.0, 0.65, 0.0) {}
 	~Material() = default;
 
 	// Add components to the material
-	inline void add_mesh(std::shared_ptr<Mesh> m) { mesh = m; }
-	inline void add_texture(std::shared_ptr<Texture> t) { texture = t; }
-	inline void add_color(const glm::vec3& c) { color = c; }
+	inline void add_mesh(std::shared_ptr<Mesh> m) { __mesh = m; }
+	inline void add_texture(std::shared_ptr<Texture> t) { __texture = t; }
+	inline void add_color(const glm::vec3& c) { __color = c; }
 
 	// Check to see if they have valid members
-	inline bool has_mesh() const { return mesh != nullptr; }
-	inline bool has_texture() const { return texture != nullptr; }
+	inline bool has_mesh() const { return __mesh != nullptr; }
+	inline bool has_texture() const { return __texture != nullptr; }
 
 	// Tell the mesh to bind for the draw step
-	inline void bind_mesh() const { mesh->bind(); }
-	inline void unbind_mesh() const { mesh->unbind(); }
+	inline void bind_mesh() const { __mesh->bind(); }
+	inline void unbind_mesh() const { __mesh->unbind(); }
 
 	// Tell the texture to bind for the draw step
-	inline void bind_texture() const { texture->bind(); }
-	inline void unbind_texture() const { texture->unbind(); }
+	inline void bind_texture() const { __texture->bind(); }
+	inline void unbind_texture() const { __texture->unbind(); }
 
 	// Get the color of the material (mostly used in case there isn't a texture)
-	inline const glm::vec3& get_color() const { return color; }
+	inline const glm::vec3& get_color() const { return __color; }
 
 private:
-	std::shared_ptr<Mesh> mesh;
-	std::shared_ptr<Texture> texture;
-	glm::vec3 color;
+	std::shared_ptr<Mesh> __mesh;
+	std::shared_ptr<Texture> __texture;
+	glm::vec3 __color;
 };

@@ -3,7 +3,7 @@
 
 #include "../Systems/InputManager.h"
 
-Player::Player()
+Player::Player() : __value(0)
 {
 }
 
@@ -14,6 +14,7 @@ Player::~Player()
 Player::Player(Player&& other) noexcept
 {
 	other;
+	__value = other.__value;
 }
 
 Player& Player::operator=(Player&& other) noexcept

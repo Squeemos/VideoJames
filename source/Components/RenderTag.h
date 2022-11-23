@@ -10,10 +10,10 @@ class RenderTag
 {
 public:
 	RenderTag() = delete;
-	RenderTag(RenderType type) : render_type(type) {}
+	RenderTag(RenderType type) : __render_type(type) {}
 
-	const RenderType get_type() const { return render_type; }
+	const RenderType get_type() const { return __render_type; }
 
 private:
-	RenderType render_type;
+	RenderType __render_type;
 };

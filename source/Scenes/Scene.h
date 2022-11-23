@@ -15,7 +15,7 @@ class Scene
 public:
 
 	// All virtual methods that need to be created for scenes to work
-	Scene() : camera(nullptr), shutdown(false), scene_finished(false) { }
+	Scene() : __camera(nullptr), __shutdown(false), __scene_finished(false) { }
 	virtual ~Scene() {}
 	virtual void update(double& dt) = 0;
 
@@ -23,11 +23,11 @@ public:
 
 protected:
 	// Each scene at least has a name, camera, registry
-	entt::registry registry;
-	std::string scene_name;
-	std::shared_ptr<Camera> camera;
+	entt::registry __registry;
+	std::string __scene_name;
+	std::shared_ptr<Camera> __camera;
 
-	bool shutdown;
-	bool scene_finished;
+	bool __shutdown;
+	bool __scene_finished;
 };
 

@@ -18,16 +18,16 @@ Sandbox::Sandbox()
 {
 	trace_message("Creating Sandbox Scene");
 
-	camera = std::make_shared<Camera>();
+	__camera = std::make_shared<Camera>();
 
-	scene_name = "Sandbox";
+	__scene_name = "Sandbox";
 
 	init();
 }
 
 Sandbox::~Sandbox()
 {
-	registry.clear();
+	__registry.clear();
 }
 
 void Sandbox::update(double& dt)
@@ -38,42 +38,38 @@ void Sandbox::update(double& dt)
 		return;
 	}
 
-	for (auto [e, rb] : registry.view<RigidBody>().each())
-	{
-		rb.update(dt);
-	}
+	for (auto [e, rb, tform] : __registry.view<RigidBody, Transform>().each())
+		rb.update(dt, tform);
 
-	for (auto [e, player, tform] : registry.view<Player, Transform>().each())
-	{
+	for (auto [e, player, tform] : __registry.view<Player, Transform>().each())
 		player.update(dt, tform);
-	}
 
-	for (auto [e, cf, tform] : registry.view<LinearCameraFollow, Transform>().each())
+	for (auto [e, cf, tform] : __registry.view<LinearCameraFollow, Transform>().each())
 		cf.update(tform.get_translation());
 
 	if (InputManager::get_instance().check_mouse_held(GLFW_MOUSE_BUTTON_RIGHT))
 	{
-		glm::vec2 mouse_world = camera->mouse_to_world(InputManager::get_instance().get_mouse_position());
-		entt::entity e = registry.create();
-		registry.emplace<Transform>(e, mouse_world, glm::vec2(200, 200), 0.0f, 2.0f);
-		auto& mat = registry.emplace<Material>(e);
+		glm::vec2 mouse_world = __camera->mouse_to_world(InputManager::get_instance().get_mouse_position());
+		entt::entity e = __registry.create();
+		__registry.emplace<Transform>(e, mouse_world, glm::vec2(200, 200), 0.0f, 2.0f);
+		auto& mat = __registry.emplace<Material>(e);
 		mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 		mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgb_tex.jpg", TextureType::Single));
-		registry.emplace<RenderTag>(e, RenderType::World);
+		__registry.emplace<RenderTag>(e, RenderType::World);
 	}
 
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_5))
-		camera->reset_zoom();
+		__camera->reset_zoom();
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_8))
-		camera->zoom_y(-.001f);
+		__camera->zoom_y(-.001f);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_2))
-		camera->zoom_y(.001f);
+		__camera->zoom_y(.001f);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_4))
-		camera->zoom_x(-.001f);
+		__camera->zoom_x(-.001f);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_6))
-		camera->zoom_x(.001f);
+		__camera->zoom_x(.001f);
 
-	for (auto [e, ge] : registry.view<GuiContainer>().each())
+	for (auto [e, ge] : __registry.view<GuiContainer>().each())
 	{
 		ge.update();
 	}
@@ -81,30 +77,30 @@ void Sandbox::update(double& dt)
 
 void Sandbox::init()
 {
-	registry.clear();
+	__registry.clear();
 
-	entt::entity e = registry.create();
-	auto& tform = registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f, 2.0f);
-	registry.emplace<RigidBody>(e, &tform);
-	registry.emplace<LinearCameraFollow>(e, camera, 1.0f);
-	auto& mat = registry.emplace<Material>(e);
+	entt::entity e = __registry.create();
+	__registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f, 2.0f);
+	__registry.emplace<RigidBody>(e);
+	__registry.emplace<LinearCameraFollow>(e, __camera, 1.0f);
+	auto& mat = __registry.emplace<Material>(e);
 	mat.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
-	registry.emplace<Player>(e);
-	registry.emplace<RenderTag>(e, RenderType::World);
+	__registry.emplace<Player>(e);
+	__registry.emplace<RenderTag>(e, RenderType::World);
 
-	entt::entity e2 = registry.create();
-	registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
-	auto& mat2 = registry.emplace<Material>(e2);
+	entt::entity e2 = __registry.create();
+	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
+	auto& mat2 = __registry.emplace<Material>(e2);
 	mat2.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
-	registry.emplace<RenderTag>(e2, RenderType::World);
+	__registry.emplace<RenderTag>(e2, RenderType::World);
 
-	entt::entity e3 = registry.create();
-	auto& tform3 = registry.emplace<Transform>(e3, glm::vec2(-1255.0f, 695.0f), glm::vec2(50.0f, 50.0f), 0.0f, 10.0f);
-	auto& mat3 = registry.emplace<Material>(e3);
+	entt::entity e3 = __registry.create();
+	auto& tform3 = __registry.emplace<Transform>(e3, glm::vec2(-1255.0f, 695.0f), glm::vec2(50.0f, 50.0f), 0.0f, 10.0f);
+	auto& mat3 = __registry.emplace<Material>(e3);
 	mat3.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat3.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/x.png", TextureType::Single));
-	registry.emplace<RenderTag>(e3, RenderType::Screen);
-	auto& gc = registry.emplace<GuiContainer>(e3, camera);
-	gc.add_element(std::make_shared<ExitButton>(&shutdown, tform3));
+	__registry.emplace<RenderTag>(e3, RenderType::Screen);
+	auto& gc = __registry.emplace<GuiContainer>(e3, __camera);
+	gc.add_element(std::make_shared<ExitButton>(&__shutdown, tform3));
 }

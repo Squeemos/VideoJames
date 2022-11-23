@@ -19,8 +19,8 @@ public:
 
 private:
 	// The members inside that interact
-	std::unique_ptr<Window> window;
-	std::unique_ptr<SceneManager> scene_manager;
-	std::unique_ptr<Renderer> renderer;
+	std::unique_ptr<Window> __window;
+	std::unique_ptr<SceneManager> __scene_manager;
+	std::unique_ptr<Renderer> __renderer;
 };
 

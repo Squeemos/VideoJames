@@ -30,7 +30,7 @@ public:
 
 private:
 	// Internal id for drawing
-	GLuint id;
+	GLuint __id;
 
 	// Used to actually load the texture in case we need to do something else
 	void load_texture(const std::string& p, TextureType type);

@@ -8,17 +8,13 @@ class Shader;
 class Renderer
 {
 public:
-	Renderer(std::shared_ptr<Camera>& cam);
+	Renderer();
 	~Renderer();
 
 	// Given a list of renderables, draw them
-	void render(RenderList renderables);
-
-	// A method to update the camera
-	inline void update_camera(std::shared_ptr<Camera>& cam) { camera = cam; }
+	void render(RenderList renderables, std::shared_ptr<Camera> camera);
 
 private:
-	std::shared_ptr<Shader> shader;
-	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Shader> __shader;
 };
 

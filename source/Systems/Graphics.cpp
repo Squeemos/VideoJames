@@ -11,12 +11,12 @@
 
 static std::string read_shader(std::string file_name);
 
-Shader::Shader(const std::string& vertex, const std::string& fragment) : vertex_path(vertex), fragment_path(fragment), name(vertex + fragment)
+Shader::Shader(const std::string& vertex, const std::string& fragment) : __vertex_path(vertex), __fragment_path(fragment), __name(vertex + fragment)
 {
 	load_shader(vertex, fragment);
 }
 
-Shader::Shader(const std::string& vertex, const std::string& fragment, const std::string& n) : vertex_path(vertex), fragment_path(fragment), name(n)
+Shader::Shader(const std::string& vertex, const std::string& fragment, const std::string& n) : __vertex_path(vertex), __fragment_path(fragment), __name(n)
 {
 	load_shader(vertex, fragment);
 }
@@ -27,7 +27,7 @@ Shader::~Shader()
 
 void Shader::use()
 {
-	glUseProgram(program_id);
+	glUseProgram(__program_id);
 }
 
 void Shader::unuse()
@@ -37,32 +37,32 @@ void Shader::unuse()
 
 void Shader::set_uniform(const std::string& n, bool value) const
 {
-	glUniform1i(glGetUniformLocation(program_id, n.c_str()), static_cast<int>(value));
+	glUniform1i(glGetUniformLocation(__program_id, n.c_str()), static_cast<int>(value));
 }
 
 void Shader::set_uniform(const std::string& n, int value) const
 {
-	glUniform1i(glGetUniformLocation(program_id, n.c_str()), static_cast<int>(value));
+	glUniform1i(glGetUniformLocation(__program_id, n.c_str()), static_cast<int>(value));
 }
 
 void Shader::set_uniform(const std::string& n, float value) const
 {
-	glUniform1f(glGetUniformLocation(program_id, n.c_str()), value);
+	glUniform1f(glGetUniformLocation(__program_id, n.c_str()), value);
 }
 
 void Shader::set_uniform(const std::string& n, const glm::vec2 vec2) const
 {
-	glUniform2f(glGetUniformLocation(program_id, n.c_str()), vec2.x, vec2.y);
+	glUniform2f(glGetUniformLocation(__program_id, n.c_str()), vec2.x, vec2.y);
 }
 
 void Shader::set_uniform(const std::string& n, const glm::vec3 vec3) const
 {
-	glUniform3f(glGetUniformLocation(program_id, n.c_str()), vec3.x, vec3.y, vec3.z);
+	glUniform3f(glGetUniformLocation(__program_id, n.c_str()), vec3.x, vec3.y, vec3.z);
 }
 
 void Shader::set_uniform(const std::string& n, const glm::mat4 mat4) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(program_id, n.c_str()), 1, false, glm::value_ptr(mat4));
+	glUniformMatrix4fv(glGetUniformLocation(__program_id, n.c_str()), 1, false, glm::value_ptr(mat4));
 }
 
 void Shader::load_shader(const std::string& vertex, const std::string& fragment)
@@ -110,17 +110,17 @@ void Shader::load_shader(const std::string& vertex, const std::string& fragment)
 	}
 
 	// Create the shader program
-	program_id = glCreateProgram();
-	glAttachShader(program_id, vertex_shader);
-	glAttachShader(program_id, frag_shader);
-	glLinkProgram(program_id);
+	__program_id = glCreateProgram();
+	glAttachShader(__program_id, vertex_shader);
+	glAttachShader(__program_id, frag_shader);
+	glLinkProgram(__program_id);
 
 	// Check that the shader program was properly created
-	glGetProgramiv(program_id, GL_LINK_STATUS, &success);
+	glGetProgramiv(__program_id, GL_LINK_STATUS, &success);
 	if (!success)
 	{
 		// Get info of error
-		glGetProgramInfoLog(program_id, 1024, NULL, info_log);
+		glGetProgramInfoLog(__program_id, 1024, NULL, info_log);
 
 		// Delete the shaders before throwing
 		glDeleteShader(vertex_shader);

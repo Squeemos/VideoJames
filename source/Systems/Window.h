@@ -52,20 +52,20 @@ public:
 
 private:
 	// Members to describe the state of the window
-	WindowState state;
-	GLuint width, height;
-	GLuint current_width, current_height;
+	WindowState __state;
+	GLuint __width, __height;
+	GLuint __current_width, __current_height;
 
 	// Used to calculate dt
-	double previous_time;
+	double __previous_time;
 
 	// Actual pointer to the window we'll be using
-	GLFWwindow* window;
+	GLFWwindow* __window;
 
 	// Pointer to the monitor the window will be on
-	GLFWmonitor* monitor;
+	GLFWmonitor* __monitor;
 
 	// Pointer to the video mode of the monitor
-	const GLFWvidmode* monitor_video_mode;
+	const GLFWvidmode* __monitor_video_mode;
 };
 

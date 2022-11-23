@@ -22,9 +22,9 @@ struct Vertex
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &__VAO);
+	glDeleteBuffers(1, &__VBO);
+	glDeleteBuffers(1, &__EBO);
 }
 
 Mesh::Mesh(const std::string& mesh_path)
@@ -72,18 +72,18 @@ Mesh::Mesh(const std::string& mesh_path)
 		}
 	}
 
-	num_indices = static_cast<GLsizei>(is.size());
+	__num_indices = static_cast<GLsizei>(is.size());
 
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	glGenVertexArrays(1, &__VAO);
+	glGenBuffers(1, &__VBO);
+	glGenBuffers(1, &__EBO);
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(__VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, __VBO);
 	glBufferData(GL_ARRAY_BUFFER, vs.size() * sizeof(Vertex), vs.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, __EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, is.size() * sizeof(GLuint), is.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
@@ -97,8 +97,8 @@ Mesh::Mesh(const std::string& mesh_path)
 
 void Mesh::bind() const
 {
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(__VAO);
+	glDrawElements(GL_TRIANGLES, __num_indices, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::unbind() const

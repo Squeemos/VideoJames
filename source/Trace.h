@@ -13,9 +13,9 @@ public:
 	TraceSystem(const std::string& file_path)
 	{
 		// Open the file
-		file.open(file_path);
+		__file.open(file_path);
 		// Check to make sure that it was read correctly
-		if (file.rdstate() & std::ofstream::failbit)
+		if (__file.rdstate() & std::ofstream::failbit)
 		{
 			std::cerr << "Cannot create the trace file. Error from: " << file_path << std::endl;
 			std::abort();
@@ -25,7 +25,7 @@ public:
 	// Shutdown the trace system and close the file
 	~TraceSystem()
 	{
-		file.close();
+		__file.close();
 	}
 
 	// Prevent copying
@@ -36,19 +36,19 @@ public:
 	// Actually write the message into the file
 	void operator<<(const std::string& message)
 	{
-		mutex.lock();
+		__mutex.lock();
 
 		#ifdef _DEBUG
 		std::cout << message << std::endl;
 		#endif
 
-		file << message << std::endl;
-		mutex.unlock();
+		__file << message << std::endl;
+		__mutex.unlock();
 	}
 
 private:
-	std::ofstream file;
-	std::mutex mutex;
+	std::ofstream __file;
+	std::mutex __mutex;
 };
 
 // How to interact with the trace system

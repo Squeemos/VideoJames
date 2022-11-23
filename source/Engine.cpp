@@ -11,9 +11,9 @@ Engine::Engine()
 	
 	Window::start_opengl();
 
-	window = std::make_unique<Window>();
-	scene_manager = std::make_unique<SceneManager>();
-	renderer = std::make_unique<Renderer>(scene_manager->get_camera());
+	__window = std::make_unique<Window>();
+	__scene_manager = std::make_unique<SceneManager>();
+	__renderer = std::make_unique<Renderer>();
 }
 
 Engine::~Engine()
@@ -25,25 +25,21 @@ Engine::~Engine()
 
 void Engine::run()
 {
-	while (window->running())
+	while (__window->running())
 	{
-		window->reset();
+		__window->reset();
 
 		InputManager::get_instance().update();
 
-		double dt = window->update();
+		double dt = __window->update();
 
-		scene_manager->update(dt);
+		__scene_manager->update(dt);
 
-		if (scene_manager->scene_changed())
-			renderer->update_camera(scene_manager->get_camera());
+		if (__scene_manager->shutdown())
+			__window->close();
 
-		if (scene_manager->shutdown())
-			window->close();
+		__renderer->render(__scene_manager->get_renderables(), __scene_manager->get_camera());
 
-		const auto renderables = scene_manager->get_renderables();
-		renderer->render(renderables);
-
-		window->swap_buffers();
+		__window->swap_buffers();
 	}
 }
