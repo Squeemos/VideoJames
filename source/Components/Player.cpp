@@ -3,7 +3,7 @@
 
 #include "../Systems/InputManager.h"
 
-Player::Player() : __value(0)
+Player::Player() : __move_speed(400.0f)
 {
 }
 
@@ -11,10 +11,8 @@ Player::~Player()
 {
 }
 
-Player::Player(Player&& other) noexcept
+Player::Player(Player&& other) noexcept : __move_speed(other.__move_speed)
 {
-	other;
-	__value = other.__value;
 }
 
 Player& Player::operator=(Player&& other) noexcept
@@ -28,13 +26,13 @@ void Player::update(double dt, Transform& tform)
 	float float_dt = static_cast<float>(dt);
 
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_W))
-		tform.translate_y(400 * float_dt);
+		tform.translate_y(__move_speed * float_dt);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_S))
-		tform.translate_y(-400 * float_dt);
+		tform.translate_y(-__move_speed * float_dt);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_A))
-		tform.translate_x(-400 * float_dt);
+		tform.translate_x(-__move_speed * float_dt);
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_D))
-		tform.translate_x(400 * float_dt);
+		tform.translate_x(__move_speed * float_dt);
 
 	if (InputManager::get_instance().check_key_pressed(GLFW_KEY_UP))
 		tform.set_z_order(2.0f);

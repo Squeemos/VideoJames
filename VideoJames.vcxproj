@@ -176,6 +176,7 @@ xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dependencies\GLAD\src\glad.c" />
+    <ClCompile Include="source\Components\Collision.cpp" />
     <ClCompile Include="source\Components\Gui.cpp" />
     <ClCompile Include="source\Components\LinearCameraFollow.cpp" />
     <ClCompile Include="source\Components\Mesh.cpp" />
@@ -193,6 +194,7 @@ xcopy "$(ProjectDir)assets" "$(TargetDir)assets" /e /y /i /r</Command>
     <ClCompile Include="source\Systems\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Components\Collision.h" />
     <ClInclude Include="source\Components\Gui.h" />
     <ClInclude Include="source\Components\LinearCameraFollow.h" />
     <ClInclude Include="source\Components\Material.h" />

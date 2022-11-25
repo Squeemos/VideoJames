@@ -13,5 +13,5 @@ public:
 	void update(double dt, Transform& tform);
 
 private:
-	int __value;
+	float __move_speed;
 };
