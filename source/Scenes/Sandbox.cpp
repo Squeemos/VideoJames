@@ -39,14 +39,26 @@ void Sandbox::update(double& dt)
 		return;
 	}
 
-	for (auto [e, rb, tform] : __registry.view<RigidBody, Transform>().each())
-		rb.update(dt, tform);
+	__registry.view<RigidBody, Transform>().each([&dt](auto e, auto& rb, auto& tform)
+		{
+			e;
+			rb.update(dt, tform);
+		}
+	);
 
-	for (auto [e, player, tform] : __registry.view<Player, Transform>().each())
-		player.update(dt, tform);
+	__registry.view<Player, Transform>().each([&dt](auto e, auto& player, auto& tform)
+		{
+			e;
+			player.update(dt, tform);
+		}
+	);
 
-	for (auto [e, cf, tform] : __registry.view<LinearCameraFollow, Transform>().each())
-		cf.update(tform.get_translation());
+	__registry.view<LinearCameraFollow, Transform>().each([](auto e, auto& cf, auto& tform)
+		{
+			e;
+			cf.update(tform.get_translation());
+		}
+	);
 
 	if (InputManager::get_instance().check_mouse_held(GLFW_MOUSE_BUTTON_RIGHT))
 	{
@@ -70,19 +82,18 @@ void Sandbox::update(double& dt)
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_6))
 		__camera->zoom_x(.001f);
 
-	for (auto [e, ge] : __registry.view<GuiContainer>().each())
-	{
-		ge.update();
-	}
+	__registry.view<GuiContainer>().each([](auto e, auto& ge)
+		{
+			e;
+			ge.update();
+		}
+	);
 
 	auto view = __registry.view<Collider, Transform>();
 	for (auto first = view.begin(); first != view.end(); ++first)
 	{
-		for (auto second = first; second != view.end(); ++second)
+		for (auto second = std::next(first); second != view.end(); ++second)
 		{
-			if (first == second)
-				continue;
-
 			auto& first_collider = view.get<Collider>(*first);
 			auto& second_collider = view.get<Collider>(*second);
 			
@@ -92,7 +103,13 @@ void Sandbox::update(double& dt)
 			bool collided = Collider::check_collision(first_collider, first_tform, second_collider, second_tform);
 			if (collided)
 			{
-				trace_message("Collision detected");
+				__registry.get<Material>(*first).add_color(glm::vec3(0.0f, 1.0f, 0.0f));
+				__registry.get<Material>(*second).add_color(glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+			else
+			{
+				__registry.get<Material>(*first).add_color(glm::vec3(1.0f, 0.0f, 0.0f));
+				__registry.get<Material>(*second).add_color(glm::vec3(1.0f, 0.0f, 0.0f));
 			}
 		}
 	}
@@ -111,13 +128,15 @@ void Sandbox::init()
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
 	__registry.emplace<Player>(e);
 	__registry.emplace<RenderTag>(e, RenderType::World);
-	__registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>());
+	// __registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
+	__registry.emplace<Collider>(e, ColliderType::Point, std::make_shared<PointCollider>());
 
 	auto e2 = __registry.create();
 	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
 	auto& mat2 = __registry.emplace<Material>(e2);
 	mat2.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	__registry.emplace<RenderTag>(e2, RenderType::World);
+	__registry.emplace<Collider>(e2, ColliderType::Box, std::make_shared<BoxCollider>(200.0f, 200.0f));
 
 	auto e3 = __registry.create();
 	auto& tform3 = __registry.emplace<Transform>(e3, glm::vec2(-1255.0f, 695.0f), glm::vec2(50.0f, 50.0f), 0.0f, 10.0f);
@@ -127,4 +146,11 @@ void Sandbox::init()
 	__registry.emplace<RenderTag>(e3, RenderType::Screen);
 	auto& gc = __registry.emplace<GuiContainer>(e3, __camera);
 	gc.add_element(std::make_shared<ExitButton>(&__shutdown, tform3));
+
+	auto e4 = __registry.create();
+	__registry.emplace<Transform>(e4, glm::vec2(-300.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f);
+	auto& mat4 = __registry.emplace<Material>(e4);
+	mat4.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
+	__registry.emplace<RenderTag>(e4, RenderType::World);
+	__registry.emplace<Collider>(e4, ColliderType::Circle, std::make_shared<CircleCollider>(100.0f));
 }
