@@ -53,6 +53,14 @@ void Sandbox::update(double& dt)
 		}
 	);
 
+	__registry.view<Player, Collider>().each([&dt](auto e, auto& player, auto& collider)
+		{
+			e;
+			player;
+			collider;
+		}
+	);
+
 	__registry.view<LinearCameraFollow, Transform>().each([](auto e, auto& cf, auto& tform)
 		{
 			e;
@@ -100,8 +108,8 @@ void Sandbox::update(double& dt)
 			auto& first_tform = view.get<Transform>(*first);
 			auto& second_tform = view.get<Transform>(*second);
 
-			bool collided = Collider::check_collision(first_collider, first_tform, second_collider, second_tform);
-			if (collided)
+			CollisionInfo info = Collider::check_collision(first_collider, first_tform, second_collider, second_tform);
+			if (info.collided)
 			{
 				__registry.get<Material>(*first).add_color(glm::vec3(0.0f, 1.0f, 0.0f));
 				__registry.get<Material>(*second).add_color(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -120,7 +128,7 @@ void Sandbox::init()
 	__registry.clear();
 
 	auto e = __registry.create();
-	__registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f, 2.0f);
+	__registry.emplace<Transform>(e, glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 200.0f), 45.0f, 2.0f);
 	__registry.emplace<RigidBody>(e);
 	__registry.emplace<LinearCameraFollow>(e, __camera, 1.0f);
 	auto& mat = __registry.emplace<Material>(e);
@@ -128,8 +136,9 @@ void Sandbox::init()
 	mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgba_tex.png", TextureType::Single));
 	__registry.emplace<Player>(e);
 	__registry.emplace<RenderTag>(e, RenderType::World);
-	// __registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
-	__registry.emplace<Collider>(e, ColliderType::Point, std::make_shared<PointCollider>());
+	__registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
+	//__registry.emplace<Collider>(e, ColliderType::Point, std::make_shared<PointCollider>());
+	//__registry.emplace<Collider>(e, ColliderType::Circle, std::make_shared<CircleCollider>(100.0f));
 
 	auto e2 = __registry.create();
 	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
@@ -148,9 +157,9 @@ void Sandbox::init()
 	gc.add_element(std::make_shared<ExitButton>(&__shutdown, tform3));
 
 	auto e4 = __registry.create();
-	__registry.emplace<Transform>(e4, glm::vec2(-300.0f, 0.0f), glm::vec2(200.0f, 200.0f), 0.0f);
+	__registry.emplace<Transform>(e4, glm::vec2(-300.0f, 0.0f), glm::vec2(200.0f, 200.0f), 45.0f);
 	auto& mat4 = __registry.emplace<Material>(e4);
 	mat4.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	__registry.emplace<RenderTag>(e4, RenderType::World);
-	__registry.emplace<Collider>(e4, ColliderType::Circle, std::make_shared<CircleCollider>(100.0f));
+	__registry.emplace<Collider>(e4, ColliderType::Circle, std::make_shared<CircleCollider>(141.421f));
 }
