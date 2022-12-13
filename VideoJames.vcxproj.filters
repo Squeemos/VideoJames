@@ -75,9 +75,6 @@
     <ClCompile Include="source\Scenes\Sandbox.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="source\Components\RigidBody.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="source\Components\LinearCameraFollow.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -149,12 +146,6 @@
     <ClInclude Include="source\Components\LinearCameraFollow.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="source\Components\RigidBody.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Components\RenderTag.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="source\Components\Gui.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -162,6 +153,12 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="source\Components\Collision.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Delegate.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Components\Tags.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

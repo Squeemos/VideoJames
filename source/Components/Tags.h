@@ -17,3 +17,11 @@ public:
 private:
 	RenderType __render_type;
 };
+
+struct DeletedTag
+{
+};
+
+struct Mouse
+{
+};

@@ -10,7 +10,7 @@
 // Rendering components
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
-#include "../Components/RenderTag.h"
+#include "../Components/Tags.h"
 
 // Typedef for a list of objects to render, this way we only need to edit it in one place
 typedef entt::view<entt::get_t<const Transform, const Material, const RenderTag>> RenderList;

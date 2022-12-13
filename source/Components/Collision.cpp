@@ -2,9 +2,10 @@
 #include "../Trace.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <limits>
+#include <numbers>
 
-constexpr float pi = 3.14159265358979323846f;
-constexpr float tolerance = .00001f;
+inline constexpr float pi = std::numbers::pi_v<float>;
+inline constexpr float tolerance = .00001f;
 
 inline static glm::vec2 scalar_triple_product(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c)
 {

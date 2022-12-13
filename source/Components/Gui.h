@@ -7,6 +7,7 @@ class GuiElement;
 class Camera;
 
 #include "Transform.h"
+#include <entt/entt.hpp>
 
 class GuiContainer
 {
@@ -37,18 +38,4 @@ protected:
 	std::shared_ptr<const Camera> __camera;
 private:
 	
-};
-
-class ExitButton : public GuiElement
-{
-public:
-	ExitButton() = delete;
-	ExitButton(bool* ev, const Transform tform) : __exit_value(ev), __transform(tform) {}
-	~ExitButton() { __exit_value = nullptr; }
-
-	void update();
-
-private:
-	bool* __exit_value;
-	const Transform __transform;
 };
