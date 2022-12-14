@@ -18,6 +18,14 @@ struct ScreenCollider
 {
 };
 
+struct DynamicCollider
+{
+};
+
+struct StaticCollider
+{
+};
+
 enum class ColliderType
 {
 	None = 0,

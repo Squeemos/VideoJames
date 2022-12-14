@@ -31,13 +31,6 @@ static void undo_change(entt::entity self, entt::registry& r, entt::entity other
 	r.get<Material>(self).add_color(glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
-static void sample(entt::entity self, entt::registry& r, entt::entity other)
-{
-	self;
-	r;
-	other;
-}
-
 static void delete_object(entt::entity self, entt::registry& r, entt::entity other)
 {
 	other;
@@ -159,8 +152,28 @@ void Sandbox::update(double& dt)
 		}
 	);
 
+	// Do this with dynamic colliders vs all colliders
 	check_collision(__registry.view<Collider, Transform, WorldCollider>(), __registry);
-	check_collision(__registry.view<Collider, Transform, ScreenCollider>(), __registry);
+
+	auto mouse_view = __registry.view<Mouse, Transform, Collider, ScreenCollider>();
+	auto screen_objects_view = __registry.view<Transform, Collider, ScreenCollider>();
+	for (const auto& [mouse, mouse_transform, mouse_collider] : mouse_view.each())
+	{
+		for (const auto& [screen_object, so_transform, so_collider] : screen_objects_view.each())
+		{
+			CollisionInfo info = Collider::check_collision(mouse_collider, mouse_transform, so_collider, so_transform);
+			if (info.collided)
+			{
+				try_get_delegate(mouse, __registry, SignalType::BeginCollide, screen_object);
+				try_get_delegate(screen_object, __registry, SignalType::BeginCollide, mouse);
+			}
+			else
+			{
+				try_get_delegate(mouse, __registry, SignalType::ExitCollide, screen_object);
+				try_get_delegate(screen_object, __registry, SignalType::ExitCollide, mouse);
+			}
+		}
+	}
 
 	auto delete_view = __registry.view<DeletedTag>();
 	__registry.destroy(delete_view.begin(), delete_view.end());
@@ -180,7 +193,6 @@ void Sandbox::init()
 	__registry.emplace<RenderTag>(e, RenderType::World);
 	__registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
 	__registry.emplace<WorldCollider>(e);
-	__registry.emplace<Delegator>(e).add_delegate(SignalType::BeginCollide, sample);
 
 	auto e2 = __registry.create();
 	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
@@ -226,7 +238,7 @@ void Sandbox::init()
 	__registry.emplace<Collider>(e5, ColliderType::Point, std::make_shared<PointCollider>());
 	__registry.emplace<ScreenCollider>(e5);
 
-	auto other_exit = [this](entt::entity self, entt::registry& r, entt::entity other)
+	auto other_exit = [](entt::entity self, entt::registry& r, entt::entity other)
 	{
 		if (InputManager::get_instance().check_mouse_clicked(GLFW_MOUSE_BUTTON_LEFT))
 			trace_message("Shutdown pressed");
