@@ -33,15 +33,15 @@ static void undo_change(entt::entity self, entt::registry& r, entt::entity other
 
 static void sample(entt::entity self, entt::registry& r, entt::entity other)
 {
+	self;
 	r;
 	other;
-	trace_message("Collision: " + std::to_string(static_cast<unsigned>(self)));
 }
 
 static void delete_object(entt::entity self, entt::registry& r, entt::entity other)
 {
 	other;
-	if (InputManager::get_instance().check_mouse_clicked(GLFW_MOUSE_BUTTON_LEFT))
+	if (InputManager::get_instance().check_mouse_clicked(GLFW_MOUSE_BUTTON_LEFT) && !r.all_of<DeletedTag>(self) && r.all_of<Mouse>(other))
 		r.emplace<DeletedTag>(self);
 }
 
@@ -128,7 +128,7 @@ void Sandbox::update(double& dt)
 		}
 	);
 
-	if (InputManager::get_instance().check_mouse_clicked(GLFW_MOUSE_BUTTON_RIGHT))
+	if (InputManager::get_instance().check_mouse_held(GLFW_MOUSE_BUTTON_RIGHT))
 	{
 		glm::vec2 mouse_world = __camera->mouse_to_world(InputManager::get_instance().get_mouse_position());
 		auto e = __registry.create();
