@@ -10,6 +10,14 @@
 
 typedef std::vector<glm::vec2> Polytope;
 
+struct WorldCollider
+{
+};
+
+struct ScreenCollider
+{
+};
+
 enum class ColliderType
 {
 	None = 0,
