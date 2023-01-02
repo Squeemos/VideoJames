@@ -1,3 +1,8 @@
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#endif // !STB_IMAGE_IMPLEMENTATION
+#include "External/stb_image.h"
+
 #include "Engine.h"
 #include "Errors.h"
 #include "Trace.h"

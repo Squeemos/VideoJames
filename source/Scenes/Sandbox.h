@@ -5,10 +5,10 @@
 class Sandbox : public Scene
 {
 public:
-	Sandbox();
-	virtual ~Sandbox();
+	Sandbox(SceneManager* scene_manager);
+	~Sandbox() override;
 
-	void update(double& dt);
-	void init();
+	void update(double& dt) override;
+	void init() override;
 };
 

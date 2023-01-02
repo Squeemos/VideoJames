@@ -3,21 +3,18 @@
 #include "../Trace.h"
 
 #include "../Systems/ResourceManager.h"
+#include "../Systems/InputManager.h"
+#include "../Systems/SceneManager.h"
 
 #include "../Components/Tags.h"
 #include "../Components/Player.h"
 #include "../Components/Transform.h"
 #include "../Components/Material.h"
 #include "../Components/LinearCameraFollow.h"
-#include "../Components/Gui.h"
 #include "../Components/Collision.h"
 #include "../Components/Delegate.h"
 
-#include "../Systems/InputManager.h"
-
 #include <memory>
-
-//using namespace std::placeholders;
 
 static void change_color(entt::entity self, entt::registry& r, entt::entity other)
 {
@@ -45,37 +42,27 @@ inline static void try_get_delegate(entt::entity first, entt::registry& r, Signa
 		delegator->invoke(signal, first, r, second);
 }
 
-template <typename T>
-inline static void check_collision(T view, entt::registry& r)
+inline static void check_handle_collision(entt::registry& r, entt::entity first, entt::entity second, Collider& first_collider, Transform& first_transform, Collider& second_collider, Transform& second_transform)
 {
-	for (auto first = view.begin(); first != view.end(); ++first)
+	CollisionInfo info = Collider::check_collision(first_collider, first_transform, second_collider, second_transform);
+	if (info.collided)
 	{
-		for (auto second = std::next(first); second != view.end(); ++second)
-		{
-			auto [first_collider, first_tform] = view.get(*first);
-			auto [second_collider, second_tform] = view.get(*second);
-
-			CollisionInfo info = Collider::check_collision(first_collider, first_tform, second_collider, second_tform);
-			if (info.collided)
-			{
-				try_get_delegate(*first, r, SignalType::BeginCollide, *second);
-				try_get_delegate(*second, r, SignalType::BeginCollide, *first);
-			}
-			else
-			{
-				try_get_delegate(*first, r, SignalType::ExitCollide, *second);
-				try_get_delegate(*second, r, SignalType::ExitCollide, *first);
-			}
-		}
+		try_get_delegate(first, r, SignalType::BeginCollide, second);
+		try_get_delegate(second, r, SignalType::BeginCollide, first);
+	}
+	else
+	{
+		try_get_delegate(first, r, SignalType::ExitCollide, second);
+		try_get_delegate(second, r, SignalType::ExitCollide, first);
 	}
 }
 
-Sandbox::Sandbox()
+Sandbox::Sandbox(SceneManager* scene_manager)
 {
 	trace_message("Creating Sandbox Scene");
 
 	__camera = std::make_shared<Camera>();
-
+	__scene_manager = scene_manager;
 	__scene_name = "Sandbox";
 
 	init();
@@ -103,7 +90,7 @@ void Sandbox::update(double& dt)
 		}
 	);
 
-	__registry.view<Mouse, Transform, WorldCollider>().each([&mouse_world_pos](auto& tform)
+	__registry.view<Mouse, Transform, DynamicCollider>().each([&mouse_world_pos](auto& tform)
 		{
 			tform.set_translation(mouse_world_pos);
 		}
@@ -131,7 +118,7 @@ void Sandbox::update(double& dt)
 		mat.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/rgb_tex.jpg", TextureType::Single));
 		__registry.emplace<RenderTag>(e, RenderType::World);
 		__registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
-		__registry.emplace<WorldCollider>(e);
+		__registry.emplace<StaticCollider>(e);
 		__registry.emplace<Delegator>(e).add_delegate(SignalType::BeginCollide, delete_object);
 	}
 
@@ -146,32 +133,44 @@ void Sandbox::update(double& dt)
 	if (InputManager::get_instance().check_key_held(GLFW_KEY_KP_6))
 		__camera->zoom_x(.001f);
 
-	__registry.view<GuiContainer>().each([](auto& ge)
-		{
-			ge.update();
-		}
-	);
-
 	// Do this with dynamic colliders vs all colliders
-	check_collision(__registry.view<Collider, Transform, WorldCollider>(), __registry);
+	auto dynamic_colliders = __registry.view<Transform, Collider, DynamicCollider>();
+	auto static_colliders = __registry.view<Transform, Collider, StaticCollider>();
+
+	// Iterate through all dynamic colliders
+	for (auto first = dynamic_colliders.begin(); first != dynamic_colliders.end(); ++first)
+	{
+		auto [first_tform, first_collider] = dynamic_colliders.get(*first);
+
+		// Iterate through all next dynamic colliders
+		for (auto second = std::next(first); second != dynamic_colliders.end(); ++second)
+		{
+			auto [second_tform, second_collider] = dynamic_colliders.get(*second);
+
+			// Check collision and handle
+			check_handle_collision(__registry, *first, *second, first_collider, first_tform, second_collider, second_tform);
+		}
+
+		// Iterate through all static colliders
+		for (auto second = static_colliders.begin(); second != static_colliders.end(); ++second)
+		{
+			auto [second_tform, second_collider] = static_colliders.get(*second);
+
+			// Check collision and handle
+			check_handle_collision(__registry, *first, *second, first_collider, first_tform, second_collider, second_tform);
+		}
+	}
 
 	auto mouse_view = __registry.view<Mouse, Transform, Collider, ScreenCollider>();
 	auto screen_objects_view = __registry.view<Transform, Collider, ScreenCollider>();
-	for (const auto& [mouse, mouse_transform, mouse_collider] : mouse_view.each())
+
+	// Iterate through all mouse objects
+	for (auto [mouse, mouse_transform, mouse_collider] : mouse_view.each())
 	{
-		for (const auto& [screen_object, so_transform, so_collider] : screen_objects_view.each())
+		// Iterate through all screen colliders
+		for (auto [screen_object, so_transform, so_collider] : screen_objects_view.each())
 		{
-			CollisionInfo info = Collider::check_collision(mouse_collider, mouse_transform, so_collider, so_transform);
-			if (info.collided)
-			{
-				try_get_delegate(mouse, __registry, SignalType::BeginCollide, screen_object);
-				try_get_delegate(screen_object, __registry, SignalType::BeginCollide, mouse);
-			}
-			else
-			{
-				try_get_delegate(mouse, __registry, SignalType::ExitCollide, screen_object);
-				try_get_delegate(screen_object, __registry, SignalType::ExitCollide, mouse);
-			}
+			check_handle_collision(__registry, mouse, screen_object, mouse_collider, mouse_transform, so_collider, so_transform);
 		}
 	}
 
@@ -192,16 +191,16 @@ void Sandbox::init()
 	__registry.emplace<Player>(e);
 	__registry.emplace<RenderTag>(e, RenderType::World);
 	__registry.emplace<Collider>(e, ColliderType::Box, std::make_shared<BoxCollider>(100.0f, 100.0f));
-	__registry.emplace<WorldCollider>(e);
+	__registry.emplace<DynamicCollider>(e);
 
 	auto e2 = __registry.create();
-	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 0.0f);
+	__registry.emplace<Transform>(e2, glm::vec2(600, 0.0f), glm::vec2(400, 400), 18.0f);
 	auto& mat2 = __registry.emplace<Material>(e2);
 	mat2.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	__registry.emplace<RenderTag>(e2, RenderType::World);
 	__registry.emplace<Collider>(e2, ColliderType::Box, std::make_shared<BoxCollider>(200.0f, 200.0f));
-	__registry.emplace<WorldCollider>(e2);
 	__registry.emplace<Delegator>(e2).add_delegate(SignalType::BeginCollide, change_color).add_delegate(SignalType::ExitCollide, undo_change);
+	__registry.emplace<StaticCollider>(e2);
 
 	auto e3 = __registry.create();
 	__registry.emplace<Transform>(e3, glm::vec2(-1255.0f, 695.0f), glm::vec2(50.0f, 50.0f), 0.0f, 10.0f);
@@ -209,7 +208,6 @@ void Sandbox::init()
 	mat3.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
 	mat3.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/x.png", TextureType::Single));
 	__registry.emplace<RenderTag>(e3, RenderType::Screen);
-	__registry.emplace<GuiContainer>(e3, __camera);
 	__registry.emplace<Collider>(e3, ColliderType::Box, std::make_shared<BoxCollider>(25.0f, 25.0f));
 	__registry.emplace<ScreenCollider>(e3);
 
@@ -227,10 +225,10 @@ void Sandbox::init()
 	__registry.emplace<Transform>(e4, glm::vec2(-300.0f, 0.0f), glm::vec2(200.0f, 200.0f), 45.0f);
 	auto& mat4 = __registry.emplace<Material>(e4);
 	mat4.add_mesh(ResourceManager::get_instance().find_or_construct_mesh("1b1"));
-	mat4.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/real_circle.png", TextureType::Single));
+	// mat4.add_texture(ResourceManager::get_instance().find_or_construct_texture("./assets/real_circle.png", TextureType::Single));
 	__registry.emplace<RenderTag>(e4, RenderType::World);
-	__registry.emplace<Collider>(e4, ColliderType::Circle, std::make_shared<CircleCollider>(100.0f));
-	__registry.emplace<WorldCollider>(e4);
+	__registry.emplace<Collider>(e4, ColliderType::Circle, std::make_shared<CircleCollider>(141.42f));
+	__registry.emplace<StaticCollider>(e4);
 
 	auto e5 = __registry.create();
 	__registry.emplace<Mouse>(e5);
@@ -253,5 +251,5 @@ void Sandbox::init()
 	__registry.emplace<Mouse>(e6);
 	__registry.emplace<Transform>(e6);
 	__registry.emplace<Collider>(e6, ColliderType::Point, std::make_shared<PointCollider>());
-	__registry.emplace<WorldCollider>(e6);
+	__registry.emplace<DynamicCollider>(e6);
 }

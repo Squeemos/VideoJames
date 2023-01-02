@@ -12,7 +12,7 @@ inline static glm::vec2 scalar_triple_product(const glm::vec2& a, const glm::vec
 	return b * glm::dot(a, c) - a * glm::dot(b, c);
 }
 
-static glm::vec2 support(Polytope polytope, glm::vec2 vector)
+inline static glm::vec2 support(Polytope& polytope, glm::vec2 vector)
 {
 	float max_dp = -std::numeric_limits<float>::infinity();
 	glm::vec2 best = glm::vec2(0);
@@ -29,7 +29,7 @@ static glm::vec2 support(Polytope polytope, glm::vec2 vector)
 	return best;
 }
 
-static glm::vec2 support_2(Polytope polytope_1, Polytope polytope_2, glm::vec2 vector)
+inline static glm::vec2 support_2(Polytope& polytope_1, Polytope& polytope_2, glm::vec2 vector)
 {
 	glm::vec2 first = support(polytope_1, vector);
 	glm::vec2 second = support(polytope_2, -vector);
@@ -125,14 +125,17 @@ CollisionInfo Collider::check_collision(Collider& first_collider, Transform& fir
 
 CircleCollider::CircleCollider() : __radius(1.0f), __number_of_samples(16)
 {
+	init();
 }
 
 CircleCollider::CircleCollider(const float& r) : __radius(r), __number_of_samples(16)
 {
+	init();
 }
 
 CircleCollider::CircleCollider(const float& r, unsigned n_samples) : __radius(r), __number_of_samples(n_samples)
 {
+	init();
 }
 
 float CircleCollider::get_radius() const
@@ -140,34 +143,49 @@ float CircleCollider::get_radius() const
 	return __radius;
 }
 
-Polytope CircleCollider::populate_polytope(const Transform& t)
+Polytope& CircleCollider::populate_polytope(const Transform& t)
 {
-	glm::vec2 translation = t.get_translation();
-	Polytope p(__number_of_samples);
+	if (t.get_dirty())
+	{
+		glm::vec2 trans = t.get_translation();
+		for (unsigned i = 0; i < __number_of_samples; ++i)
+		{
+			__polytope[i] + trans;
+		}
+	}
+
+	return __polytope;
+}
+
+void CircleCollider::init()
+{
+	__polytope = Polytope(__number_of_samples);
+	__base_polytope = Polytope(__number_of_samples);
+
 	float theta = 2.0f * pi / __number_of_samples;
 
 	for (unsigned i = 0; i < __number_of_samples; ++i)
 	{
-		p[i].x = __radius * cos(theta * i) + translation.x;
-		p[i].y = __radius * sin(theta * i) + translation.y;
+		__base_polytope[i].x = __radius * cos(theta * i);
+		__base_polytope[i].y = __radius * sin(theta * i);
 	}
-
-	return p;
 }
 
 BoxCollider::BoxCollider() : __box(10.0f, 10.0f)
 {
+	init();
 }
 
-BoxCollider::BoxCollider(const glm::vec2& bounding_box)
+BoxCollider::BoxCollider(const glm::vec2& bounding_box) : __box(bounding_box)
 {
-	__box = bounding_box;
+	init();
 }
 
 BoxCollider::BoxCollider(const float& bb_x, const float& bb_y)
 {
 	__box.x = bb_x;
 	__box.y = bb_y;
+	init();
 }
 
 glm::vec2 BoxCollider::get_bounding_box() const
@@ -175,37 +193,55 @@ glm::vec2 BoxCollider::get_bounding_box() const
 	return __box;
 }
 
-Polytope BoxCollider::populate_polytope(const Transform& t)
+Polytope& BoxCollider::populate_polytope(const Transform& t)
 {
-	glm::vec2 translation = t.get_translation();
-	Polytope p(4);
+	if (t.get_dirty())
+	{
+		glm::vec2 translation = t.get_translation();
 
-	float rotation = glm::radians(t.get_rotation());
-	glm::vec2 cos_vec = __box * cos(rotation);
-	glm::vec2 sin_vec = __box * sin(rotation);
+		float rotation = glm::radians(t.get_rotation());
+		glm::vec2 cos_vec = __box * cos(rotation);
+		glm::vec2 sin_vec = __box * sin(rotation);
 
-	p[0].x = translation.x + cos_vec.x - sin_vec.y;
-	p[0].y = translation.y + sin_vec.x + cos_vec.y;
+		__polytope[0].x = translation.x + cos_vec.x - sin_vec.y;
+		__polytope[0].y = translation.y + sin_vec.x + cos_vec.y;
 
-	p[1].x = translation.x - cos_vec.x - sin_vec.y;
-	p[1].y = translation.y - sin_vec.x + cos_vec.y;
+		__polytope[1].x = translation.x - cos_vec.x - sin_vec.y;
+		__polytope[1].y = translation.y - sin_vec.x + cos_vec.y;
 
-	p[2].x = translation.x - cos_vec.y + sin_vec.y;
-	p[2].y = translation.y - sin_vec.x - cos_vec.y;
+		__polytope[2].x = translation.x - cos_vec.y + sin_vec.y;
+		__polytope[2].y = translation.y - sin_vec.x - cos_vec.y;
 
-	p[3].x = translation.x + cos_vec.x + sin_vec.y;
-	p[3].y = translation.y + sin_vec.x - cos_vec.y;
+		__polytope[3].x = translation.x + cos_vec.x + sin_vec.y;
+		__polytope[3].y = translation.y + sin_vec.x - cos_vec.y;
 
-	return p;
+		//glm::vec2 some_point = __box;
+		//glm::mat4 rot = glm::mat4(1.0f);
+		//rot = glm::rotate(rot, glm::radians(t.get_rotation()), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		//glm::vec4 new_point = rot * glm::vec4(some_point.x, some_point.y, 0.0f, 0.0f);
+		//new_point;
+	}
+
+	return __polytope;
+}
+
+void BoxCollider::init()
+{
+	__polytope = Polytope(4);
+	__base_polytope = Polytope(4);
 }
 
 PointCollider::PointCollider()
 {
+	__polytope = Polytope(1);
 }
 
-Polytope PointCollider::populate_polytope(const Transform& t)
+Polytope& PointCollider::populate_polytope(const Transform& t)
 {
-	return Polytope{ t.get_translation() };
+	if (t.get_dirty())
+		__polytope[0] = t.get_translation();
+	return __polytope;
 }
 
 CollisionInfo::CollisionInfo() : collided(false), vectors()

@@ -30,7 +30,7 @@ void Renderer::render(RenderList renderables, std::shared_ptr<Camera> camera)
 	__shader->set_uniform("view", camera->get_view());
 	__shader->set_uniform("rotation", camera->get_rotation());
 
-	for (const auto& [e, transform, material, tag] : renderables.each())
+	for (auto [e, transform, material, tag] : renderables.each())
 	{
 		if (material.has_mesh())
 		{

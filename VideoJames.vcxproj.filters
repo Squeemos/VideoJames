@@ -78,14 +78,14 @@
     <ClCompile Include="source\Components\LinearCameraFollow.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="source\Components\Gui.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="source\Components\Player.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="source\Components\Collision.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scenes\MainMenu.cpp">
+      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +146,6 @@
     <ClInclude Include="source\Components\LinearCameraFollow.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="source\Components\Gui.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="source\Components\Player.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -160,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="source\Components\Tags.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scenes\MainMenu.h">
+      <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
